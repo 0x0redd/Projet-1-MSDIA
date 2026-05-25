@@ -1,0 +1,4 @@
+True Label,Loss Before,Loss After,Loss Δ,P(token₀) Before,P(token₀) After,P(token₀) Δ
+Pituitary Tumor,1.1667,0.0002,-1.1665,0.9999,1.0,0.0001
+Glioma,1.5808,0.0527,-1.528,1.0,1.0,0.0
+Meningioma,1.4592,0.099,-1.3602,1.0,1.0,0.0

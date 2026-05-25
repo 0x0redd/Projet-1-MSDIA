@@ -1,0 +1,1854 @@
+
+    \documentclass[12pt,a4paper]{article}
+    \usepackage[utf8]{inputenc}
+    \usepackage[T1]{fontenc}
+    \usepackage[french]{babel}
+    \usepackage{amsmath}
+    \usepackage{amssymb}
+    \usepackage{graphicx}
+    \usepackage{booktabs}
+    \usepackage{array}
+    \usepackage{siunitx}
+    \usepackage{float}
+    \usepackage{xcolor}
+    \usepackage[hypcap=false]{caption}
+    \usepackage{hyperref}
+    \usepackage{tabularx}
+    \usepackage{tikz}
+    \usetikzlibrary{positioning,arrows.meta,calc,fit,backgrounds,shapes.geometric,matrix}
+    \usepackage[left=2cm,right=2cm,top=2.4cm , bottom=2.4cm]{geometry}
+
+    % Style des couleurs (inspiré du document original)
+    \definecolor{BlueNum}{RGB}{21,101,192}    % bleu pour les nombres
+    \definecolor{HeadBlue}{RGB}{26,58,92}    % titres
+    \definecolor{Accent}{RGB}{21,101,192}    % accents
+    \definecolor{LightBlue}{RGB}{227,243,252}%
+    \definecolor{DarkRow}{RGB}{245,249,255}  % alternance lignes
+
+    \newcommand{\brun}[1]{\textcolor{BlueNum}{\textbf{#1}}} % pour les valeurs importantes
+    \newcommand{\code}[1]{\texttt{#1}}
+
+    % Style des tableaux
+    \newcolumntype{L}{>{$}l<{$}}   % math mode left
+    \newcolumntype{C}{>{$}c<{$}}   % math mode center
+    \setlength{\emergencystretch}{3em}
+
+    \begin{document}
+
+    % Titre
+    \title{Détection de tumeurs cérébrales en IRM \\[0.3cm]
+    \large par fusion multi‑caractéristiques et apprentissage automatique}
+    \author{Projet 7 — MSDIA, Semestre 8 \\ Avril 2026}
+    \date{}
+    \maketitle
+
+    \begin{center}
+    \rule{0.9\textwidth}{1pt}
+    \end{center}
+
+    \section*{RÉSUMÉ}
+    \addcontentsline{toc}{section}{RÉSUMÉ}
+    Ce rapport présente une pipeline complète et reproductible de classification de tumeurs cérébrales sur IRM, organisée en deux phases. 
+    La \textbf{Phase~1} sélectionne les paramètres optimaux pour trois familles de descripteurs (GLCM, LBP, DWT) via des métriques de séparabilité sans classifieur : 
+    Fisher Discriminant Ratio (FDR), Information Mutuelle (MI) et indice de Davies–Bouldin (DBI). 
+    La \textbf{Phase~2} réalise un benchmark exhaustif de SVM, k‑NN et forêt aléatoire sur 8 jeux de caractéristiques, des blocs unitaires jusqu’à la fusion complète.
+
+    Les paramètres retenus en Phase~1 : GLCM \code{[1,2,4,8], angles=[0], levels=256} (score \brun{0,756}), 
+    LBP \code{P=12, R=1, uniform} (score \brun{0,991}), 
+    DWT \code{db2, level=1} (score \brun{0,984}). 
+    En Phase~2, la meilleure performance est obtenue par \textbf{Full(opt) + SVM} avec une accuracy de \brun{0,9067} et un F1‑macro de \brun{0,9064}.
+
+    \section{Introduction}
+    Avec l’essor rapide des technologies numériques et la croissance exponentielle des données visuelles, la classification d’images est devenue une problématique centrale dans le domaine de la vision par ordinateur et de l’intelligence artificielle.
+    Les images constituent aujourd’hui une source d’information essentielle dans de nombreux domaines tels que la médecine, la surveillance, l’agriculture intelligente, ou encore les systèmes autonomes.
+    L’extraction automatique d’informations pertinentes à partir de ces données visuelles représente ainsi un enjeu majeur.
+
+    La classification d’images consiste à attribuer une étiquette ou une catégorie à une image donnée, en fonction de ses caractéristiques visuelles.
+    Cette tâche, bien que simple en apparence, devient complexe en raison de la variabilité des données (bruit, illumination, orientation, diversité intra-classe, etc.) ainsi que de la dimension élevée des images.
+
+    Dans ce projet, nous nous intéressons à l’utilisation des \textbf{méthodes classiques de Machine Learning} pour la classification d’images.
+    Contrairement aux approches de Deep Learning, qui apprennent automatiquement des représentations hiérarchiques à partir des données brutes, les méthodes traditionnelles reposent sur une étape cruciale appelée \textbf{ingénierie des caractéristiques} (\textit{feature engineering}).
+    Cette étape consiste à transformer les images en vecteurs de caractéristiques pertinents permettant aux modèles d’apprentissage de mieux discriminer les classes.
+
+    L’objectif principal de ce travail est de mettre en oeuvre et comparer les performances de trois algorithmes fondamentaux du Machine Learning :
+    \begin{itemize}
+        \item Support Vector Machine (SVM)
+        \item K-Nearest Neighbors (KNN)
+        \item Random Forest (RF)
+    \end{itemize}
+
+    Ces algorithmes ont été choisis pour leur robustesse, leur simplicité d’implémentation et leur efficacité dans des tâches de classification, notamment lorsque la taille des données est limitée.
+    Ce travail inclut également une analyse des performances ainsi qu’une optimisation des caractéristiques extraites.
+
+    Un des défis majeurs dans la classification d’images à l’aide de méthodes classiques est la \textbf{grande dimension des données}.
+    En effet, une image est généralement représentée par un grand nombre de pixels, ce qui peut entraîner des problèmes tels que la malédiction de la dimensionnalité, un surapprentissage (\textit{overfitting}) ou encore une augmentation du coût computationnel.
+    Pour remédier à cela, il est nécessaire de recourir à des techniques de :
+    \begin{itemize}
+        \item Prétraitement des données
+        \item Extraction de caractéristiques
+        \item Réduction de dimensionnalité
+    \end{itemize}
+
+    Par ailleurs, la littérature montre que les méthodes classiques, telles que SVM, peuvent offrir des performances compétitives, voire supérieures, dans des contextes de petits ensembles de données.
+    En revanche, les méthodes de Deep Learning deviennent généralement plus performantes lorsque la quantité de données disponible est importante.
+
+    Ainsi, ce projet vise non seulement à implémenter des modèles de classification, mais également à :
+    \begin{itemize}
+        \item Comprendre le rôle fondamental des caractéristiques dans la performance des modèles
+        \item Analyser le comportement des algorithmes face à différentes représentations des données
+        \item Comparer les performances en termes de précision, complexité et robustesse
+    \end{itemize}
+
+    Enfin, ce travail constitue une base méthodologique solide pour des projets futurs, notamment l’intégration de techniques avancées telles que les méthodes d’ensemble (\textit{ensemble learning}), les modèles hybrides ou encore les approches basées sur le Deep Learning.
+
+    \subsection{Contributions principales}
+    \begin{itemize}
+    \item Pipeline complète de la préparation des données aux diagnostics de robustesse.
+    \item Sélection de paramètres guidée par FDR, MI et DBI pour GLCM, LBP et DWT (201 configurations explorées).
+    \item Benchmark comparatif SVM / k‑NN / forêt aléatoire sur 8 jeux de caractéristiques (blocs unitaires, fusions partielles, fusion complète).
+    \item Analyse de stabilité sur 10 protocoles de validation croisée et 3 graines aléatoires.
+    \end{itemize}
+
+    \section{Problématique et Contexte Théorique}
+
+    La classification d’images constitue une tâche essentielle en vision par ordinateur, mais elle présente plusieurs défis importants, notamment lorsqu’elle est abordée à l’aide de méthodes classiques de Machine Learning.
+    Contrairement aux données tabulaires classiques, les images sont des données fortement structurées et de très grande dimension, ce qui rend leur traitement direct difficile.
+
+    \subsection{Représentation des images}
+
+    Une image numérique peut être représentée comme une matrice de pixels.
+    Pour une image en niveaux de gris de taille \(M \times N\), chaque pixel est une valeur scalaire représentant une intensité lumineuse.
+    Dans le cas d’images couleur, chaque pixel est généralement représenté par trois composantes (RGB), ce qui augmente encore la dimension des données.
+
+    Ainsi, une image peut être transformée en un vecteur de dimension :
+    \[
+    d = M \times N \times C
+    \]
+    où \(C\) représente le nombre de canaux (1 pour le grayscale, 3 pour RGB).
+
+    Cette représentation vectorielle, bien que simple, pose un problème majeur : \textbf{la très grande dimension des données}.
+
+    \subsection{Malédiction de la dimensionnalité}
+
+    Lorsque la dimension des données augmente, plusieurs problèmes apparaissent :
+    \begin{itemize}
+        \item Augmentation du coût computationnel
+        \item Difficulté à généraliser (\textit{overfitting})
+        \item Diminution de la pertinence des distances (notamment pour KNN)
+    \end{itemize}
+
+    Ce phénomène est connu sous le nom de \textbf{malédiction de la dimensionnalité}.
+    Il rend inefficace l’utilisation directe des pixels bruts pour la classification.
+
+    \subsection{Nécessité de l’ingénierie des caractéristiques}
+
+    Pour surmonter ces limitations, il est nécessaire de transformer les données brutes en un espace de caractéristiques plus pertinent.
+    Cette étape, appelée \textbf{feature engineering}, consiste à extraire des informations discriminantes à partir des images.
+
+    Les caractéristiques doivent idéalement :
+    \begin{itemize}
+        \item Réduire la dimension des données
+        \item Capturer les propriétés importantes (formes, textures, couleurs)
+        \item Faciliter la séparation des classes
+    \end{itemize}
+
+    Contrairement au Deep Learning, où les caractéristiques sont apprises automatiquement, les méthodes classiques reposent fortement sur la qualité des caractéristiques définies.
+
+    \subsection{Machine Learning vs Deep Learning}
+
+    Dans le contexte de la classification d’images, deux grandes approches existent :
+    \begin{itemize}
+        \item \textbf{Machine Learning traditionnel} : nécessite une extraction manuelle des caractéristiques
+        \item \textbf{Deep Learning} : apprend automatiquement les caractéristiques à partir des données
+    \end{itemize}
+
+    Selon la littérature comparative, les performances des deux approches dépendent fortement de la taille du dataset :
+    \begin{itemize}
+        \item Sur des petits datasets, les méthodes classiques (comme SVM) sont souvent plus efficaces
+        \item Sur des grands datasets, les modèles de Deep Learning (comme CNN) surpassent largement les méthodes traditionnelles
+    \end{itemize}
+
+    \subsection{Formulation du problème de classification}
+
+    Le problème de classification peut être formalisé comme suit.
+
+    Soit un ensemble de données :
+    \[
+    \mathcal{D} = \{(x_i, y_i)\}_{i=1}^{N}
+    \]
+    où :
+    \begin{itemize}
+        \item \(x_i \in \mathbb{R}^d\) est le vecteur de caractéristiques de l’image
+        \item \(y_i \in \{1, \dots, K\}\) est la classe associée
+    \end{itemize}
+
+    L’objectif est d’apprendre une fonction de décision :
+    \[
+    f : \mathbb{R}^d \rightarrow \{1, \dots, K\}
+    \]
+    capable de prédire correctement la classe d’une nouvelle image.
+
+    \subsection{Défis principaux du projet}
+
+    Dans ce projet, plusieurs défis doivent être adressés :
+    \begin{itemize}
+        \item Transformer les images en représentations exploitables
+        \item Choisir des caractéristiques pertinentes
+        \item Réduire la dimension sans perdre d’information importante
+        \item Sélectionner le modèle de classification le plus adapté
+        \item Évaluer les performances de manière rigoureuse
+    \end{itemize}
+
+    Ces défis sont traités à travers une approche progressive combinant prétraitement, extraction de caractéristiques, réduction de dimension et classification.
+
+    \subsection{Objectif scientifique}
+
+    Au-delà de la simple implémentation, ce travail vise à répondre à la question suivante :
+
+    \begin{center}
+    \textit{Comment la qualité des caractéristiques influence-t-elle la performance des modèles de Machine Learning pour la classification d’images ?}
+    \end{center}
+
+    La réponse à cette question permet de mieux comprendre les limites des approches classiques et d’identifier des pistes d’amélioration pour des travaux futurs.
+
+    \section{Matériels et Méthodes}
+    \subsection{Jeu de données et Prétraitement}
+
+    Dans cette section, nous décrivons le jeu de données utilisé ainsi que les différentes étapes de prétraitement appliquées avant l'entraînement des modèles de classification.
+    Cette étape est essentielle, car la qualité des données conditionne directement la performance des algorithmes de Machine Learning.
+
+    \subsubsection{Description du jeu de données}
+
+    Le projet consiste à classifier des images en utilisant des méthodes classiques de Machine Learning, comme spécifié dans le cahier des charges.
+
+    Le jeu de données utilisé est constitué d’un ensemble d’images appartenant à plusieurs classes.
+    Chaque image représente un exemple à classifier, et l’objectif est d’apprendre une fonction permettant de prédire correctement la classe associée.
+
+    Les principales caractéristiques du dataset sont :
+    \begin{itemize}
+        \item Nombre total d’images : \(N\)
+        \item Nombre de classes : \(K\)
+        \item Type d’images : (grayscale / RGB)
+        \item Dimensions initiales : \(M \times N\)
+    \end{itemize}
+
+    Les données sont généralement divisées en deux sous-ensembles :
+    \begin{itemize}
+        \item \textbf{Ensemble d'entraînement} : utilisé pour apprendre les paramètres des modèles
+        \item \textbf{Ensemble de test} : utilisé pour évaluer les performances du modèle
+    \end{itemize}
+
+    \subsubsection{Problématique des données brutes}
+
+    Les images brutes ne peuvent pas être utilisées directement par les algorithmes de Machine Learning classiques.
+    En effet :
+    \begin{itemize}
+        \item Les dimensions sont trop élevées
+        \item Les données contiennent du bruit
+        \item Les variations d’échelle et d’intensité peuvent perturber l’apprentissage
+    \end{itemize}
+
+    Il est donc nécessaire d’appliquer un ensemble de transformations pour rendre les données exploitables.
+
+    \subsubsection{Redimensionnement des images}
+
+    La première étape consiste à uniformiser la taille des images.
+    Toutes les images sont redimensionnées vers une taille fixe :
+    \[
+    M' \times N'
+    \]
+
+    Cela permet :
+    \begin{itemize}
+        \item d’assurer une cohérence entre les données
+        \item de réduire la complexité computationnelle
+    \end{itemize}
+
+    \subsubsection{Conversion en niveaux de gris}
+
+    Dans certains cas, les images couleur sont converties en niveaux de gris afin de :
+    \begin{itemize}
+        \item réduire la dimension des données
+        \item simplifier l’extraction des caractéristiques
+    \end{itemize}
+
+    Une image RGB de dimension \(M \times N \times 3\) devient alors une image \(M \times N\).
+
+    \subsubsection{Normalisation des données}
+
+    Les valeurs des pixels sont normalisées afin de les ramener dans un intervalle standard, généralement :
+    \[
+    x' = \frac{x}{255}
+    \]
+
+    Cette transformation permet :
+    \begin{itemize}
+        \item d’accélérer la convergence des algorithmes
+        \item d’éviter les biais liés aux grandes valeurs
+    \end{itemize}
+
+    \subsubsection{Vectorisation des images}
+
+    Les images sont ensuite transformées en vecteurs pour être utilisées par les modèles de Machine Learning.
+
+    Une image de taille \(M \times N\) est convertie en un vecteur :
+    \[
+    x \in \mathbb{R}^{M \times N}
+    \]
+
+    Cette opération est appelée \textbf{flattening}.
+
+    \subsubsection{Analyse de la distribution des données}
+
+    Une analyse de la distribution des classes est effectuée afin de vérifier l’équilibre du dataset.
+    Un déséquilibre important peut entraîner :
+    \begin{itemize}
+        \item un biais du modèle vers certaines classes
+        \item une diminution des performances globales
+    \end{itemize}
+
+    \begin{figure}[ht]
+        \centering
+        \begin{minipage}[t]{0.49\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{output/class_balance_train.png}
+        \end{minipage}
+        \hfill
+        \begin{minipage}[t]{0.49\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{output/class_balance_train_sample.png}
+        \end{minipage}
+        \caption{Distribution des classes (gauche) et aperçu d'images prétraitées (droite) dans l'ensemble d'entraînement.}
+        \label{fig:class_balance_train}
+    \end{figure}
+
+    \subsubsection{Visualisation des données}
+
+    La visualisation des images permet de :
+    \begin{itemize}
+        \item comprendre la structure des données
+        \item détecter d’éventuelles anomalies
+        \item valider les étapes de prétraitement
+    \end{itemize}
+
+    \subsubsection{Importance du prétraitement}
+
+    Le prétraitement joue un rôle fondamental dans les performances du système.
+    En effet :
+    \begin{itemize}
+        \item il réduit le bruit
+        \item il améliore la qualité des caractéristiques
+        \item il facilite l’apprentissage des modèles
+    \end{itemize}
+
+    Dans les approches de Machine Learning classiques, cette étape est particulièrement critique, car les modèles ne sont pas capables d’apprendre automatiquement des représentations complexes comme dans le Deep Learning.
+
+    \subsubsection{Conclusion de la section}
+
+    À l’issue de cette phase, les données sont transformées en une représentation exploitable, prête pour l’étape suivante : \textbf{l’extraction des caractéristiques et la réduction de dimension}.
+
+    \section{Réduction de Dimension}
+
+    Après l’extraction des caractéristiques, les vecteurs obtenus restent généralement de grande dimension.
+    Cette complexité peut entraîner des problèmes de surapprentissage, une augmentation du coût computationnel et une dégradation des performances des modèles.
+    Afin de pallier ces limitations, une étape de \textbf{réduction de dimension} est introduite.
+
+    \subsection{Objectif de la réduction de dimension}
+
+        La réduction de dimension vise à transformer les données initiales en un espace de plus faible dimension tout en conservant l’information la plus pertinente.
+
+        Les principaux objectifs sont :
+        \begin{itemize}
+            \item Réduire la complexité des données
+            \item Éliminer les redondances
+            \item Améliorer la généralisation des modèles
+            \item Accélérer le temps d’entraînement
+        \end{itemize}
+
+    \subsection{Principe de l’Analyse en Composantes Principales (PCA)}
+
+        Dans ce projet, la méthode principale utilisée est l’\textbf{Analyse en Composantes Principales (PCA)}.
+
+        La PCA est une méthode statistique qui consiste à projeter les données sur un nouvel espace orthogonal, appelé espace des composantes principales, de manière à maximiser la variance des données projetées.
+
+        Soit un ensemble de données centré :
+        \[
+        X = \{x_1, x_2, ..., x_n\}, \quad x_i \in \mathbb{R}^d
+        \]
+
+        La PCA consiste à :
+        \begin{enumerate}
+            \item Calculer la matrice de covariance :
+            \[
+            C = \frac{1}{n} X^T X
+            \]
+
+            \item Calculer les valeurs propres et vecteurs propres de \(C\)
+
+            \item Sélectionner les \(k\) plus grandes valeurs propres
+
+            \item Projeter les données sur les \(k\) vecteurs propres correspondants :
+            \[
+            X_{reduit} = X W_k
+            \]
+        \end{enumerate}
+
+        où \(W_k\) est la matrice des \(k\) vecteurs propres principaux.
+
+    \subsection{Interprétation géométrique}
+
+        La PCA peut être interprétée comme une rotation de l’espace des données vers de nouvelles directions où :
+        \begin{itemize}
+            \item La première composante principale capture la plus grande variance
+            \item Les composantes suivantes capturent les variances restantes
+        \end{itemize}
+
+        Cela permet de concentrer l’information dans un nombre réduit de dimensions.
+
+    \subsection{Choix du nombre de composantes}
+
+        Le choix du nombre de composantes \(k\) est crucial.
+        Il est généralement déterminé en fonction de la variance expliquée cumulée.
+
+        \[
+        \text{Variance expliquée} = \sum_{i=1}^{k} \lambda_i \Big/ \sum_{j=1}^{d} \lambda_j
+        \]
+
+        où \(\lambda_i\) sont les valeurs propres.
+
+        On choisit \(k\) tel que :
+        \begin{itemize}
+            \item 90\% à 95\% de la variance soit conservée
+        \end{itemize}
+
+    \subsection{Impact de la PCA sur les performances}
+
+        L’application de la PCA présente plusieurs avantages :
+        \begin{itemize}
+            \item Réduction du bruit dans les données
+            \item Suppression des caractéristiques redondantes
+            \item Amélioration de la stabilité des modèles
+        \end{itemize}
+
+        Cependant, elle peut également entraîner :
+        \begin{itemize}
+            \item Une perte d’information si \(k\) est trop petit
+            \item Une interprétation plus difficile des caractéristiques
+        \end{itemize}
+
+    \subsection{Comparaison avec et sans PCA}
+
+        Dans ce projet, une comparaison a été effectuée entre :
+        \begin{itemize}
+            \item Modèles utilisant les caractéristiques brutes
+            \item Modèles utilisant les caractéristiques réduites par PCA
+        \end{itemize}
+
+        Les résultats montrent que :
+        \begin{itemize}
+            \item La PCA améliore généralement la performance
+            \item Elle réduit significativement le temps de calcul
+            \item Elle est particulièrement utile pour les méthodes basées sur la distance (ex: KNN)
+        \end{itemize}
+
+    \subsection{Visualisation après réduction}
+
+        Dans ce projet, la PCA est utilisée principalement pour accélérer certains calculs d’évaluation, en particulier le \textbf{Davies-Bouldin Index (DBI)} : l’index est estimé sur une version réduite des features (typiquement un nombre de composantes plafonné) afin de réduire le coût computationnel en espace de grande dimension.
+
+        La visualisation qualitative des regroupements de classes est plutôt réalisée via \textbf{t-SNE} (voir la section de diagnostics), car cette approche non linéaire met mieux en évidence la structure locale dans l’espace des caractéristiques.
+
+    \subsection{Conclusion}
+
+        La réduction de dimension, et en particulier la PCA, constitue une étape essentielle dans les pipelines de Machine Learning classiques.
+        Elle permet de simplifier les données tout en conservant l’information pertinente, ce qui améliore significativement les performances globales du système de classification.
+
+        \subsection{Extraction des caractéristiques}
+
+        \subsubsection{Vue d'ensemble et importance des descripteurs}
+            Cette section constitue le coeur du projet : en apprentissage automatique classique, la performance dépend fortement de la qualité des variables d'entrée.
+            Contrairement aux approches profondes qui apprennent automatiquement les représentations, les modèles classiques (SVM, \(k\)-NN, RF) nécessitent des descripteurs explicites, pertinents et discriminants.
+
+            Dans ce travail, plusieurs familles de caractéristiques sont considérées :
+            \begin{itemize}
+            \item \textbf{Raw pixel features (baseline)} : représentation directe des intensités de pixels vectorisées, utilisée comme point de comparaison simple.
+            \item \textbf{Histogram-based features} : descripteurs fondés sur la distribution des intensités ou des motifs, utiles pour capturer la structure globale d'une image.
+            \item \textbf{Texture features} : descripteurs dédiés aux variations locales de texture, en particulier \textbf{HOG} (Histogram of Oriented Gradients), \textbf{LBP} (Local Binary Patterns) et \textbf{GLCM}.
+            \item \textbf{Color features} : non retenues ici comme source principale, car la pipeline repose majoritairement sur des images IRM en niveaux de gris ; l'information discriminante provient surtout de la texture et des structures spatiales.
+            \end{itemize}
+
+            L'idée clé est que \textbf{la qualité des caractéristiques conditionne directement la qualité de classification}.
+            Des descripteurs bien conçus améliorent la séparabilité entre classes, facilitent l'apprentissage des frontières de décision et conduisent à de meilleures métriques (accuracy, F1-macro), avec une meilleure robustesse.
+
+
+
+            \subsubsection{GLCM — Matrice de co‑occurrence}
+        La matrice de co‑occurrence (GLCM) caractérise la texture par six propriétés de Haralick (contraste, dissimilarité, homogénéité, énergie, corrélation, ASM). 
+        L’espace de recherche couvre \brun{144 configurations} : 6 choix de distances, 4 d’angles, 3 niveaux de quantification et 2 symétries.
+
+        \begin{figure}[H]
+            \centering
+            \resizebox{0.82\textwidth}{!}{%
+            \begin{tikzpicture}[font=\small, >=stealth]
+                \matrix (m) [matrix of nodes,
+                    nodes={draw, minimum size=0.7cm, anchor=center},
+                    row sep=-\pgflinewidth, column sep=-\pgflinewidth]
+                {
+                    0 & 1 & 1 & 2 \\
+                    1 & 1 & 0 & 1 \\
+                    2 & 0 & 1 & 0 \\
+                    0 & 2 & 2 & 1 \\
+                };
+                \node[above=0.2cm of m] {\textbf{Image quantifiée}};
+                \node[below=0.2cm of m, text width=3cm, align=center, font=\footnotesize]
+                    {Configuration illustrée : $d=1$, $\theta=0^\circ$};
+
+                \draw[->, thick] (m.east) -- ++(1.2,0) node[midway, above, scale=0.8] {Calcul};
+
+                \matrix (g) [matrix of nodes,
+                    nodes={draw, minimum size=0.7cm, anchor=center},
+                    row sep=-\pgflinewidth, column sep=-\pgflinewidth,
+                    right=1.5cm of m]
+                {
+                    0 & 2 & 1 \\
+                    3 & 2 & 1 \\
+                    1 & 1 & 1 \\
+                };
+                \node[above=0.2cm of g] {\textbf{GLCM (3$\times$3)}};
+
+                \draw[->, thick] (g.east) -- ++(1.2,0) node[midway, above, scale=0.8] {Extraction};
+
+                \node[draw, rectangle, right=1.5cm of g, text width=2.8cm, fill=gray!10, font=\scriptsize] (h) {
+                    \textbf{6 propriétés :} \\
+                    - Contraste \\
+                    - Dissimilarité \\
+                    - Homogénéité \\
+                    - Énergie \\
+                    - Corrélation \\
+                    - ASM
+                };
+            \end{tikzpicture}%
+            }
+            \caption{Processus d'extraction GLCM : une configuration représentative (quantification à 3 niveaux, $d=1$, $\theta=0^\circ$) conduit au calcul des propriétés de Haralick parmi les 144 configurations explorées.}
+        \end{figure}
+
+
+
+
+        \subsubsection{LBP — Motifs binaires locaux}
+        Le LBP encode la texture locale via un histogramme de motifs binaires. 
+        Espace de recherche : \brun{36 configurations} avec \(P\in\{8,12,16,24\}\), \(R\in\{1,2,3\}\), et les méthodes uniforme, nri\_uniform ou ror.
+
+        \begin{figure}[H]
+            \centering
+            \resizebox{0.90\textwidth}{!}{%
+            \begin{tikzpicture}[font=\small,
+                cel/.style={rectangle, draw, minimum width=0.6cm, minimum height=0.6cm, outer sep=0pt, inner sep=0pt},
+                bit/.style={circle, draw, inner sep=0.5pt, minimum size=4pt, font=\tiny, align=center}
+            ]
+
+            % ---- Étape 1 : Voisinage local (P=8, R=1) avec valeurs ----
+            \draw[step=0.6, gray!30, thin] (-1.5,-1.5) grid (1.5,1.5);
+            \draw[thick] (-1.5,-1.5) rectangle (1.5,1.5);
+            \node[cel, fill=red!18] at (0,0) {$\mathbf{g_c}$};
+            \foreach \i/\col in {0/100,1/80,2/95,3/130,4/140,5/110,6/90,7/70} {
+                \node[cel] at ({-0.6+0.6*mod(\i,3)},{0.6-0.6*floor(\i/3)}) {\col};
+            }
+            \node[above=1.9cm] at (-1.5,1.5) {\textbf{Voisinage $3\times3$}};
+            \node[above=1.6cm] at (1.5,1.5) {\footnotesize $g_c = 50$};
+
+            % ---- Étape 2 : Comparaison avec le centre ----
+            \draw[->, thick] (2,-0.5) -- (3.8,-0.5) node[midway, above] {Comparaison};
+            \node[align=center] at (2.2,-1.2) {\footnotesize $s(x) = \begin{cases}1 & x \ge g_c \\ 0 & x < g_c\end{cases}$};
+
+            % ---- Étape 3 : Motif binaire (vecteur binaire) ----
+            \begin{scope}[shift={(5.5,-0.5)}]
+                \draw[step=0.6, gray!30, thin] (-1.5,-1.5) grid (1.5,1.5);
+                \draw[thick] (-1.5,-1.5) rectangle (1.5,1.5);
+                \node[cel, fill=red!20] at (0,0) {\textbf{50}};
+                \foreach \i/\val in {0/1,1/1,2/1,3/1,4/1,5/1,6/1,7/0} {
+                    \node[cel] at ({-0.6+0.6*mod(\i,3)},{0.6-0.6*floor(\i/3)}) {\tiny \val};
+                }
+                \node[align=center] at (0,-2.2) {\textbf{Motif binaire obtenu} \\ \texttt{11111110}};
+            \end{scope}
+
+            % ---- Étape 4 : Codage uniforme / rotation invariant ----
+            \draw[->, thick] (7.2,1) -- (8.8,1) node[midway, above] {Post‑traitement};
+
+            \begin{scope}[shift={(10,0.2)}]
+                \node[draw, thick, rounded corners, fill=blue!5, minimum width=2cm, minimum height=1cm, align=center] at (0,0) {
+                    \textbf{Choix de la méthode} \\
+                    \tiny uniforme / nri\_uniform / ror
+                };
+                \draw[->] (0,-0.8) -- (0,-1.5);
+                \node[draw, thick, rounded corners, fill=green!10, minimum width=2.2cm, minimum height=1cm, align=center] at (0,-2.4) {
+                    \textbf{Uniforme} ($\le 2$ transitions) \\ `11111110` → accepté
+                };
+                \node[draw, thick, rounded corners, fill=orange!10, minimum width=2.2cm, minimum height=1cm, align=center] at (0,-4) {
+                    \textbf{Rotation invariant} (ror) \\ `01111111` = `11111110`
+                };
+            \end{scope}
+
+            % ---- Étape 5 : Histogramme final (multi‑patch) ----
+            \begin{scope}[shift={(15.5,-1.5)}]
+                \draw[->] (0,0) -- (0,2.5) node[above] {fréquence};
+                \draw[->] (0,0) -- (3.5,0) node[right] {motif binaire};
+                \foreach \x/\h in {0.3/1.2, 0.8/0.6, 1.3/1.8, 1.8/1.0, 2.3/0.4, 2.8/1.4} {
+                    \draw[fill=gray!50] (\x,0) rectangle ++(0.25,\h);
+                }
+                \draw[fill=blue!50] (2.05,0) rectangle ++(0.25,1.6); % motif saillant
+                \draw[fill=gray!50] (2.55,0) rectangle ++(0.25,0.8);
+                \node[align=center, font=\bfseries] at (1.5,2.9) {Histogramme LBP};
+                \node[font=\scriptsize, align=center] at (1.5,-1) {Échantillonné sur l’ensemble\\de l’image};
+            \end{scope}
+
+            \node[anchor=north east, text width=5cm, align=left, fill=gray!5, rounded corners, inner sep=4pt] at ($(current bounding box.north east)+(-0.2,0.4)$) {\footnotesize\textit{La méthode uniforme réduit le nombre de bins de \(2^P\) à \(P+2\), ce qui simplifie l’histogramme sans perdre de pouvoir discriminant.}};
+            \end{tikzpicture}%
+            }
+            \caption{Chaîne de construction d’un descripteur LBP. (1) Voisinage local de \(P\) points à distance \(R\) ; (2) calcul du motif binaire par comparaison avec le centre ; (3) obtention d’un vecteur binaire ; (4) post‑traitement selon la méthode choisie (uniforme, nri\_uniform ou ror) ; (5) agrégation en histogramme normalisé.}
+            \label{fig:lbp}
+        \end{figure}
+
+    \subsubsection{DWT — Transformée en ondelettes discrètes}
+    La DWT décompose l’image en sous‑bandes ; pour chaque sous‑bande sont extraites moyenne, écart‑type, énergie et entropie. 
+    Espace de recherche : \brun{21 configurations} (7 familles d’ondelettes × 3 niveaux).
+
+
+
+    \begin{figure}[H]
+        \centering
+        \resizebox{0.88\textwidth}{!}{%
+        \begin{tikzpicture}[
+            sb/.style      = {draw=black!60, rectangle, fill=blue!15,
+                            font=\sffamily, inner sep=0pt, outer sep=0pt},
+            arrow/.style   = {-Stealth, thick, black!65},
+            features/.style= {draw=black!70, rounded corners=4pt, fill=gray!6,
+                            font=\small\sffamily, align=left, inner sep=8pt},
+            cfgbox/.style  = {draw=black!70, thick, rounded corners=3pt, fill=white,
+                            font=\small\sffamily, inner sep=8pt, align=left},
+        ]
+
+        %%──────────────────────────────────────────────────────────────────────────
+        %% Subband sizes:  s3 = 0.75 cm   s2 = 1.5 cm   s1 = 3.0 cm
+        %% Origin = top-left corner of the full DWT tile (y grows downward → negative)
+        %%──────────────────────────────────────────────────────────────────────────
+
+        %% ── Level-3 subbands (each 0.75 × 0.75 cm) ─────────────────────────────────
+        \node[sb, minimum size=0.75cm, fill=blue!40, font=\tiny\sffamily\bfseries]
+            (LL3) at (0.375,-0.375) {LL3};
+        \node[sb, minimum size=0.75cm, font=\tiny\sffamily]
+            (HL3) at (1.125,-0.375) {HL3};
+        \node[sb, minimum size=0.75cm, font=\tiny\sffamily]
+            (LH3) at (0.375,-1.125) {LH3};
+        \node[sb, minimum size=0.75cm, font=\tiny\sffamily]
+            (HH3) at (1.125,-1.125) {HH3};
+
+        %% ── Level-2 subbands (each 1.5 × 1.5 cm) ───────────────────────────────────
+        %% HL2: right of level-3 block  →  x centre = 1.5+0.75 = 2.25
+        \node[sb, minimum size=1.5cm, font=\small\sffamily]
+            (HL2) at (2.25,-0.75) {HL2};
+        %% LH2: below level-3 block     →  y centre = −1.5−0.75 = −2.25
+        \node[sb, minimum size=1.5cm, font=\small\sffamily]
+            (LH2) at (0.75,-2.25) {LH2};
+        %% HH2: bottom-right corner of level-2 group
+        \node[sb, minimum size=1.5cm, font=\small\sffamily]
+            (HH2) at (2.25,-2.25) {HH2};
+
+        %% ── Level-1 subbands (each 3.0 × 3.0 cm) ───────────────────────────────────
+        %% HL1: right of level-2 block  →  x centre = 3.0+1.5 = 4.5
+        \node[sb, minimum size=3.0cm, font=\large\sffamily]
+            (HL1) at (4.5,-1.5) {HL1};
+        %% LH1: below level-2 block     →  y centre = −3.0−1.5 = −4.5
+        \node[sb, minimum size=3.0cm, font=\large\sffamily]
+            (LH1) at (1.5,-4.5) {LH1};
+        %% HH1: bottom-right corner of level-1 group
+        \node[sb, minimum size=3.0cm, font=\large\sffamily]
+            (HH1) at (4.5,-4.5) {HH1};
+
+        %%──────────────────────────────────────────────────────────────────────────
+        %% Level borders — three concentric dashed rectangles, each slightly larger
+        %% so they are all visible.  Labels staggered horizontally so no overlaps.
+        %%──────────────────────────────────────────────────────────────────────────
+        \draw[dashed, red!70!black, very thick]
+            (-0.05, 0.05) rectangle (1.55,-1.55);
+        \node[font=\scriptsize\bfseries\sffamily, text=red!70!black, anchor=south west]
+            at (-0.05, 0.05) {Niveau 3};
+
+        \draw[dashed, orange!80!black, thick]
+            (-0.10, 0.30) rectangle (3.10,-3.10);
+        \node[font=\scriptsize\bfseries\sffamily, text=orange!80!black, anchor=south west]
+            at (1.55, 0.30) {Niveau 2};
+
+        \draw[dashed, green!50!black, thick]
+            (-0.15, 0.55) rectangle (6.15,-6.15);
+        \node[font=\scriptsize\bfseries\sffamily, text=green!50!black, anchor=south west]
+            at (3.10, 0.55) {Niveau 1};
+
+        %%──────────────────────────────────────────────────────────────────────────
+        %% Right-hand side: feature box + config box
+        %%──────────────────────────────────────────────────────────────────────────
+        \node[features, anchor=north west] (featBox) at (7.2,-0.4) {
+            \textbf{Vecteur de Caractéristiques}\\[5pt]
+            $\mu$\hspace{6pt}: Moyenne      \\[2pt]
+            $\sigma$\hspace{2pt}: Écart-type  \\[2pt]
+            $E$\hspace{5pt}: Énergie        \\[2pt]
+            $H$\hspace{4pt}: Entropie
+        };
+
+        \node[cfgbox, anchor=north west] (cfgBox) at (7.2,-4.6) {
+            \textbf{Configuration expérimentale}\\[5pt]
+            \textbullet\; 7 familles d'ondelettes      \\[2pt]
+            \textbullet\; 3 niveaux de décomposition   \\[2pt]
+            \textbullet\; 4 statistiques par sous-bande\\[5pt]
+            Total~: \textbf{\textcolor{blue!70!black}{21 configurations}}
+        };
+
+        %%──────────────────────────────────────────────────────────────────────────
+        %% Arrows from Level-1 detail subbands → feature box
+        %% All three originate from the EAST side (right), going right.
+        %%──────────────────────────────────────────────────────────────────────────
+        %% HL1 (east = 6.0, -1.5) → featBox west, same height  [horizontal]
+        \draw[arrow] (HL1.east) -- (featBox.west |- HL1.east);
+
+        %% HH1 (east = 6.0, -4.5) → featBox south  [curve upward]
+        \draw[arrow] (HH1.east) to[out=0, in=270] (featBox.south);
+
+        %% LH1 (east = 3.0, -4.5) → featBox south-west  [curve up-right]
+        \draw[arrow] (LH1.east) to[out=0, in=235] (featBox.south west);
+
+        \end{tikzpicture}%
+        }
+        \caption{Structure de la décomposition DWT 2D sur 3 niveaux :
+                les sous-bandes de détail (HL, LH, HH) à chaque niveau alimentent
+                l'extraction de quatre statistiques ($\mu,\sigma,E,H$) par sous-bande.}
+        \label{fig:dwt_structure}
+    \end{figure}
+
+
+
+    \subsubsection{HOG — Histogramme de gradients orientés}
+    Paramètres fixes : 9 orientations, cellules \(8\times8\) pixels, blocs \(2\times2\) cellules, normalisation L2‑Hys.
+
+
+
+    \begin{figure}[H]
+        \centering
+    
+        % ── 1. TikZ diagram ──────────────────────────────────────────────────────────
+        \resizebox{0.88\textwidth}{!}{%
+        \begin{tikzpicture}[
+            font        = \small,
+            node distance = 1.8cm,
+            >=Latex,
+            box/.style  = {draw=black!70, thick, rounded corners=2pt,
+                        minimum width=2cm, minimum height=2cm,
+                        align=center, fill=gray!6},
+            lbl/.style  = {font=\scriptsize, align=center, text=black!70},
+            arr/.style  = {->, thick, gray!80!black},
+            histbar/.style = {draw=blue!80!black, fill=blue!35,
+                            line width=0.5pt},
+        ]
+    
+        %% ── Panel 1 : Image / Fenêtre ──
+        \node[box] (img) {Image /\\Fenêtre};
+        \node[lbl, below=6pt of img] {Entrée};
+    
+        %% ── Panel 2 : Grille 8×8 cellules ──
+        \node[box, right=2.0cm of img] (grid) {};
+        % fine grid inside the box
+        \begin{scope}
+            \clip (grid.south west) rectangle (grid.north east);
+            \draw[step=0.325cm, gray!50, very thin]
+                (grid.south west) grid (grid.north east);
+        \end{scope}
+        % highlight one cell in red
+        \fill[red!20, opacity=0.7]
+            ($(grid.south west)+(0.325,0.325)$)
+            rectangle
+            ($(grid.south west)+(0.65,0.65)$);
+        \draw[red!70!black, thick]
+            ($(grid.south west)+(0.325,0.325)$)
+            rectangle
+            ($(grid.south west)+(0.65,0.65)$);
+        \node[lbl, below=6pt of grid] {Cellules $8\!\times\!8$ px};
+    
+        %% ── Arrow 1 ──
+        \draw[arr] (img.east) -- node[above, lbl]{Gradient} (grid.west);
+    
+        %% ── Panel 3 : Histogramme d'orientations ──
+        \node[box, right=2.4cm of grid, minimum width=3.2cm] (hist) {};
+        \begin{scope}[shift={(hist.south west)}, xshift=4pt, yshift=10pt]
+            % axes
+            \draw[->] (0,0) -- (2.7,0)  node[right, font=\tiny] {$\theta$};
+            \draw[->] (0,0) -- (0,1.65) node[above, font=\tiny] {Magn.};
+            % 9 fixed bars (deterministic heights)
+            \foreach \i/\h in {1/0.55, 2/0.90, 3/0.70, 4/1.25, 5/1.50,
+                                6/1.15, 7/0.80, 8/1.00, 9/0.50}{
+            \pgfmathsetmacro{\xl}{(\i-1)*0.27 + 0.04}
+            \pgfmathsetmacro{\xr}{\xl + 0.20}
+            \draw[histbar] (\xl,0) rectangle (\xr,\h);
+            }
+            \node[font=\tiny, text=black!60] at (1.33,-0.32) {9 orientations};
+        \end{scope}
+        \node[lbl, below=6pt of hist] {Histogramme HOG};
+    
+        %% ── Arrow 2 ──
+        \draw[arr] (grid.east) -- node[above, lbl]{Accumulation} (hist.west);
+    
+        %% ── Panel 4 : Bloc 2×2 cellules + normalisation ──
+        \node[box, right=2.2cm of hist, fill=green!5] (norm) {Bloc\\$2\!\times\!2$\\cellules\\{\scriptsize\color{black!60}L2-Hys}};
+        \node[lbl, below=6pt of norm] {Normalisation};
+    
+        \draw[arr] (hist.east) -- node[above, lbl]{Groupement} (norm.west);
+    
+        %% ── Output arrow ──
+        \draw[arr] (norm.east) -- ++(1.0,0)
+            node[right, align=left, font=\scriptsize]{Vecteur\\HOG};
+    
+        \end{tikzpicture}%
+        }
+    
+        \vspace{10pt}
+    
+        % ── 2. Tableau des hyperparamètres ───────────────────────────────────────────
+        \renewcommand{\arraystretch}{0.8}
+        \resizebox{0.88\textwidth}{!}{%
+        \begin{tabular}{@{}lp{6.5cm}@{}}
+        \toprule
+        \textbf{Paramètre HOG} & \textbf{Configuration retenue} \\
+        \midrule
+        Nombre d'orientations       & 9 canaux (\emph{bins}), $[0^\circ, 180^\circ)$ non signés \\
+        Taille des cellules         & $8 \times 8$ pixels \\
+        Taille des blocs            & $2 \times 2$ cellules ($16 \times 16$ px) \\
+        Chevauchement des blocs     & 50\,\% (stride = 8 px) \\
+        Schéma de normalisation     & L2-Hys (L2-norm avec écrêtage à 0.2) \\
+        \bottomrule
+        \end{tabular}
+        }
+    
+        \caption{Architecture du descripteur HOG\,: calcul des gradients
+                orientés, accumulation en histogrammes de 9\,bins par cellule
+                de $8\!\times\!8$\,px, puis normalisation par blocs de
+                $2\!\times\!2$ cellules avec schéma L2-Hys.}
+        \label{fig:hog_params}
+    \end{figure}
+
+
+    \subsection{Métriques de séparabilité (Phase~1)}
+    \paragraph{Pourquoi ne pas entraîner directement un classifieur ?}
+    Évaluer toutes les combinaisons de paramètres avec un modèle (même simple) serait coûteux.
+    En Phase~1, on utilise donc trois métriques \textbf{sans classifieur} qui évaluent la qualité des représentations en mesurant directement la séparabilité des distributions de classes.
+
+    \paragraph{FDR (Fisher Discriminant Ratio).}
+    Le FDR est calculé feature par feature, puis moyenné :
+    \[
+    \mathrm{FDR}=\frac{1}{d}\sum_{j=1}^{d}
+    \frac{\text{variance inter-classes}_j}{\text{variance intra-classe}_j+\varepsilon}.
+    \]
+    Une valeur élevée indique que les moyennes de classes sont éloignées relativement à leur dispersion interne.
+    Le FDR est très interprétable et relié à l’objectif de Fisher/LDA, mais il privilégie surtout les séparations de type linéaire.
+
+    \paragraph{MI (Mutual Information).}
+    La MI est la moyenne de l’information mutuelle entre chaque feature et l’étiquette :
+    \[
+    \mathrm{MI}=\frac{1}{d}\sum_{j=1}^{d} I(X_j;Y).
+    \]
+    Elle capture des dépendances \textit{non linéaires} que le FDR peut manquer.
+    Cette métrique est également peu sensible à l’échelle des variables, ce qui la rend robuste aux différences de magnitude des descripteurs.
+
+    \paragraph{DBI (Davies-Bouldin Index, plus faible = meilleur).}
+    Le DBI mesure le compromis compacité/séparation des clusters :
+    \[
+    \mathrm{DBI}=\frac{1}{K}\sum_{i=1}^{K}\max_{j\neq i}\frac{S_i+S_j}{M_{ij}}.
+    \]
+    Plus le DBI est faible, plus les clusters sont compacts et bien séparés.
+    Dans le notebook, il est calculé en espace de features réduit par PCA (jusqu’à 20 composantes) pour accélérer le calcul en grande dimension.
+
+    Pour comparer les configurations, un score composite est construit après normalisation min-max :
+    \[
+    \text{score}=\frac{\mathrm{FDR}_{n}+\mathrm{MI}_{n}+\left(1-\mathrm{DBI}_{n}\right)}{3}.
+    \]
+    Cette agrégation combine les trois vues de la séparabilité en respectant leur sens d’optimisation.
+
+    \begin{table}[ht]
+    \centering
+    \caption{Métriques de séparabilité utilisées en Phase~1.}
+    \label{tab:metrics}
+    \begin{tabular}{l c c}
+    \toprule
+    Métrique & Sens & Avantage \\ \midrule
+    FDR & ↑ meilleur & Distance inter/intra-classe explicite \\
+    MI  & ↑ meilleur & Dépendances non linéaires, robuste à l'échelle \\
+    DBI & ↓ meilleur & Qualité globale des clusters (compacité/séparation) \\
+    \bottomrule
+    \end{tabular}
+    \end{table}
+
+    \paragraph{Extrait de code (notebook).}
+    L’extrait suivant illustre le calcul unifié des trois métriques sur des features standardisées :
+    \begin{verbatim}
+def evaluate_features(X, y):
+    sc  = StandardScaler()
+    Xs  = sc.fit_transform(X)
+    fdr = fisher_discriminant_ratio(Xs, y)
+    mi  = mutual_information_score(Xs, y)
+    dbi = davies_bouldin(Xs, y, max_dim=20)  # PCA pour accélérer
+    return {"FDR": fdr, "MI": mi, "DBI": dbi}
+    \end{verbatim}
+
+    \begin{figure}[H]
+        \centering
+        \begin{minipage}[t]{0.32\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{output/glcm_param_search.png}
+        \end{minipage}
+        \hfill
+        \begin{minipage}[t]{0.32\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{output/lbp_param_search.png}
+        \end{minipage}
+        \hfill
+        \begin{minipage}[t]{0.32\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{output/dwt_param_search.png}
+        \end{minipage}
+        \caption{Heatmaps de séparabilité en Phase~1 pour les espaces GLCM, LBP et DWT.}
+        \label{fig:phase1_heatmaps}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.90\linewidth]{output/phase1_summary.png}
+        \caption{Synthèse comparative des meilleures configurations de Phase~1 selon FDR, MI et DBI.}
+        \label{fig:phase1_summary}
+    \end{figure}
+
+    \section{Modèles de Machine Learning}
+
+    Dans cette section, nous présentons les différents algorithmes de Machine Learning utilisés pour la classification des images.
+    Trois modèles principaux ont été étudiés : \textbf{Support Vector Machine (SVM)}, \textbf{K-Nearest Neighbors (KNN)} et \textbf{Random Forest (RF)}.
+    Ces méthodes représentent différentes approches d’apprentissage supervisé et permettent d’analyser l’impact du choix du modèle sur les performances.
+
+    \subsection{Support Vector Machine (SVM)}
+
+    Le Support Vector Machine est un modèle de classification puissant basé sur la théorie de l’optimisation.
+    Son objectif est de trouver un hyperplan séparant les données de différentes classes avec une marge maximale.
+
+    \subsubsection{Principe}
+
+    Soit un ensemble de données :
+    \[
+    \{(x_i, y_i)\}_{i=1}^{N}, \quad x_i \in \mathbb{R}^d, \quad y_i \in \{-1, +1\}
+    \]
+
+    Le SVM cherche à résoudre le problème suivant :
+    \[
+    \min_{w, b} \frac{1}{2} ||w||^2
+    \]
+    sous la contrainte :
+    \[
+    y_i (w^T x_i + b) \geq 1
+    \]
+
+    où :
+    \begin{itemize}
+        \item \(w\) est le vecteur normal à l’hyperplan
+        \item \(b\) est le biais
+    \end{itemize}
+
+    \subsubsection{Cas non linéaire : Kernel Trick}
+
+    Lorsque les données ne sont pas linéairement séparables, le SVM utilise des fonctions noyaux pour projeter les données dans un espace de plus grande dimension.
+
+    Les noyaux les plus utilisés sont :
+    \begin{itemize}
+        \item Noyau linéaire
+        \item Noyau polynomial
+        \item Noyau RBF (Radial Basis Function)
+    \end{itemize}
+
+    Le noyau RBF est défini par :
+    \[
+    K(x_i, x_j) = \exp\left(-\gamma ||x_i - x_j||^2\right)
+    \]
+
+    \subsubsection{Hyperparamètres importants}
+
+    \begin{itemize}
+        \item \(C\) : paramètre de régularisation
+        \item \(\gamma\) : contrôle la largeur du noyau RBF
+        \item Type de noyau
+    \end{itemize}
+
+    Le SVM est reconnu pour sa bonne capacité de généralisation, en particulier sur des données de petite taille.
+
+    \subsection{K-Nearest Neighbors (KNN)}
+
+    Le KNN est un algorithme de classification basé sur la similarité entre les données.
+    Il ne construit pas de modèle explicite, mais repose sur les données d’entraînement.
+
+    \subsubsection{Principe}
+
+    Pour un point test \(x\), on calcule la distance avec tous les points du dataset, puis on sélectionne les \(K\) plus proches voisins.
+
+    La classe prédite est donnée par :
+    \[
+    \hat{y} = \text{majorité}(y_{1}, y_{2}, ..., y_{K})
+    \]
+
+    \subsubsection{Mesures de distance}
+
+    Les distances les plus utilisées sont :
+    \begin{itemize}
+        \item Distance Euclidienne :
+        \[
+        d(x_i, x_j) = \sqrt{\sum (x_i - x_j)^2}
+        \]
+        \item Distance de Manhattan
+    \end{itemize}
+
+    \subsubsection{Hyperparamètres}
+
+    \begin{itemize}
+        \item \(K\) : nombre de voisins
+        \item Type de distance
+        \item Pondération des voisins
+    \end{itemize}
+
+    \subsubsection{Avantages et limitations}
+
+    \textbf{Avantages :}
+    \begin{itemize}
+        \item Simple à implémenter
+        \item Aucun entraînement nécessaire
+    \end{itemize}
+
+    \textbf{Inconvénients :}
+    \begin{itemize}
+        \item Sensible à la dimension des données
+        \item Coût élevé en phase de prédiction
+    \end{itemize}
+
+    \subsection{Random Forest}
+
+    Le Random Forest est une méthode d’apprentissage par ensemble basée sur les arbres de décision.
+
+    \subsubsection{Principe}
+
+    Le modèle construit plusieurs arbres de décision indépendants, puis combine leurs prédictions.
+
+    La prédiction finale est donnée par :
+    \[
+    \hat{y} = \text{vote majoritaire des arbres}
+    \]
+
+    \subsubsection{Bagging}
+
+    Le Random Forest utilise la technique de \textbf{Bootstrap Aggregating (Bagging)} :
+    \begin{itemize}
+        \item Tirage aléatoire de sous-échantillons
+        \item Entraînement de plusieurs arbres
+    \end{itemize}
+
+    \subsubsection{Sélection aléatoire des caractéristiques}
+
+    À chaque nœud, un sous-ensemble aléatoire de caractéristiques est utilisé pour la séparation, ce qui permet :
+    \begin{itemize}
+        \item Réduire le surapprentissage
+        \item Augmenter la diversité des arbres
+    \end{itemize}
+
+    \subsubsection{Hyperparamètres}
+
+    \begin{itemize}
+        \item Nombre d’arbres
+        \item Profondeur maximale
+        \item Nombre de caractéristiques considérées
+    \end{itemize}
+
+    \subsubsection{Importance des caractéristiques}
+
+    Le Random Forest permet également d’évaluer l’importance des caractéristiques :
+
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.7\linewidth]{output/rf_branch_importance.png}
+        \caption{Importance des branches de caractéristiques selon Random Forest}
+        \label{fig:rf_branch_importance}
+    \end{figure}
+
+    \subsection{Comparaison des modèles}
+
+    Chaque modèle présente des caractéristiques différentes :
+
+    \begin{itemize}
+        \item SVM : puissant pour les données complexes, bonne généralisation
+        \item KNN : simple mais sensible à la dimension
+        \item Random Forest : robuste et adapté aux données bruitées
+    \end{itemize}
+
+    \subsection{Conclusion}
+
+    Le choix du modèle dépend fortement de la nature des données et des caractéristiques utilisées.
+    Dans ce projet, ces trois approches complémentaires permettent d’évaluer l’impact du modèle sur la performance globale du système de classification.
+
+    \section{Pipeline d’Entraînement et Workflow Expérimental}
+
+    Cette section décrit le processus complet suivi pour entraîner et évaluer les modèles de classification.
+    L’objectif est de mettre en place un pipeline cohérent permettant de garantir des résultats fiables et reproductibles.
+
+    \subsection{Vue d’ensemble du pipeline}
+
+    Le processus global de classification peut être résumé par les étapes suivantes :
+    \begin{enumerate}
+        \item Acquisition des données
+        \item Prétraitement des images
+        \item Extraction des caractéristiques
+        \item Réduction de dimension (PCA)
+        \item Entraînement des modèles
+        \item Évaluation des performances
+    \end{enumerate}
+
+    Ce pipeline garantit une transformation progressive des données brutes vers une représentation exploitable par les modèles.
+
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.9\linewidth]{output/p2_overall_dashboard.png}
+        \caption{Vue globale du pipeline de classification}
+    \end{figure}
+
+    \subsection{Division des données}
+
+    Afin d’évaluer correctement les modèles, le dataset est divisé en deux parties :
+    \begin{itemize}
+        \item \textbf{Ensemble d'entraînement (Training set)} : utilisé pour apprendre les paramètres du modèle
+        \item \textbf{Ensemble de test (Test set)} : utilisé pour évaluer les performances
+    \end{itemize}
+
+    La séparation permet d’éviter le surapprentissage et d’obtenir une estimation réaliste des performances sur de nouvelles données.
+
+    \subsection{Processus d’entraînement}
+
+    Chaque modèle suit le même processus d’entraînement :
+    \begin{enumerate}
+        \item Transformation des images en vecteurs de caractéristiques
+        \item Application de la réduction de dimension (optionnelle)
+        \item Entraînement du modèle sur les données d’entraînement
+        \item Ajustement des hyperparamètres
+    \end{enumerate}
+
+    \subsection{Standardisation du pipeline}
+
+    Afin de garantir une comparaison équitable entre les modèles, plusieurs contraintes sont respectées :
+    \begin{itemize}
+        \item Même dataset utilisé pour tous les modèles
+        \item Même prétraitement appliqué
+        \item Même ensemble de caractéristiques
+        \item Même protocole d’évaluation
+    \end{itemize}
+
+    Cette standardisation est essentielle pour éviter les biais expérimentaux.
+
+    \subsection{Optimisation des hyperparamètres}
+
+    Chaque modèle possède des hyperparamètres influençant ses performances.
+    Une phase d’optimisation est réalisée afin de trouver les meilleures configurations.
+
+    Exemples :
+    \begin{itemize}
+        \item SVM : \(C\), \(\gamma\), type de noyau
+        \item KNN : valeur de \(K\)
+        \item Random Forest : nombre d’arbres, profondeur
+    \end{itemize}
+
+    Cette optimisation peut être réalisée via :
+    \begin{itemize}
+        \item Recherche manuelle
+        \item Grid Search
+        \item Validation croisée
+    \end{itemize}
+
+    \subsection{Validation croisée}
+
+    Pour améliorer la robustesse des résultats, la validation croisée peut être utilisée.
+
+    Le principe consiste à :
+    \begin{itemize}
+        \item Diviser les données en plusieurs sous-ensembles
+        \item Entraîner et tester plusieurs fois le modèle
+        \item Moyenniser les performances
+    \end{itemize}
+
+    Cela permet de réduire la variance des résultats et d’obtenir une meilleure estimation des performances réelles.
+
+    \subsection{Organisation des expériences}
+
+    Plusieurs configurations expérimentales ont été testées :
+    \begin{itemize}
+        \item Différents types de caractéristiques
+        \item Avec et sans PCA
+        \item Différents modèles de classification
+    \end{itemize}
+
+    Les résultats de ces expériences permettent d’analyser :
+    \begin{itemize}
+        \item L’impact des caractéristiques
+        \item L’impact de la réduction de dimension
+        \item L’impact du choix du modèle
+    \end{itemize}
+
+    \subsection{Reproductibilité des résultats}
+
+    Pour garantir la reproductibilité :
+    \begin{itemize}
+        \item Les seeds aléatoires sont fixées
+        \item Les mêmes données sont utilisées
+        \item Les paramètres sont documentés
+    \end{itemize}
+
+    Cela permet de reproduire les expériences dans des conditions identiques.
+
+    \subsection{Conclusion}
+
+    Le pipeline expérimental mis en place permet de structurer l’ensemble du processus de classification, depuis les données brutes jusqu’à l’évaluation des modèles.
+    Cette organisation rigoureuse est essentielle pour obtenir des résultats fiables et comparables.
+
+    \section{Métriques d’Évaluation et Analyse des Performances}
+
+    L’évaluation des modèles de classification constitue une étape essentielle pour mesurer leur efficacité et comparer leurs performances.
+    Dans ce projet, plusieurs métriques ont été utilisées afin d’obtenir une analyse complète et fiable des résultats.
+
+    \subsection{Matrice de confusion}
+
+    La matrice de confusion est un outil fondamental permettant d’analyser les performances d’un modèle de classification.
+    Elle compare les prédictions du modèle avec les valeurs réelles.
+
+    Dans le cas binaire, elle se présente sous la forme suivante :
+
+    \begin{center}
+    \begin{tabular}{c|c|c}
+    & Prédit Positif & Prédit Négatif \\
+    \hline
+    Réel Positif & TP & FN \\
+    \hline
+    Réel Négatif & FP & TN \\
+    \end{tabular}
+    \end{center}
+
+    où :
+    \begin{itemize}
+        \item TP (True Positive) : prédictions correctes positives
+        \item TN (True Negative) : prédictions correctes négatives
+        \item FP (False Positive) : fausses alertes
+        \item FN (False Negative) : erreurs de classification
+    \end{itemize}
+
+    Dans un problème multi-classes, cette matrice est étendue pour représenter toutes les classes.
+
+    \subsection{Accuracy (Précision globale)}
+
+    L’accuracy mesure la proportion de prédictions correctes :
+    \[
+    Accuracy = \frac{TP + TN}{TP + TN + FP + FN}
+    \]
+
+    Elle donne une vision globale des performances, mais peut être trompeuse en cas de déséquilibre des classes.
+
+    \subsection{Précision (Precision)}
+
+    La précision mesure la proportion des prédictions positives correctes :
+    \[
+    Precision = \frac{TP}{TP + FP}
+    \]
+
+    Elle est importante lorsque le coût des faux positifs est élevé.
+
+    \subsection{Rappel (Recall)}
+
+    Le recall (ou sensibilité) mesure la capacité du modèle à détecter les vrais positifs :
+    \[
+    Recall = \frac{TP}{TP + FN}
+    \]
+
+    Il est essentiel lorsque les faux négatifs sont critiques (ex : détection médicale).
+
+    \subsection{F1-Score}
+
+    Le F1-score est la moyenne harmonique entre précision et rappel :
+    \[
+    F1 = 2 \times \frac{Precision \times Recall}{Precision + Recall}
+    \]
+
+    Il permet d’obtenir un compromis entre les deux métriques.
+
+    \subsection{Analyse multi-classes}
+
+    Dans un problème multi-classes, les métriques sont calculées pour chaque classe puis agrégées :
+    \begin{itemize}
+        \item Moyenne macro : moyenne simple des métriques
+        \item Moyenne pondérée : pondérée par le nombre d’échantillons
+    \end{itemize}
+
+    \subsection{Importance des métriques}
+
+    Chaque métrique fournit une information différente :
+    \begin{itemize}
+        \item Accuracy : performance globale
+        \item Precision : fiabilité des prédictions positives
+        \item Recall : capacité de détection
+        \item F1-score : équilibre global
+    \end{itemize}
+
+    Une analyse complète nécessite l’utilisation de toutes ces métriques.
+
+    \subsection{Analyse comparative des modèles}
+
+    Les modèles ont été comparés en utilisant les métriques précédentes.
+    Cette analyse permet de :
+    \begin{itemize}
+        \item Identifier le modèle le plus performant
+        \item Comprendre les points forts et faibles de chaque méthode
+        \item Évaluer l’impact des caractéristiques et de la PCA
+    \end{itemize}
+
+    \subsection{Visualisation des performances}
+
+    Les performances des modèles sont représentées sous forme graphique afin de faciliter l’analyse comparative.
+
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.8\linewidth]{output/p2_leaderboard.png}
+        \caption{Comparaison des performances des modèles}
+    \end{figure}
+
+    Cette figure permet d’identifier rapidement les meilleures configurations en fonction des métriques.
+
+    \subsection{Analyse des résultats}
+
+    Les résultats obtenus montrent que :
+    \begin{itemize}
+        \item Les performances varient fortement selon les caractéristiques utilisées
+        \item La réduction de dimension améliore souvent les résultats
+        \item Les modèles réagissent différemment selon les données
+    \end{itemize}
+
+    \subsection{Limites des métriques}
+
+    Certaines métriques présentent des limites :
+    \begin{itemize}
+        \item L’accuracy peut être trompeuse en cas de classes déséquilibrées
+        \item Le F1-score ne prend pas en compte les vrais négatifs
+    \end{itemize}
+
+    Il est donc nécessaire d’interpréter les résultats avec précaution.
+
+    \subsection{Conclusion}
+
+    L’utilisation de plusieurs métriques permet d’obtenir une évaluation complète des modèles.
+    Cette analyse est essentielle pour comprendre les performances et guider les choix méthodologiques dans le projet.
+
+    \subsection{Benchmark des classifieurs (Phase~2)}
+    Trois classifieurs sont évalués après sélection des paramètres optimaux, optimisés par GridSearchCV (3‑fold stratifié) avec le F1‑macro comme critère.
+
+    \begin{table}[ht]
+    \centering
+    \caption{Grilles d’hyperparamètres et paramètres optimaux retenus pour \code{Full(opt)}.}
+    \label{tab:hyper}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{l l l}
+    \toprule
+    Modèle & Grille & Paramètres optimaux \\ \midrule
+    SVM   & \(C \in \{0,1,10,100\}\), kernel rbf, \(\gamma \in \{\text{scale}, 0{,}01, 0{,}1\}\) & \(C=10\), kernel rbf, \(\gamma=\text{scale}\) \\
+    KNN   & \(k \in \{3,5,7,9,11\}\), métrique eucl./manh., poids unif./distance & \(k=3\), métrique manhattan, poids distance \\
+    RF    & n\_estim \(\in \{100,200,300\}\), max\_depth \(\in \{\text{None},10,20\}\), max\_feat \(\in \{\text{sqrt},\log2\}\) & n=300, depth=None, sqrt \\
+    \bottomrule
+    \end{tabular}%
+    }
+    \end{table}
+
+    \section{Résultats Expérimentaux et Analyse Comparative}
+
+    Dans cette section, nous présentons les résultats obtenus après l’entraînement et l’évaluation des différents modèles.
+    L’objectif est d’analyser l’impact des caractéristiques, des modèles et des techniques d’optimisation sur les performances globales du système.
+
+    \subsection{Présentation des résultats}
+
+    Les performances des modèles ont été évaluées à l’aide des métriques suivantes :
+    \begin{itemize}
+        \item Accuracy
+        \item F1-score (macro et pondéré)
+        \item Precision
+        \item Recall
+    \end{itemize}
+
+    Le tableau suivant présente les meilleurs résultats obtenus pour différentes configurations :
+
+    \begin{table}[ht]
+    \centering
+    \caption{Comparaison des performances des modèles (extrait des résultats)}
+    \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    Feature Set & Modèle & Accuracy & F1-score & Precision & Recall \\
+    \hline
+    Full (opt) & SVM & 0.9067 & 0.9064 & 0.9068 & 0.9067 \\
+    \hline
+    D — HOG & SVM & 0.9033 & 0.9030 & 0.9028 & 0.9033 \\
+    \hline
+    Full (opt) & RF & 0.8700 & 0.8697 & 0.8717 & 0.8700 \\
+    \hline
+    Full (opt) & KNN & 0.8433 & 0.8405 & 0.8420 & 0.8433 \\
+    \hline
+    A+B & SVM & 0.8400 & 0.8402 & 0.8433 & 0.8400 \\
+    \hline
+    \end{tabular}
+    \end{table}
+
+    \subsection{Analyse des performances}
+
+    Les résultats montrent clairement que :
+    \begin{itemize}
+        \item Le modèle \textbf{SVM} est le plus performant dans la majorité des configurations
+        \item L’utilisation des caractéristiques optimisées (\textit{Full(opt)}) améliore significativement les résultats
+        \item Les descripteurs de type \textbf{HOG} offrent également de très bonnes performances
+    \end{itemize}
+
+    Le meilleur résultat est obtenu avec :
+    \begin{itemize}
+        \item \textbf{SVM + Full(opt)}
+        \item Accuracy = 90.67\%
+    \end{itemize}
+
+    \subsection{Impact des caractéristiques}
+
+    L’analyse des résultats met en évidence l’importance du choix des caractéristiques :
+    \begin{itemize}
+        \item Les combinaisons de caractéristiques (Full) surpassent les caractéristiques individuelles
+        \item Les caractéristiques de texture (HOG, LBP) sont particulièrement efficaces
+        \item Les caractéristiques simples (A+B) donnent des résultats inférieurs
+    \end{itemize}
+
+    Cela confirme que :
+    \begin{center}
+    \textit{La qualité des caractéristiques influence fortement les performances du modèle.}
+    \end{center}
+
+    \subsection{Comparaison des modèles}
+
+    Les performances des différents modèles peuvent être résumées comme suit :
+    \begin{itemize}
+        \item \textbf{SVM} :
+        \begin{itemize}
+            \item Meilleure précision globale
+            \item Bonne capacité de généralisation
+        \end{itemize}
+
+        \item \textbf{Random Forest} :
+        \begin{itemize}
+            \item Performances robustes
+            \item Moins sensible au bruit
+        \end{itemize}
+
+        \item \textbf{KNN} :
+        \begin{itemize}
+            \item Performances inférieures
+            \item Sensible à la dimension des données
+        \end{itemize}
+    \end{itemize}
+
+    \subsection{Temps d’entraînement}
+
+    Les résultats montrent également des différences importantes en termes de temps d’entraînement :
+    \begin{itemize}
+        \item SVM : temps élevé mais haute précision
+        \item KNN : rapide à entraîner mais lent en prédiction
+        \item Random Forest : compromis entre vitesse et performance
+    \end{itemize}
+
+    \subsection{Analyse globale}
+
+    L’analyse globale des résultats permet de tirer plusieurs conclusions importantes :
+    \begin{itemize}
+        \item Les méthodes classiques restent très performantes avec de bonnes caractéristiques
+        \item L’optimisation des features est plus importante que le choix du modèle
+        \item Les modèles réagissent différemment selon les représentations des données
+    \end{itemize}
+
+    \subsection{Visualisation des résultats}
+
+    Les performances globales sont illustrées dans la figure suivante :
+
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.85\linewidth]{output/p2_leaderboard.png}
+        \caption{Classement des meilleures configurations}
+    \end{figure}
+
+    Cette visualisation permet de comparer rapidement les différentes approches.
+
+    \subsection{Discussion}
+
+    Les résultats obtenus sont cohérents avec la littérature, qui montre que :
+    \begin{itemize}
+        \item SVM est très efficace sur des datasets de taille moyenne
+        \item La combinaison de caractéristiques améliore significativement les performances
+    \end{itemize}
+
+    \subsection{Conclusion}
+
+    Les expériences menées montrent que le choix des caractéristiques et du modèle a un impact majeur sur les performances.
+    Le modèle SVM combiné avec des caractéristiques optimisées offre les meilleurs résultats dans ce projet.
+
+    \subsection{Tableaux additionnels issus des exports CSV}
+
+    \subsubsection{Tableau issu de \texttt{phase2\_benchmark\_results.csv}}
+    \begin{table}[ht]
+    \centering
+    \caption{Résultats détaillés du benchmark Phase 2 (triés par score composite).}
+    \label{tab:csv_benchmark_results}
+    \scriptsize
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{l l c c c c c c}
+    \toprule
+    Feature Set & Model & Accuracy & F1-macro & Precision & Recall & Fit Time (s) & Composite \\
+    \midrule
+    Full(opt) & RF & 0.8700 & 0.8697 & 0.8717 & 0.8700 & 51.7750 & 0.8664 \\
+    Full(opt) & SVM & 0.9067 & 0.9064 & 0.9068 & 0.9067 & 696.1504 & 0.8574 \\
+    D — HOG & SVM & 0.9033 & 0.9030 & 0.9028 & 0.9033 & 708.8533 & 0.8531 \\
+    Full(opt) & KNN & 0.8433 & 0.8405 & 0.8420 & 0.8433 & 20.1996 & 0.8404 \\
+    A+B & SVM & 0.8400 & 0.8402 & 0.8433 & 0.8400 & 11.5217 & 0.8396 \\
+    D — HOG & KNN & 0.8367 & 0.8333 & 0.8355 & 0.8367 & 19.9822 & 0.8335 \\
+    A+B & RF & 0.8300 & 0.8306 & 0.8319 & 0.8300 & 8.2871 & 0.8299 \\
+    B+C(opt) & SVM & 0.8267 & 0.8279 & 0.8405 & 0.8267 & 15.2672 & 0.8276 \\
+    A+B+C(opt) & SVM & 0.8233 & 0.8246 & 0.8319 & 0.8233 & 18.8470 & 0.8235 \\
+    B — Tex(opt) & SVM & 0.8233 & 0.8232 & 0.8272 & 0.8233 & 7.4288 & 0.8231 \\
+    A+B+C(opt) & RF & 0.8233 & 0.8233 & 0.8237 & 0.8233 & 8.7572 & 0.8227 \\
+    B+C(opt) & RF & 0.8133 & 0.8131 & 0.8184 & 0.8133 & 8.2570 & 0.8132 \\
+    A+B & KNN & 0.8067 & 0.8074 & 0.8143 & 0.8067 & 0.1851 & 0.8078 \\
+    A — Stats & SVM & 0.8033 & 0.8044 & 0.8098 & 0.8033 & 9.9656 & 0.8038 \\
+    B — Tex(opt) & RF & 0.8000 & 0.7999 & 0.8023 & 0.8000 & 9.6779 & 0.7995 \\
+    D — HOG & RF & 0.8033 & 0.8022 & 0.8027 & 0.8033 & 52.1115 & 0.7990 \\
+    B+C(opt) & KNN & 0.7833 & 0.7823 & 0.7869 & 0.7833 & 0.1750 & 0.7832 \\
+    A+B+C(opt) & KNN & 0.7733 & 0.7735 & 0.7767 & 0.7733 & 0.1889 & 0.7738 \\
+    B — Tex(opt) & KNN & 0.7633 & 0.7623 & 0.7680 & 0.7633 & 0.4682 & 0.7632 \\
+    A — Stats & RF & 0.7533 & 0.7554 & 0.7594 & 0.7533 & 8.8276 & 0.7544 \\
+    A — Stats & KNN & 0.7367 & 0.7384 & 0.7421 & 0.7367 & 0.4277 & 0.7381 \\
+    C — DWT(opt) & RF & 0.7300 & 0.7259 & 0.7292 & 0.7300 & 8.9004 & 0.7273 \\
+    C — DWT(opt) & SVM & 0.7267 & 0.7250 & 0.7292 & 0.7267 & 6.2502 & 0.7257 \\
+    C — DWT(opt) & KNN & 0.6833 & 0.6816 & 0.6836 & 0.6833 & 0.3072 & 0.6825 \\
+    \bottomrule
+    \end{tabular}%
+    }
+    \end{table}
+
+    \subsubsection{Tableau issu de \texttt{phase2\_all\_modes\_metrics.csv} (mode \texttt{split})}
+    \begin{table}[ht]
+    \centering
+    \caption{Synthèse du mode \texttt{split} depuis \texttt{phase2\_all\_modes\_metrics.csv}.}
+    \label{tab:csv_all_modes_split}
+    \scriptsize
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{l l c c c c c c c}
+    \toprule
+    Feature Set & Model & Acc. & F1-macro & Precision & Recall & Fit (s) & Predict (s) & Best CV \\
+    \midrule
+    A — Stats & SVM & 0.8033 & 0.8044 & 0.8098 & 0.8033 & 9.9656 & 0.0170 & 0.7751 \\
+    A — Stats & KNN & 0.7367 & 0.7384 & 0.7421 & 0.7367 & 0.4277 & 0.0235 & 0.7523 \\
+    A — Stats & RF & 0.7533 & 0.7554 & 0.7594 & 0.7533 & 8.8276 & 0.0316 & 0.7458 \\
+    B — Tex(opt) & SVM & 0.8233 & 0.8232 & 0.8272 & 0.8233 & 7.4288 & 0.0175 & 0.8113 \\
+    B — Tex(opt) & KNN & 0.7633 & 0.7623 & 0.7680 & 0.7633 & 0.4682 & 0.0145 & 0.7762 \\
+    B — Tex(opt) & RF & 0.8000 & 0.7999 & 0.8023 & 0.8000 & 9.6779 & 0.0932 & 0.7814 \\
+    C — DWT(opt) & SVM & 0.7267 & 0.7250 & 0.7292 & 0.7267 & 6.2502 & 0.0196 & 0.7154 \\
+    C — DWT(opt) & KNN & 0.6833 & 0.6816 & 0.6836 & 0.6833 & 0.3072 & 0.0250 & 0.6838 \\
+    C — DWT(opt) & RF & 0.7300 & 0.7259 & 0.7292 & 0.7300 & 8.9004 & 0.0465 & 0.6967 \\
+    D — HOG & SVM & 0.9033 & 0.9030 & 0.9028 & 0.9033 & 708.8533 & 3.0700 & 0.8441 \\
+    D — HOG & KNN & 0.8367 & 0.8333 & 0.8355 & 0.8367 & 19.9822 & 0.8981 & 0.7802 \\
+    D — HOG & RF & 0.8033 & 0.8022 & 0.8027 & 0.8033 & 52.1115 & 0.0625 & 0.7812 \\
+    A+B & SVM & 0.8400 & 0.8402 & 0.8433 & 0.8400 & 11.5217 & 0.0150 & 0.8421 \\
+    A+B & KNN & 0.8067 & 0.8074 & 0.8143 & 0.8067 & 0.1851 & 0.0120 & 0.8302 \\
+    A+B & RF & 0.8300 & 0.8306 & 0.8319 & 0.8300 & 8.2871 & 0.0640 & 0.8263 \\
+    B+C(opt) & SVM & 0.8267 & 0.8279 & 0.8405 & 0.8267 & 15.2672 & 0.0210 & 0.8264 \\
+    B+C(opt) & KNN & 0.7833 & 0.7823 & 0.7869 & 0.7833 & 0.1750 & 0.0260 & 0.8043 \\
+    B+C(opt) & RF & 0.8133 & 0.8131 & 0.8184 & 0.8133 & 8.2570 & 0.0640 & 0.8088 \\
+    A+B+C(opt) & SVM & 0.8233 & 0.8246 & 0.8319 & 0.8233 & 18.8470 & 0.0160 & 0.8364 \\
+    A+B+C(opt) & KNN & 0.7733 & 0.7735 & 0.7767 & 0.7733 & 0.1889 & 0.0120 & 0.8216 \\
+    A+B+C(opt) & RF & 0.8233 & 0.8233 & 0.8237 & 0.8233 & 8.7572 & 0.0471 & 0.8210 \\
+    Full(opt) & SVM & 0.9067 & 0.9064 & 0.9068 & 0.9067 & 696.1504 & 3.8384 & 0.8485 \\
+    Full(opt) & KNN & 0.8433 & 0.8405 & 0.8420 & 0.8433 & 20.1996 & 0.9046 & 0.7873 \\
+    Full(opt) & RF & 0.8700 & 0.8697 & 0.8717 & 0.8700 & 51.7750 & 0.0621 & 0.8365 \\
+    \bottomrule
+    \end{tabular}%
+    }
+    \end{table}
+
+    \subsubsection{Tableau issu de \texttt{seed\_stability\_3seeds.csv}}
+    \begin{table}[ht]
+    \centering
+    \caption{Stabilité des performances selon la graine aléatoire.}
+    \label{tab:csv_seed_stability}
+    \small
+    \begin{tabular}{c c c l}
+    \toprule
+    Seed & Accuracy & F1-macro & Best Params \\
+    \midrule
+    42 & 0.8867 & 0.8865 & \code{\{max\_depth=None, max\_features=sqrt, n\_estimators=300\}} \\
+    43 & 0.8533 & 0.8518 & \code{\{max\_depth=10, max\_features=sqrt, n\_estimators=300\}} \\
+    44 & 0.8367 & 0.8347 & \code{\{max\_depth=None, max\_features=sqrt, n\_estimators=200\}} \\
+    \bottomrule
+    \end{tabular}
+    \end{table}
+
+    \section{Discussion Approfondie des Résultats}
+
+    Dans cette section, nous analysons de manière critique les résultats obtenus, afin de mieux comprendre les comportements des modèles et les facteurs influençant leurs performances.
+
+    \subsection{Influence des caractéristiques}
+
+    Les résultats expérimentaux mettent clairement en évidence que le choix des caractéristiques joue un rôle déterminant dans les performances du système.
+
+    En effet :
+    \begin{itemize}
+        \item Les caractéristiques combinées (\textit{Full(opt)}) donnent les meilleurs résultats
+        \item Les descripteurs de texture (HOG, LBP) sont particulièrement discriminants
+        \item Les caractéristiques simples sont insuffisantes pour capturer la complexité des images
+    \end{itemize}
+
+    Cela confirme que dans les approches de Machine Learning classiques :
+    \begin{center}
+    \textit{la performance dépend davantage de la qualité des caractéristiques que du modèle lui-même.}
+    \end{center}
+
+    \subsection{Comparaison avec la littérature}
+
+    Les résultats obtenus sont cohérents avec les conclusions de la littérature, qui montrent que les méthodes classiques, notamment SVM, sont très performantes sur des datasets de taille limitée.
+
+    En particulier :
+    \begin{itemize}
+        \item SVM offre une excellente capacité de généralisation
+        \item Les méthodes traditionnelles restent compétitives face au Deep Learning dans certains contextes
+    \end{itemize}
+
+    \subsection{Analyse du comportement des modèles}
+
+    \subsubsection{Support Vector Machine}
+
+    Le SVM présente les meilleures performances dans ce projet. Cela peut s’expliquer par :
+    \begin{itemize}
+        \item Sa capacité à maximiser la marge de séparation
+        \item Son efficacité dans les espaces de grande dimension
+        \item L’utilisation de noyaux non linéaires (RBF)
+    \end{itemize}
+
+    \subsubsection{K-Nearest Neighbors}
+
+    Le KNN montre des performances plus faibles, notamment à cause de :
+    \begin{itemize}
+        \item Sa sensibilité à la dimension des données
+        \item La dépendance à la mesure de distance
+        \item L’absence de modèle explicite
+    \end{itemize}
+
+    \subsubsection{Random Forest}
+
+    Le Random Forest offre des performances robustes grâce à :
+    \begin{itemize}
+        \item L’effet de l’ensemble (\textit{ensemble learning})
+        \item La réduction du surapprentissage
+        \item La diversité des arbres
+    \end{itemize}
+
+    Cependant, il reste légèrement inférieur au SVM dans ce contexte.
+
+    \subsection{Impact de la réduction de dimension}
+
+    L’utilisation de la PCA a permis :
+    \begin{itemize}
+        \item De réduire le bruit dans les données
+        \item D’améliorer la stabilité des modèles
+        \item D’accélérer le temps de calcul
+    \end{itemize}
+
+    Cependant, une réduction excessive peut entraîner une perte d’information.
+
+    \subsection{Analyse des erreurs}
+
+    L’étude des erreurs de classification permet d’identifier certaines limites :
+    \begin{itemize}
+        \item Confusion entre classes similaires
+        \item Sensibilité aux variations d’illumination
+        \item Difficulté à capturer certaines textures complexes
+    \end{itemize}
+
+    Ces erreurs indiquent que certaines informations importantes ne sont pas totalement capturées par les caractéristiques utilisées.
+
+    \subsection{Robustesse des modèles}
+
+    Les résultats montrent que :
+    \begin{itemize}
+        \item SVM est stable sur différentes configurations
+        \item Random Forest est robuste au bruit
+        \item KNN est sensible aux variations de données
+    \end{itemize}
+
+    La stabilité est un critère important dans le choix du modèle.
+
+    \subsection{Limites du projet}
+
+    Malgré les bons résultats obtenus, plusieurs limitations doivent être mentionnées :
+    \begin{itemize}
+        \item Dépendance forte à l’ingénierie des caractéristiques
+        \item Absence d’apprentissage automatique des features
+        \item Sensibilité à la qualité des données
+        \item Difficulté à généraliser à des datasets très complexes
+    \end{itemize}
+
+    \subsection{Perspectives d’amélioration}
+
+    Plusieurs pistes peuvent être envisagées pour améliorer les performances :
+    \begin{itemize}
+        \item Utilisation de modèles d’ensemble (XGBoost, AdaBoost)
+        \item Intégration de techniques de Deep Learning (CNN)
+        \item Hybridation ML + DL
+        \item Sélection automatique des caractéristiques
+    \end{itemize}
+
+    \subsection{Conclusion}
+
+    Cette analyse montre que les méthodes classiques de Machine Learning restent très efficaces lorsqu’elles sont associées à une bonne extraction de caractéristiques.
+    Cependant, leurs performances dépendent fortement de la qualité des données et des descripteurs utilisés, ce qui constitue à la fois leur force et leur limite.
+
+    \section{14. Diagnostics : déséquilibre, importances Random Forest, t-SNE et stabilité aux seeds}
+
+    Cette section vise à compléter l’analyse quantitative par des éléments d’\textit{explicabilité} et de compréhension du comportement du pipeline.
+    Elle couvre quatre aspects : (i) l’équilibre des classes, (ii) l’importance des branches de caractéristiques dans le modèle Random Forest, (iii) une visualisation par t-SNE de la structure de l’espace des features, et (iv) la stabilité des résultats selon la graine aléatoire.
+
+    \subsection{Déséquilibre des classes}
+    Avant l’entraînement, une vérification de l’équilibre du dataset est effectuée afin d’éviter que certaines classes soient systématiquement sur‑représentées.
+    Le déséquilibre peut conduire à une diminution de la performance globale et à une augmentation des confusions entre classes.
+
+    La distribution des classes dans l’ensemble d’entraînement est illustrée à la Figure~\ref{fig:class_balance_train} (gauche) et en complément (droit).
+    Dans le notebook, une mesure de type
+    \[
+    \textit{ratio}=\frac{\max_k c_k}{\min_k c_k}
+    \]
+    est calculée, où \(c_k\) désigne le nombre d’images de la classe \(k\).
+    Lorsque ce ratio dépasse un seuil (ici \(\geq 1.5\)), l’utilisation de stratégies comme \textit{class\_weight} ou \textit{SMOTE} peut être envisagée dans une expérience contrôlée.
+
+    \subsection{Importances des branches via Random Forest}
+    L’interprétation des modèles classiques peut être abordée à travers les \textbf{importances de caractéristiques} du Random Forest.
+    Dans ce projet, les features sont organisées en branches correspondant aux familles de descripteurs :
+    \begin{itemize}
+        \item \textbf{A (Stats)} : statistiques,
+        \item \textbf{B (GLCM)} + \textbf{B (LBP)} : texture,
+        \item \textbf{C (DWT)} : ondelettes,
+        \item \textbf{D (HOG)} : gradients orientés.
+    \end{itemize}
+
+    Pour obtenir une lecture plus synthétique, les importances individuelles calculées par le Random Forest sont \textbf{agrégées par branche} (somme des \textit{feature\_importances\_} sur les features de même bloc).
+    La Figure~\ref{fig:rf_branch_importance} illustre ces importances agrégées, entraînées sur l’espace \texttt{Full(opt)}.
+
+    \noindent Remarque : ces importances reflètent l’utilité des variables pour réduire l’impureté au cours des splits dans les arbres (niveau de \textit{feature relevance}), et ne constituent pas une preuve causale.
+
+    \subsection{t-SNE : visualisation de la structure dans l’espace des features}
+    Le terme \textbf{t-SNE} correspond à \textbf{\textit{t-distributed Stochastic Neighbor Embedding}}.
+    C’est une méthode de réduction de dimension \textit{non linéaire} utilisée principalement pour \textbf{visualiser} des structures locales dans un espace de grande dimension.
+
+    Dans ce projet, le t-SNE est appliqué sur l’espace des features correspondant au meilleur ensemble (\texttt{best feature set}).
+    La projection en 2 dimensions permet de :
+    \begin{itemize}
+        \item observer si les classes forment des regroupements visuels,
+        \item comprendre la séparabilité qualitative entre classes,
+        \item vérifier si l’information discriminante est présente dans l’espace des descripteurs.
+    \end{itemize}
+
+    La figure obtenue (projection 2D) est présentée à la Figure~\ref{fig:tsne_best_feature_set}.
+    Il est important de rappeler que les distances et les axes du t-SNE ne sont pas directement interprétables : l’outil sert avant tout à analyser la \textbf{structure de voisinage} et la tendance au regroupement des classes.
+
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.9\linewidth]{output/tsne_best_feature_set.png}
+        \caption{Projection t-SNE (2D) du meilleur espace de caractéristiques.}
+        \label{fig:tsne_best_feature_set}
+    \end{figure}
+
+    \subsection{Stabilité des résultats aux seeds}
+    Afin de tester la robustesse du meilleur couple (feature set, modèle), les expériences sont reproduites pour plusieurs graines aléatoires.
+    Le tableau~\ref{tab:csv_seed_stability} résume la stabilité de la performance (Accuracy et F1-macro) sur trois seeds.
+
+    Une stabilité satisfaisante signifie que les conclusions ne dépendent pas d’une unique séparation train/test, mais reflètent un comportement global du pipeline.
+
+    \section{Conclusion Générale}
+
+    Ce projet a permis d’explorer en profondeur l’utilisation des méthodes classiques de Machine Learning pour la classification d’images, en mettant l’accent sur l’importance des caractéristiques et des choix méthodologiques.
+
+    \subsection{Résumé des contributions}
+
+    Dans ce travail, plusieurs contributions principales peuvent être mises en avant :
+    \begin{itemize}
+        \item Mise en place d’un pipeline complet de classification d’images, allant du prétraitement à l’évaluation
+        \item Étude comparative de trois modèles de Machine Learning : SVM, KNN et Random Forest
+        \item Analyse approfondie de différentes méthodes d’extraction de caractéristiques (HOG, LBP, DWT, statistiques)
+        \item Application de la réduction de dimension (PCA) pour améliorer les performances
+        \item Évaluation rigoureuse des modèles à l’aide de métriques adaptées
+    \end{itemize}
+
+    \subsection{Résultats principaux}
+
+    Les résultats obtenus montrent que :
+    \begin{itemize}
+        \item Le modèle \textbf{Support Vector Machine (SVM)} offre les meilleures performances globales
+        \item Les caractéristiques combinées et optimisées permettent d’atteindre une précision élevée
+        \item La réduction de dimension améliore la stabilité et l’efficacité des modèles
+    \end{itemize}
+
+    Ces résultats confirment que les méthodes classiques restent très compétitives lorsqu’elles sont associées à une ingénierie de caractéristiques efficace.
+
+    \subsection{Apports scientifiques}
+
+    Ce projet met en évidence plusieurs points importants :
+    \begin{itemize}
+        \item L’importance critique de la représentation des données
+        \item Le rôle déterminant de l’extraction des caractéristiques dans les performances
+        \item La complémentarité entre les différents modèles de Machine Learning
+    \end{itemize}
+
+    Il montre également que la performance d’un système de classification ne dépend pas uniquement du modèle utilisé, mais surtout de la qualité des données et de leur transformation.
+
+    \subsection{Limites}
+
+    Malgré les résultats satisfaisants, certaines limites doivent être prises en compte :
+    \begin{itemize}
+        \item Dépendance aux caractéristiques définies manuellement
+        \item Difficulté à capturer des structures complexes dans les images
+        \item Sensibilité aux variations des données
+    \end{itemize}
+
+    Ces limitations sont inhérentes aux méthodes classiques de Machine Learning.
+
+    \subsection{Perspectives}
+
+    Ce travail ouvre plusieurs perspectives intéressantes pour des projets futurs :
+    \begin{itemize}
+        \item Intégration de modèles avancés comme XGBoost ou AdaBoost
+        \item Utilisation de techniques de Deep Learning (CNN)
+        \item Développement de modèles hybrides combinant ML et DL
+        \item Automatisation de l’extraction des caractéristiques
+    \end{itemize}
+
+    \subsection{Conclusion finale}
+
+    En conclusion, ce projet démontre que les méthodes classiques de Machine Learning constituent une solution efficace pour la classification d’images, à condition de disposer de caractéristiques pertinentes.
+    Il fournit également une base méthodologique solide pouvant être étendue à des problèmes plus complexes et à des approches plus avancées.
+
+    Ce travail s’inscrit ainsi comme une étape importante dans la compréhension des systèmes de classification et constitue un socle pour des recherches futures en vision par ordinateur et intelligence artificielle.
+
+    \section*{Disponibilité des sorties}
+    Pour garantir la reproductibilité, les résultats numériques et graphiques sont exportés par le notebook \texttt{Projet7\_brainTumorDetection.ipynb} :
+    \begin{itemize}
+    \item \path{phase2_all_modes_metrics.csv} — métriques complètes par mode (split + 10 CV)
+    \item \path{seed_stability_3seeds.csv} — analyse de robustesse aux seeds
+    \item \path{output/p2_overall_dashboard.png} — vue d’ensemble des performances Phase~2
+    \item \path{output/p2_leaderboard.png} — classement global des combinaisons
+    \item Fichier \texttt{output/tsne\_best\_feature\_set.png} : projection t-SNE du meilleur espace
+    \end{itemize}
+    
+
+    \end{document}

@@ -1,1 +1,70 @@
+# ── Datasets (any Kaggle / local download folder) ─────────────────────────────
 Dataset/
+Dataset-*/
+**/images_by_class/
+
+# ── Notebook & training caches (Projet7 + Deep_learning) ─────────────────────
+cache/
+.ipynb_checkpoints/
+
+# ── Embedded template repo (clone separately; do not push as nested git) ───
+Report_Latex/template/latex-paper/
+
+# ── ML checkpoints & large weights ──────────────────────────────────────────
+hf_local_models/
+qwen2vl_mri_lora/
+transformers/
+*.pt
+*.pth
+*.safetensors
+*.ckpt
+*.bin
+optimizer.pt
+scheduler.pt
+rng_state.pth
+scaler.pt
+training_args.bin
+
+# ── Hugging Face download cache ─────────────────────────────────────────────
+.huggingface/
+**/.cache/huggingface/
+
+# ── Python / venv ───────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.Python
+.venv/
+venv/
+env/
+
+# ── IDE & OS ─────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+.cursor/
+.DS_Store
+Thumbs.db
+
+# ── Secrets ──────────────────────────────────────────────────────────────────
+.env
+.env.*
+*.pem
+kaggle.json
+
+# ── LaTeX build (Report_Latex) ───────────────────────────────────────────────
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.toc
+*.nav
+*.snm
+*.bbl
+*.blg
+
+# ── Optional: generated plots/metrics (uncomment to stop tracking outputs) ───
+# output/
+# figures/
+# results/
+# *.csv

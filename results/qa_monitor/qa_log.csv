@@ -1,0 +1,13 @@
+global_step,epoch,true_label,raw_output,predicted_label,correct,p_glioma,p_meningioma,p_pituitary
+100,1.518,Pituitary Tumor,Glioma,Glioma,0,0.500571,0.285217,0.208669
+100,1.518,Glioma,Glioma,Glioma,1,0.716952,0.23276,0.047288
+100,1.518,Meningioma,Glioma,Glioma,0,0.499031,0.116693,0.376688
+200,3.03,Pituitary Tumor,Pituitary Tumor,Pituitary Tumor,1,0.00223,0.039522,0.957533
+200,3.03,Glioma,Meningioma,Meningioma,0,0.468238,0.530583,0.000308
+200,3.03,Meningioma,Glioma,Glioma,0,0.609373,0.18013,0.207329
+300,4.549,Pituitary Tumor,Pituitary Tumor,Pituitary Tumor,1,0.000153,0.000791,0.998912
+300,4.549,Glioma,Glioma,Glioma,1,0.894421,0.105167,1.2e-05
+300,4.549,Meningioma,Glioma,Glioma,0,0.881083,0.11028,0.00705
+330,5.0,Pituitary Tumor,Pituitary Tumor,Pituitary Tumor,1,0.000116,0.001987,0.997739
+330,5.0,Glioma,Glioma,Glioma,1,0.622175,0.377368,1.5e-05
+330,5.0,Meningioma,Glioma,Glioma,0,0.516013,0.37167,0.109865

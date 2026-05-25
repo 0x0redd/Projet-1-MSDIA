@@ -1,0 +1,41 @@
+# Training environment for MSDIA project notebooks:
+#   - Projet7_brainTumorDetection.ipynb (Phase 1–2: classical ML + feature extraction)
+#   - Projet7_brainTumorDetection copy.ipynb (same + optional Kaggle download)
+#   - Projet7_Hand-Writen-digits.ipynb (classical ML pipeline)
+#   - Deep_learning.ipynb (Phase 3: PyTorch CNN / ViT / fusion models)
+#
+# Python: 3.10 or 3.11 recommended (matches project IDE; avoid 3.14 until all wheels exist).
+#
+# --- Install PyTorch FIRST (pick ONE line for your machine) ---
+# CPU only:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+# NVIDIA CUDA 12.x (example):
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+#
+# Then install the rest:
+#   pip install -r requirements-training.txt
+#
+# Optional extras (uncomment if needed on the new machine):
+#   kagglehub          # download Hand-Written Digits / datasets via Kaggle API
+#   scikit-posthocs    # Friedman / Nemenyi statistical tests (evaluation cells, not training)
+
+# --- Core numerics & ML (all Projet7 + Deep_learning) ---
+numpy>=1.24,<3
+pandas>=2.0
+scipy>=1.10
+scikit-learn>=1.3
+joblib>=1.3
+
+# --- Image features & I/O (Projet7 Phase 1, Deep_learning preprocessing) ---
+scikit-image>=0.21
+PyWavelets>=1.4
+Pillow>=10.0
+
+# --- Deep learning (Deep_learning.ipynb) ---
+# torch + torchvision: install separately BEFORE this file (see header).
+# Deep_learning uses torchvision.models (ResNet, VGG, EfficientNet, ViT).
+
+# --- Progress & plotting (training loops + saving figures) ---
+tqdm>=4.65
+matplotlib>=3.7
+seaborn>=0.13

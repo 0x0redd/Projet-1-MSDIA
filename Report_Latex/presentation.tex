@@ -1,0 +1,539 @@
+\documentclass[aspectratio=169]{beamer}
+\usetheme{Madrid}
+\usecolortheme{default}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{array}
+
+\title{Détection de tumeurs cérébrales en IRM}
+\subtitle{Pipeline ML classique: avancement et résultats}
+\author{Projet 7 -- MSDIA S8}
+\date{Avril 2026}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Plan}
+  \tableofcontents
+\end{frame}
+
+\section{Contexte}
+
+\begin{frame}{1) Périmètre du projet}
+\begin{itemize}
+  \item Objectif: classifier des IRM cérébrales avec des méthodes classiques de Machine Learning.
+  \item Approche: ingénierie de caractéristiques + benchmark systématique des modèles.
+  \item Modèles évalués: \textbf{SVM}, \textbf{k-NN}, \textbf{Random Forest}.
+  \item Message clé: une pipeline ML classique bien conçue reste compétitive et explicable.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{2) Problématique et motivation}
+\begin{itemize}
+  \item Données image: forte dimension, variabilité intra-classe, bruit, illumination.
+  \item Défi principal: transformer les pixels bruts en représentations discriminantes.
+  \item Contraintes: reproductibilité, robustesse, coût de calcul maîtrisé.
+  \item Critères de succès: Accuracy/F1, stabilité (CV + seeds), compromis performance/temps.
+\end{itemize}
+\end{frame}
+
+\section{Méthodologie}
+
+\begin{frame}{3) Données et prétraitement}
+\begin{columns}[T]
+  \column{0.55\textwidth}
+  \begin{itemize}
+    \item Prétraitements finalisés: redimensionnement, niveaux de gris, normalisation.
+    \item Vectorisation des images pour les algorithmes classiques.
+    \item Vérification de l'équilibre des classes en entraînement.
+    \item Pipeline de données stable et reproductible.
+  \end{itemize}
+  \column{0.45\textwidth}
+  \includegraphics[width=\linewidth]{output/class_balance_train.png}
+\end{columns}
+\end{frame}
+
+\begin{frame}{4) Vue d'ensemble de la pipeline expérimentale}
+\begin{center}
+  \includegraphics[width=0.9\linewidth]{output/p2_overall_dashboard.png}
+\end{center}
+\vspace{-0.3em}
+\begin{itemize}
+  \item Prétraitement $\rightarrow$ extraction de caractéristiques $\rightarrow$ sélection Phase 1
+  \item Benchmark Phase 2 $\rightarrow$ diagnostics et robustesse
+\end{itemize}
+\end{frame}
+
+\begin{frame}{5) Pourquoi des métriques de séparabilité en Phase 1 ?}
+\begin{itemize}
+  \item Entraîner un classifieur sur chaque combinaison serait trop coûteux.
+  \item On évalue rapidement la qualité intrinsèque des descripteurs via:
+  \begin{itemize}
+    \item \textbf{FDR} (plus grand = meilleur),
+    \item \textbf{MI} (plus grand = meilleur),
+    \item \textbf{DBI} (plus petit = meilleur).
+  \end{itemize}
+  \item Score composite utilisé pour classer les configurations:
+  \[
+  \text{score}=\frac{FDR_n + MI_n + (1-DBI_n)}{3}
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{6) Phase 1A -- Recherche de paramètres GLCM}
+\begin{columns}[T]
+  \column{0.5\textwidth}
+  \includegraphics[width=\linewidth]{output/glcm_param_search.png}
+  \column{0.5\textwidth}
+  \includegraphics[width=\linewidth]{output/glcm_top15.png}
+\end{columns}
+\begin{itemize}
+  \item Exploration systématique de l'espace de recherche GLCM.
+  \item Sélection objective de la meilleure configuration via score composite.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{7) Phase 1B -- Recherche de paramètres LBP}
+\begin{columns}[T]
+  \column{0.5\textwidth}
+  \includegraphics[width=\linewidth]{output/lbp_param_search.png}
+  \column{0.5\textwidth}
+  \includegraphics[width=\linewidth]{output/lbp_by_method.png}
+\end{columns}
+\begin{itemize}
+  \item Paramètres testés: \(P\), \(R\), méthode.
+  \item Conservation du meilleur réglage LBP pour le benchmark final.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{8) Phase 1C -- Recherche de paramètres DWT}
+\begin{columns}[T]
+  \column{0.5\textwidth}
+  \includegraphics[width=\linewidth]{output/dwt_param_search.png}
+  \column{0.5\textwidth}
+  \includegraphics[width=\linewidth]{output/dwt_wavelet_comparison.png}
+\end{columns}
+\begin{itemize}
+  \item Comparaison des familles d'ondelettes et niveaux de décomposition.
+  \item Paramètres DWT optimaux retenus pour la suite.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{9) Consolidation de la Phase 1}
+\begin{center}
+  \includegraphics[width=0.82\linewidth]{output/phase1_summary.png}
+\end{center}
+\begin{itemize}
+  \item Paramètres optimaux figés pour GLCM / LBP / DWT.
+  \item Ces choix alimentent la construction des jeux de features de Phase 2.
+\end{itemize}
+\end{frame}
+
+\section{Benchmark Phase 2}
+
+\begin{frame}{10) Design du benchmark}
+\begin{itemize}
+  \item 8 jeux de caractéristiques: blocs unitaires, fusions partielles, fusion complète \texttt{Full(opt)}.
+  \item Trois modèles comparés: SVM, k-NN, Random Forest.
+  \item Recherche d'hyperparamètres pour chaque couple (feature set, modèle).
+  \item Évaluation en mode \texttt{split} + multi-CV (\texttt{cv\_1} à \texttt{cv\_5}).
+\end{itemize}
+\vspace{0.3em}
+\footnotesize Sources: \texttt{phase2\_benchmark\_results.csv}, \texttt{phase2\_all\_modes\_metrics.csv}.
+\end{frame}
+
+\begin{frame}{11) Focus -- Best feature parameters et évaluation}
+\small
+\begin{itemize}
+  \item Les jeux \texttt{(opt)} utilisent les meilleurs paramètres de Phase 1:
+  \texttt{B -- Tex(opt), C -- DWT(opt), B+C(opt), A+B+C(opt), Full(opt)}.
+  \item Meilleur résultat global: \textbf{Full(opt)+SVM} (Acc=0.9067, F1-macro=0.9064).
+  \item Très proche: \textbf{D -- HOG+SVM} (Acc=0.9033, F1-macro=0.9030).
+  \item \textbf{Full(opt)+RF}: Acc=0.8700, F1=0.8697.
+  \item \textbf{Full(opt)+KNN}: Acc=0.8433, F1=0.8405.
+\end{itemize}
+\textbf{Message:} l'optimisation des descripteurs + la fusion multi-caractéristiques maximisent la performance.
+\end{frame}
+
+\begin{frame}{12) Classement global des configurations}
+\begin{center}
+  \includegraphics[width=0.82\linewidth]{output/p2_leaderboard.png}
+\end{center}
+\begin{itemize}
+  \item Gagnant clair: \texttt{Full(opt)+SVM}.
+  \item SVM domine les premières places, RF offre un compromis robuste.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{13) Focus -- Hyperparamètres et combinaisons entraînées}
+\small
+\begin{itemize}
+  \item \textbf{SVM}: majoritairement RBF, \(C \in \{1,10,100\}\), \(\gamma \in \{\text{scale}, 0.01\}\).
+  \item \textbf{k-NN}: \(n\_neighbors \in \{3,9,11\}\), distances Manhattan/Euclidean, pondération distance fréquente.
+  \item \textbf{RF}: \(n\_estimators\) 200--300, \(max\_features \in \{sqrt,log2\}\), profondeur 10 ou None.
+  \item Les variations \texttt{split} + \texttt{cv\_1..cv\_5} confirment les tendances, sans optimum fragile unique.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{14) Trade-off performance / coût d'entraînement}
+\begin{itemize}
+  \item \textbf{Meilleure performance absolue}: \texttt{Full(opt)+SVM}
+  \begin{itemize}
+    \item Acc=0.9067, temps d'entraînement \(\sim 696s\)
+  \end{itemize}
+  \item \textbf{Très haute performance}: \texttt{D -- HOG+SVM}
+  \begin{itemize}
+    \item Acc=0.9033, temps \(\sim 709s\)
+  \end{itemize}
+  \item \textbf{Option plus rapide}: \texttt{A+B+RF}
+  \begin{itemize}
+    \item Acc=0.8300, temps \(\sim 8.29s\)
+  \end{itemize}
+\end{itemize}
+\textbf{Conclusion:} cartographie complète du compromis précision--temps.
+\end{frame}
+
+\section{Diagnostics et conclusion}
+
+\begin{frame}{15) Diagnostics, robustesse et explicabilité}
+\begin{columns}[T]
+  \column{0.33\textwidth}
+  \includegraphics[width=\linewidth]{output/rf_branch_importance.png}
+  \column{0.33\textwidth}
+  \includegraphics[width=\linewidth]{output/tsne_best_feature_set.png}
+  \column{0.33\textwidth}
+  \includegraphics[width=\linewidth]{output/class_balance_train.png}
+\end{columns}
+\vspace{0.5em}
+\begin{itemize}
+  \item Diagnostics réalisés: déséquilibre, importances RF, structure t-SNE, stabilité aux seeds.
+  \item Pipeline prête pour l'inférence (test sur image aléatoire).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusion générale}
+\begin{itemize}
+  \item Pipeline complète et reproductible validée de bout en bout.
+  \item Meilleur couple: \textbf{Full(opt)+SVM}.
+  \item Livrables: figures, exports CSV, notebook expérimental, rapport.
+  \item Suites possibles: calibration probabiliste, XGBoost, baseline CNN.
+\end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------
+\appendix
+
+\begin{frame}{Mini-deck A -- Best Feature Sets}
+\small
+\begin{tabular}{lll}
+\toprule
+Feature set & Best model & Accuracy \\
+\midrule
+A -- Stats & SVM & 0.8033 \\
+B -- Tex(opt) & SVM & 0.8233 \\
+C -- DWT(opt) & RF  & 0.7300 \\
+D -- HOG & SVM & 0.9033 \\
+A+B & SVM & 0.8400 \\
+B+C(opt) & SVM & 0.8267 \\
+A+B+C(opt) & SVM & 0.8233 \\
+Full(opt) & SVM & 0.9067 \\
+\bottomrule
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Mini-deck B -- Benchmark outcome}
+\begin{itemize}
+  \item Top-2: \texttt{Full(opt)+SVM} puis \texttt{D -- HOG+SVM}.
+  \item RF: bon compromis précision / temps.
+  \item k-NN: entraînement rapide mais en retrait sur les meilleurs jeux fusionnés.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Mini-deck C -- Hyperparameter behavior}
+\begin{itemize}
+  \item SVM RBF majoritaire; linéaire observé sur certains folds haute dimension.
+  \item k-NN: petits et moyens voisinages dominants.
+  \item RF: forêts larges (200--300 arbres) sélectionnées de façon récurrente.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Mini-deck D -- Performance vs cost}
+\begin{itemize}
+  \item Best absolute: \texttt{Full(opt)+SVM}.
+  \item Best practical speed: RF sur jeux fusionnés plus compacts.
+  \item Choix final dépend du contexte de déploiement.
+\end{itemize}
+\end{frame}
+
+\end{document}
+\documentclass[aspectratio=169]{beamer}
+\usetheme{Madrid}
+\usecolortheme{default}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\title{Brain Tumor MRI Classification\\Classical ML Progress Presentation}
+\author{MSDIA -- Project 7}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% ------------------------------------------------------------------
+\begin{frame}{1) Title \& Project Scope}
+\textbf{Project scope}
+\begin{itemize}
+  \item End-to-end classical ML pipeline for brain tumor MRI classification
+  \item From preprocessing and feature engineering to benchmark and diagnostics
+  \item Objective: maximize predictive quality with robust, explainable results
+\end{itemize}
+\vspace{0.5em}
+\textbf{Core message:} Classical ML can remain competitive with strong feature engineering and rigorous evaluation.
+\end{frame}
+
+\begin{frame}{2) Problem Statement \& Motivation}
+\begin{itemize}
+  \item Clinical motivation: reliable support for tumor-type classification
+  \item Technical motivation: interpretable, reproducible pipeline under controlled compute
+  \item Why classical ML: explicit features, transparent trade-offs, faster experimentation
+  \item Success criteria: Accuracy/F1, robustness across seeds/CV, and efficiency
+\end{itemize}
+\vspace{0.3em}
+\footnotesize Source: \texttt{Report\_Latex/report.tex} (Introduction, Problématique et Contexte Théorique).
+\end{frame}
+
+\begin{frame}{3) Data \& Preprocessing Progress}
+\begin{columns}[T]
+  \column{0.55\textwidth}
+  \begin{itemize}
+    \item Dataset loaded and split into train/test
+    \item Steps completed: resize, grayscale, normalize, vectorize
+    \item Class balance checked before modeling
+    \item Pipeline state: stable and reproducible
+  \end{itemize}
+  \column{0.45\textwidth}
+  \includegraphics[width=\linewidth]{output/class_balance_train.png}
+\end{columns}
+\end{frame}
+
+\begin{frame}{4) End-to-End Methodology}
+\begin{center}
+  \includegraphics[width=0.90\linewidth]{output/p2_overall_dashboard.png}
+\end{center}
+\vspace{-0.3em}
+\begin{itemize}
+  \item Preprocessing $\rightarrow$ Feature extraction $\rightarrow$ Phase 1 selection
+  \item Phase 2 benchmark (SVM/KNN/RF) $\rightarrow$ Diagnostics and robustness checks
+\end{itemize}
+\end{frame}
+
+\begin{frame}{5) Why Phase 1 Uses Separability Metrics}
+\begin{itemize}
+  \item Exhaustive model training for every parameter set is expensive
+  \item Phase 1 uses fast classifier-free metrics:
+  \begin{itemize}
+    \item FDR (higher is better)
+    \item MI (higher is better)
+    \item DBI (lower is better)
+  \end{itemize}
+  \item Composite score:
+  \[
+    \text{score}=\frac{\mathrm{FDR}_n + \mathrm{MI}_n + (1-\mathrm{DBI}_n)}{3}
+  \]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{6) Phase 1A -- GLCM Parameter Search}
+\begin{columns}[T]
+  \column{0.5\textwidth}
+  \includegraphics[width=\linewidth]{output/glcm_param_search.png}
+  \column{0.5\textwidth}
+  \includegraphics[width=\linewidth]{output/glcm_top15.png}
+\end{columns}
+\vspace{0.5em}
+\begin{itemize}
+  \item Systematic grid exploration with objective metric-based ranking
+  \item Best GLCM configuration selected from composite separability score
+\end{itemize}
+\end{frame}
+
+\begin{frame}{7) Phase 1B -- LBP Parameter Search}
+\begin{columns}[T]
+  \column{0.5\textwidth}
+  \includegraphics[width=\linewidth]{output/lbp_param_search.png}
+  \column{0.5\textwidth}
+  \includegraphics[width=\linewidth]{output/lbp_by_method.png}
+\end{columns}
+\vspace{0.5em}
+\begin{itemize}
+  \item Tested parameters: \(P\), \(R\), method
+  \item Best LBP setting retained for downstream benchmark
+\end{itemize}
+\end{frame}
+
+\begin{frame}{8) Phase 1C -- DWT Parameter Search}
+\begin{columns}[T]
+  \column{0.5\textwidth}
+  \includegraphics[width=\linewidth]{output/dwt_param_search.png}
+  \column{0.5\textwidth}
+  \includegraphics[width=\linewidth]{output/dwt_wavelet_comparison.png}
+\end{columns}
+\vspace{0.5em}
+\begin{itemize}
+  \item Wavelet families and decomposition levels compared
+  \item Best DWT parameters selected objectively
+\end{itemize}
+\end{frame}
+
+\begin{frame}{9) Phase 1 Consolidation}
+\begin{center}
+  \includegraphics[width=0.82\linewidth]{output/phase1_summary.png}
+\end{center}
+\begin{itemize}
+  \item Final optimal parameters fixed for GLCM, LBP, DWT
+  \item Output feeds Phase 2 model benchmark
+\end{itemize}
+\end{frame}
+
+\begin{frame}{10) Phase 2 Benchmark Design}
+\begin{itemize}
+  \item Feature sets compared: base branches and fused sets (including \texttt{Full(opt)})
+  \item Models: SVM, KNN, RF
+  \item Evaluation strategy: split mode + \(cv\_1\) to \(cv\_5\)
+  \item Hyperparameters tuned through grid search
+  \item Data sources: \texttt{phase2\_benchmark\_results.csv}, \texttt{phase2\_all\_modes\_metrics.csv}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{11) Feature Extraction \& Evaluation (Best Parameters)}
+\small
+\begin{itemize}
+  \item \texttt{(opt)} sets (\texttt{B -- Tex(opt), C -- DWT(opt), B+C(opt), A+B+C(opt), Full(opt)}) use Phase 1 optimal extraction parameters
+  \item Best global: \textbf{Full(opt)+SVM} -- Acc \(=0.9067\), F1-macro \(=0.9064\)
+  \item Close second: \textbf{D -- HOG+SVM} -- Acc \(=0.9033\), F1-macro \(=0.9030\)
+  \item \textbf{Full(opt)+RF}: Acc \(=0.8700\), F1 \(=0.8697\)
+  \item \textbf{Full(opt)+KNN}: Acc \(=0.8433\), F1 \(=0.8405\)
+\end{itemize}
+\vspace{0.4em}
+\textbf{Takeaway:} optimized extraction + feature fusion provides the highest performance ceiling.
+\end{frame}
+
+\begin{frame}{12) Benchmark Outcome (Global Ranking)}
+\begin{center}
+  \includegraphics[width=0.82\linewidth]{output/p2_leaderboard.png}
+\end{center}
+\begin{itemize}
+  \item Clear winner: \texttt{Full(opt)+SVM}
+  \item SVM dominates most top combinations; RF is a strong efficiency-performance compromise
+\end{itemize}
+\end{frame}
+
+\begin{frame}{13) Training Across Hyperparameter Combinations}
+\small
+\begin{itemize}
+  \item SVM winners: mostly RBF, \(C \in \{1,10,100\}\), \(\gamma \in \{\text{scale},0.01\}\)
+  \item KNN winners: \(k \in \{3,9,11\}\), Manhattan/Euclidean, often distance weighting
+  \item RF winners: \(n\_estimators \in [200,300]\), \(max\_features\in\{sqrt,log2\}\), depth \(10\) or None
+  \item Multi-mode evidence (\texttt{split}, \texttt{cv\_1..cv\_5}) shows model-feature interaction, not a single fragile optimum
+\end{itemize}
+\end{frame}
+
+\begin{frame}{14) Performance vs Cost (Accuracy-Time Trade-off)}
+\begin{itemize}
+  \item \textbf{Best absolute performance:} \texttt{Full(opt)+SVM}
+  \begin{itemize}
+    \item Accuracy \(0.9067\), fit time \(\sim696s\)
+  \end{itemize}
+  \item \textbf{Very high performance:} \texttt{D -- HOG+SVM}
+  \begin{itemize}
+    \item Accuracy \(0.9033\), fit time \(\sim709s\)
+  \end{itemize}
+  \item \textbf{Faster practical option:} \texttt{A+B+RF}
+  \begin{itemize}
+    \item Accuracy \(0.8300\), fit time \(\sim8.29s\)
+  \end{itemize}
+\end{itemize}
+\textbf{Conclusion:} we mapped the full accuracy-efficiency frontier.
+\end{frame}
+
+\begin{frame}{15) Diagnostics, Readiness, Conclusion}
+\begin{columns}[T]
+  \column{0.33\textwidth}
+  \includegraphics[width=\linewidth]{output/rf_branch_importance.png}
+  \column{0.33\textwidth}
+  \includegraphics[width=\linewidth]{output/tsne_best_feature_set.png}
+  \column{0.33\textwidth}
+  \includegraphics[width=\linewidth]{output/class_balance_train.png}
+\end{columns}
+\vspace{0.5em}
+\begin{itemize}
+  \item Diagnostics done: imbalance check, RF importances, t-SNE structure, seed stability
+  \item Inference demo completed on random test images
+  \item Next steps: calibration, additional ensembles (e.g., XGBoost), CNN baseline
+\end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------
+\appendix
+\begin{frame}{Mini-Deck A -- Best Parameters \(\rightarrow\) Best Feature Sets}
+\small
+\begin{tabular}{lll}
+\toprule
+Feature set & Best model & Accuracy \\
+\midrule
+A -- Stats & SVM & 0.8033 \\
+B -- Tex(opt) & SVM & 0.8233 \\
+C -- DWT(opt) & RF & 0.7300 \\
+D -- HOG & SVM & 0.9033 \\
+A+B & SVM & 0.8400 \\
+B+C(opt) & SVM & 0.8267 \\
+A+B+C(opt) & SVM & 0.8233 \\
+Full(opt) & SVM & 0.9067 \\
+\bottomrule
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Mini-Deck B -- Benchmark Outcome}
+\begin{itemize}
+  \item Top 2: \texttt{Full(opt)+SVM} and \texttt{D -- HOG+SVM}
+  \item RF gives a robust middle ground on multiple feature sets
+  \item KNN remains lightweight but generally below SVM on best fused features
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Mini-Deck C -- Hyperparameter Search Behavior}
+\small
+\begin{itemize}
+  \item SVM: RBF dominates, occasional linear kernels on high-dimensional CV folds
+  \item KNN: low-to-mid neighbor counts (\(3,9,11\)) dominate
+  \item RF: larger forests (\(200-300\) trees) repeatedly selected
+  \item Cross-mode consistency confirms stability of key trends
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Mini-Deck D -- Performance vs Cost}
+\begin{itemize}
+  \item Best absolute: \texttt{Full(opt)+SVM} (highest Acc/F1)
+  \item Best practical speed: RF on fused compact sets
+  \item Decision depends on deployment constraints (latency vs peak quality)
+\end{itemize}
+\end{frame}
+
+\end{document}
