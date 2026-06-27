@@ -1,2 +1,0 @@
-eval_mode,feature_set,model,acc,f1_macro,f1_weighted,precision_macro,recall_macro,fit_time_s,predict_time_s,best_cv,best_params
-split,A — Stats,SVM,0.5833333333333334,0.5734126984126985,0.5734126984126985,0.5750000000000001,0.5833333333333334,4.857586622238159,0.0010058879852294922,0.5848248176836205,"{'C': 10, 'gamma': 0.01, 'kernel': 'rbf'}"

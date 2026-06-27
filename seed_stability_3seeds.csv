@@ -1,4 +1,0 @@
-seed,acc,f1_macro,best_params
-42,0.8866666666666667,0.8863951199683364,"{'max_depth': None, 'max_features': 'sqrt', 'n_estimators': 200}"
-43,0.87,0.8689666271856037,"{'max_depth': 10, 'max_features': 'sqrt', 'n_estimators': 200}"
-44,0.87,0.8687580727033316,"{'max_depth': 20, 'max_features': 'sqrt', 'n_estimators': 300}"

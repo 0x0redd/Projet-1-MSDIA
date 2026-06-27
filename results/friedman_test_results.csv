@@ -1,0 +1,9 @@
+Feature Set,N folds,Friedman statistic,p-value,Significant (p<0.05),Models compared
+D — HOG,5,7.6,0.022371,✓ Yes,"SVM, KNN, RF"
+A — Stats,5,10.0,0.006738,✓ Yes,"SVM, KNN, RF"
+Full(opt),5,7.6,0.022371,✓ Yes,"SVM, KNN, RF"
+A+B,5,10.0,0.006738,✓ Yes,"SVM, KNN, RF"
+B — Tex(opt),5,10.0,0.006738,✓ Yes,"SVM, KNN, RF"
+C — DWT(opt),5,4.8,0.090718,✗ No,"SVM, KNN, RF"
+B+C(opt),5,8.4,0.014996,✓ Yes,"SVM, KNN, RF"
+A+B+C(opt),5,7.6,0.022371,✓ Yes,"SVM, KNN, RF"

@@ -1,0 +1,10 @@
+image,true_label,pred_label,raw_output,correct,best_prob_label,p_glioma,p_meningioma,p_pituitary_tumor
+Dataset\BrainTumorDetection&Classification\BrainTumorDetection&Classification\images_by_class\Pituitary Tumor\931.jpg,Pituitary Tumor,Pituitary Tumor,Pituitary Tumor,True,Pituitary Tumor,0.0018361038528382778,0.016365014016628265,0.9813172221183777
+Dataset\BrainTumorDetection&Classification\BrainTumorDetection&Classification\images_by_class\Glioma\2547.jpg,Glioma,Glioma,Glioma,True,Glioma,0.9996123909950256,0.0003199766215402633,1.4733484931639396e-05
+Dataset\BrainTumorDetection&Classification\BrainTumorDetection&Classification\images_by_class\Meningioma\557.jpg,Meningioma,Meningioma,Meningioma,True,Meningioma,0.01223110780119896,0.9869382381439209,0.00012566414079628885
+Dataset\BrainTumorDetection&Classification\BrainTumorDetection&Classification\images_by_class\Meningioma\291.jpg,Meningioma,Meningioma,Meningioma,True,Meningioma,0.00018230809655506164,0.999562680721283,3.168039984302595e-05
+Dataset\BrainTumorDetection&Classification\BrainTumorDetection&Classification\images_by_class\Glioma\2362.jpg,Glioma,Glioma,Glioma,True,Glioma,0.9962995648384094,0.0035375095903873444,5.3714240493718535e-05
+Dataset\BrainTumorDetection&Classification\BrainTumorDetection&Classification\images_by_class\Meningioma\422.jpg,Meningioma,Meningioma,Meningioma,True,Meningioma,0.39551791548728943,0.6030927896499634,0.00039611372631043196
+Dataset\BrainTumorDetection&Classification\BrainTumorDetection&Classification\images_by_class\Glioma\3025.jpg,Glioma,Glioma,Glioma,True,Glioma,0.9998003840446472,0.00015842968423385173,5.092714218335459e-06
+Dataset\BrainTumorDetection&Classification\BrainTumorDetection&Classification\images_by_class\Pituitary Tumor\1110.jpg,Pituitary Tumor,Pituitary Tumor,Pituitary Tumor,True,Pituitary Tumor,4.7274388634832576e-05,0.006191722583025694,0.9936036467552185
+Dataset\BrainTumorDetection&Classification\BrainTumorDetection&Classification\images_by_class\Glioma\2587.jpg,Glioma,Glioma,Glioma,True,Glioma,0.9999711513519287,9.66592415352352e-06,2.406038674962474e-06

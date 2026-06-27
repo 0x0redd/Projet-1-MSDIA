@@ -1,0 +1,4 @@
+seed,acc,f1_macro,best_params
+42,0.95,0.9497549019607843,"{'C': 10, 'coef0': 1.0, 'degree': 4, 'gamma': 0.001, 'kernel': 'poly'}"
+43,0.91,0.909905622728854,"{'C': 10, 'coef0': 0.5, 'degree': 3, 'gamma': 0.001, 'kernel': 'poly'}"
+44,0.9133333333333333,0.9130212020258591,"{'C': 1, 'coef0': 1.0, 'degree': 2, 'gamma': 0.01, 'kernel': 'poly'}"

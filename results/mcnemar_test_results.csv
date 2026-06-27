@@ -1,0 +1,4 @@
+Model A,Model B,n₀₁ (A✓ B✗),n₁₀ (A✗ B✓),p-value,Significant (p<0.05),Interpretation
+SVM,KNN,20,14,0.391173,✗ No,No significant difference
+SVM,RF,18,4,0.005578,✓ Yes,A is significantly better than B
+KNN,RF,25,17,0.280087,✗ No,No significant difference
