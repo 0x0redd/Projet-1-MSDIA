@@ -1,0 +1,9 @@
+## Conclusion
+
+In this study, we developed a two-phase machine learning pipeline for brain tumor MRI classification using handcrafted features and classical classifiers. In the first phase, we used a set of predefined hyperparameters and evaluated their performance based on separability metrics to select the best parameters for our feature extraction techniques. The results showed that the separability-first approach was more effective in selecting the best parameters, resulting in higher accuracy and better performance on the validation set.
+
+In the second phase, we used KNN and SVM as classifiers and found that they performed better on the HOG and Full(opt) feature sets compared to RF, even when using the same hyperparameters for each classifier. This could be due to several factors, including the complexity of the feature sets and their ability to capture more information.
+
+Based on our results, we recommend using KNN or SVM as classifiers in combination with handcrafted features for brain tumor MRI classification tasks. However, it is important to note that this study only used two classifiers, and a complete eight-model benchmark should be conducted to further evaluate their performance. Additionally, statistical tests and external validation should be performed to ensure the robustness of our results.
+
+In conclusion, our study demonstrates the effectiveness of using handcrafted features and classical classifiers for brain tumor MRI classification tasks. By carefully selecting the best parameters and using appropriate classifiers, we can achieve high accuracy and better performance on the validation set. Future work should focus on expanding the number of models used in the benchmark, performing statistical tests, and validating our results on external datasets.

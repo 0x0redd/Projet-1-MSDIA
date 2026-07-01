@@ -1,0 +1,92 @@
+% Methods — Phases 1 & 2 only (Projet7_brainTumorDetection.ipynb)
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Dataset and preprocessing}
+\label{sec:dataset}
+We use a publicly available brain-tumour MRI collection (Kaggle Brain Tumor Detection \& Classification) with three classes---glioma, meningioma, and pituitary tumour---balanced at 500 slices per class (1{,}500 images total).
+Images are converted to grayscale, resized to $128\times128$, cropped to remove black borders ($\text{thr}=0.05$), and contrast-enhanced with CLAHE before feature extraction.
+The dataset is stratified into 80\%/20\% train/test (fixed random seed); 5-fold stratified cross-validation on the training fold selects hyperparameters.
+Class balance is verified in Fig.~\ref{fig:class_balance} (imbalance ratio $\approx 1.0$; SMOTE not applied).
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.55\linewidth]{class_balance_train}
+\caption{Training-set class distribution after stratified split (500 samples per class).}
+\label{fig:class_balance}
+\end{figure}
+
+\subsection{Separability metrics for classifier-free selection}
+\label{sec:separability}
+Phase~1 ranks descriptor configurations \emph{before} any classifier is trained.
+For each hyperparameter setting we extract features on the training set and compute three complementary metrics:
+\begin{itemize}
+    \item \textbf{Fisher's discriminant ratio (FDR):} $\text{FDR}=\frac{1}{p}\sum_{j=1}^{p}\frac{\sigma_B^2(j)}{\sigma_W^2(j)+\varepsilon}$, measuring between-class versus within-class variance per feature dimension.
+    \item \textbf{Mutual information (MI):} $\text{MI}(X_j;Y)=\sum p(x,y)\log\frac{p(x,y)}{p(x)p(y)}$, capturing non-linear dependency between each feature and the class label.
+    \item \textbf{Davies--Bouldin index (DBI):} cluster compactness relative to inter-cluster separation (lower is better).
+\end{itemize}
+Each metric is min--max normalised to $[0,1]$ on the configuration grid; DBI is inverted so that higher is better.
+The composite Phase~1 score is $(\text{FDR}_n + \text{MI}_n + (1-\text{DBI}_n))/3$.
+The highest-scoring setting per family is locked for Phase~2 (Table~\ref{tab:phase1}); the full search grid is in Table~\ref{tab:descriptor_grids}.
+
+\input{tables/descriptor_grids}
+
+\subsection{Grey-level co-occurrence matrix (GLCM)}
+\label{sec:glcm}
+The GLCM~\cite{ref_fonc20231248452,ref_hsr271195} tabulates how often grey levels $i$ and $j$ co-occur at a given pixel offset $(d,\theta)$.
+For an image quantised to $L$ levels, the matrix $\mathbf{P}$ has size $L\times L$; we average over all distance--angle pairs and extract six Haralick properties: contrast, dissimilarity, homogeneity, energy, correlation, and angular second moment (ASM).
+\textbf{Output:} 6 features.
+\textbf{Optimal:} $d\in\{1,2,4,8\}$, $\theta=0$, $L=128$, symmetric=True (score $=0.781$).
+
+\subsection{Local binary patterns (LBP)}
+\label{sec:lbp}
+LBP~\cite{ref_fnins2021634926} encodes local texture by thresholding a circular neighbourhood of $P$ pixels on a ring of radius $R$.
+\textbf{Output:} $P{+}2$ histogram bins for \texttt{uniform} method (10 dims for $P=8$).
+\textbf{Optimal:} $P=8$, $R=1$, \texttt{uniform} (score $=1.000$).
+
+\subsection{Discrete wavelet transform (DWT)}
+\label{sec:dwt}
+The 2-D DWT decomposes the image into approximation (LL) and detail sub-bands (LH, HL, HH) at each scale~\cite{ref_2409,ref_iasc2022024635}.
+We compute mean, standard deviation, energy, and Shannon entropy per sub-band.
+\textbf{Output:} $4\times(3L{+}1)$ features (16 at $L=1$).
+\textbf{Optimal:} \texttt{bior1.3}, level $=1$ (score $=0.994$).
+
+\subsection{Histogram of oriented gradients (HOG)}
+\label{sec:hog}
+HOG~\cite{ref_s41598024772437,ref_wo2023124612} accumulates gradient-orientation histograms per cell with block normalisation.
+\textbf{Output:} 1{,}176 dimensions with optimal settings on $128\times128$ inputs.
+\textbf{Optimal:} 6 orientations, $(16,16)$ cells, $(2,2)$ blocks (score $=0.997$).
+
+Fig.~\ref{fig:descriptor_demo} illustrates all four descriptors on one preprocessed slice using these optimal parameters.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{descriptor_demo}
+\caption{Visualisation of Phase~1 optimal descriptors on one MRI slice: preprocessed input, GLCM co-occurrence matrix with Haralick properties, LBP code map, DWT level-1 sub-bands, and HOG energy overlay.}
+\label{fig:descriptor_demo}
+\end{figure*}
+
+\input{tables/phase1_params}
+
+\subsection{Feature vectors and cleaning}
+\label{sec:features}
+Eight feature sets are built from Phase~1 optimal extractors plus first-order statistics:
+A (Stats), B (Tex/opt = GLCM+LBP), C (DWT/opt), D (HOG), and unions A+B, B+C, A+B+C, Full(opt) ($\sim$1{,}987 raw dimensions).
+Before training: \texttt{VarianceThreshold}, Pearson correlation filter at 0.95, \texttt{StandardScaler}.
+
+\subsection{Phase 2: Classifier benchmark}
+\label{sec:phase2}
+Eight classifiers with \texttt{GridSearchCV} (macro-F1, 5-fold CV): SVM, KNN, RF, XGBoost, LightGBM, LR, MLP, ExtraTrees.
+\input{tables/phase2_models}
+
+\subsection{Evaluation and statistics}
+Primary metric: macro-averaged F1.
+We report Cohen's $\kappa$, bootstrap 95\% CIs, McNemar, Wilcoxon, and Friedman--Nemenyi (Section~\ref{sec:statistics}).
+t-SNE (Fig.~\ref{fig:tsne}) visualises class separability in Full(opt).
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{tsne_best_feature_set}
+\caption{t-SNE projection of the Full(opt) training features (subsampled), coloured by tumour class.}
+\label{fig:tsne}
+\end{figure}

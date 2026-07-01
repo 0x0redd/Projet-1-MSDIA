@@ -1,0 +1,20 @@
+% Data-grounded draft — VLM accuracy from results/vlm_test_metrics.csv
+\section{Vision--Language Model Results}
+\label{sec:results_vlm}
+
+Phase~4 asks whether a compact VLM can classify brain MRI without explicit feature engineering.
+After LoRA fine-tuning with teacher forcing, Qwen2-VL-2B attains \textbf{86.7\%} overall accuracy on the 300-image test subset (macro-F1 pending full per-class export).
+This is \textbf{8.3 percentage points below} VGG16 (95.6\% accuracy) and \textbf{4.5 points below} SVM Full(opt) (92.2\%), but achieved with no GLCM/LBP/DWT/HOG pipeline and ${\sim}2$B parameters under 4-bit quantisation.
+
+The confusion matrix (Fig.~\ref{fig:vlm}, left) shows that meningioma is recognised most reliably, while glioma and pituitary lesions exhibit mutual confusion---mirroring errors seen in Tier~1 hybrids.
+The token-probability probe (Fig.~\ref{fig:vlm}, right) reveals that LoRA reshapes the model's lexical confidence: before adaptation, probability mass is diffuse across class tokens; afterward, the correct class token dominates but miscalibrated cases retain secondary peaks on confusable labels.
+This behaviour suggests that VLMs on small MRI sets benefit less from scale than from domain-specific texture cues captured by handcrafted branches or fine-tuned CNNs.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.48\linewidth]{qwen2vl_lora_confusion_matrix}
+\hfill
+\includegraphics[width=0.48\linewidth]{before_after_per_token_prob}
+\caption{Left: Qwen2-VL+LoRA confusion matrix on the test subset. Right: per-token probability trajectories before and after LoRA.}
+\label{fig:vlm}
+\end{figure}

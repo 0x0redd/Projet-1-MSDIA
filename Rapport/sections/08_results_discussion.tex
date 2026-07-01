@@ -1,0 +1,34 @@
+%=======================================================================
+\section{Results and Discussion}
+
+The following points structure the interpretation of the benchmark and statistical validation
+results.
+
+\begin{itemize}[leftmargin=1.4em,itemsep=3pt]
+  \item \textbf{Best overall configuration.} State which (feature-set $\times$ model) pair won on test
+        macro-F1 and by how much, and confirm whether the full fusion beat the individual branches ---
+        quantify the gain.
+  \item \textbf{Branch contribution.} Compare A vs B vs C vs D and the cumulative sets. Did HOG
+        dominate (it is the largest branch)? Did adding GLCM/LBP texture or DWT measurably help over
+        HOG alone?
+  \item \textbf{Accuracy vs.\ cost.} Reference the training-time-vs-F1 scatter: if a lighter model
+        (e.g.\ SVM or LightGBM) matches the best within its confidence interval, argue for it on
+        efficiency grounds.
+  \item \textbf{Statistical significance.} Tie the leaderboard to Section~\ref{sec:stats}: are the top
+        models statistically separable (McNemar / Friedman+Nemenyi), or is the top cluster a
+        statistical tie? This is the most important point a grader looks for.
+  \item \textbf{Per-class behaviour.} From the confusion matrices, note which tumor types are confused
+        most (commonly Glioma $\leftrightarrow$ Meningioma) and relate it back to the texture
+        similarity discussed in Section~1.
+\end{itemize}
+
+\subsection{Threats to validity}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item Single dataset and a single train/test split (mitigated by stratification, fixed seed, and CV
+        --- supplemented by a seed-stability check across three random seeds).
+  \item Phase~1 selects parameters on the training set using separability metrics, not downstream
+        accuracy; the metrics are a fast proxy, so the chosen settings are good but not guaranteed
+        globally optimal for every classifier.
+  \item Handcrafted features cannot adapt the way a CNN would; the trade-off is interpretability,
+        speed, and low data requirements.
+\end{itemize}

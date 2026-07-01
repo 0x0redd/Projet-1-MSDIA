@@ -1,0 +1,30 @@
+method,accuracy,f1,tier,eval_mode,source
+Tier0_DL_vgg16,0.9560260586319218,0.9501945339984138,0,split,cache/phase3_all_metrics_df.pkl
+Tier0_DL_resnet50,0.9136807817589576,0.9054608122118545,0,split,cache/phase3_all_metrics_df.pkl
+Tier0_DL_efficientnet_b0,0.9462540716612378,0.939970584882997,0,split,cache/phase3_all_metrics_df.pkl
+Tier0_DL_vit_b_16,0.8827361563517915,0.8708073345388941,0,split,cache/phase3_all_metrics_df.pkl
+Tier1_Hybrid_cnn_glcm,0.9185667752442996,0.9107298679363472,1,split,cache/phase3_all_metrics_df.pkl
+Tier1_Hybrid_lbpnet,0.9169381107491856,0.912142408068597,1,split,cache/phase3_all_metrics_df.pkl
+Tier1_Hybrid_waveletcnn,0.9234527687296417,0.91721485916964,1,split,cache/phase3_all_metrics_df.pkl
+Tier1_Hybrid_cnn_hog,0.9218241042345277,0.9122699246922851,1,split,cache/phase3_all_metrics_df.pkl
+Tier2_Fusion_multibranch_fusion,0.9039087947882736,0.8951905599644056,2,split,cache/phase3_all_metrics_df.pkl
+Tier2_Fusion_attention_fusion,0.8973941368078175,0.8855798370870783,2,split,cache/phase3_all_metrics_df.pkl
+ML_A — Stats_KNN,0.7333277327361458,0.7089445194152414,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_A — Stats_RF,0.7329510466028527,0.731400013151838,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_A — Stats_SVM,0.7774996345159589,0.7677675199973892,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_A+B_KNN,0.8000164995471828,0.8305120772946859,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_A+B_SVM,0.8320176733098428,0.8381637850110358,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_A+B+C(opt)_KNN,0.7995981932137385,0.8242311391074747,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_A+B+C(opt)_SVM,0.8463983161828033,0.8323418979309309,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_B — Tex(opt)_KNN,0.7490440181822765,0.7300469133532834,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_B — Tex(opt)_RF,0.7663341907217944,0.7438637323001963,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_B — Tex(opt)_SVM,0.7723777325677048,0.7585717894931164,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_B+C(opt)_KNN,0.7718072595522463,0.7743262989405334,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_B+C(opt)_SVM,0.82584121300834,0.8165505449712533,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_C — DWT(opt)_KNN,0.6698847923314728,0.6465860999156151,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_C — DWT(opt)_RF,0.7088679786409722,0.6984868946472825,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_C — DWT(opt)_SVM,0.7298590668725409,0.69565465311353,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_D — HOG_KNN,0.9171291588691354,0.9340675664205076,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_D — HOG_SVM,0.9078030665061956,0.89596022183974,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_Full(opt)_KNN,0.9221894528789047,0.946247526182859,phase1_ml,split,cache/phase2_checkpoint_manifest.json
+ML_Full(opt)_SVM,0.9275104116607213,0.9122686516189725,phase1_ml,split,cache/phase2_checkpoint_manifest.json

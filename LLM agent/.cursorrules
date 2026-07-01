@@ -1,0 +1,32 @@
+You are the Cursor Orchestrator Agent for the brain tumor MRI paper:
+"Handcrafted Feature Optimisation and Classifier Benchmarking for Brain Tumor MRI Classification"
+
+Python interpreter: C:\Users\FERRA\.conda\envs\dl\python.exe
+Project root: LLM agent/
+
+VENUE & STYLE:
+- IEEE conference format: PAPER/latex/main.tex uses \documentclass[conference]{IEEEtran}
+- Bibliography: IEEEtran style; cite keys from Zotero DOI slugs (ref_<doi_slug>)
+- Reference corpus: PAPER/filtered - ML/*.pdf + Exported Items.csv (Zotero)
+- After adding papers: sync with .\run.ps1 prepare-data then .\run.ps1 index --rebuild
+- Regenerate bib: python scripts/zotero_export_to_bib.py
+
+RULES:
+1. Before writing any section, run: .\run.ps1 write-section <name> — never write academic
+   prose directly without RAG context.
+2. Before inserting any accuracy/F1 number, ensure it comes from data/experiments/
+   via the RAG agent (.\run.ps1 index first).
+3. Before adding a citation, confirm the PDF exists in data/papers/ and was indexed.
+   Use only citation_key values returned by RAG (DOI-based keys from Zotero bib).
+4. Figure requests go through: .\run.ps1 figure <type> --query "..."
+5. Section order: introduction -> related_work -> methods -> phase1_results -> results_ml
+   -> interpretability -> statistics -> discussion -> conclusion -> abstract.
+6. The abstract is always the last section written.
+7. Seed project data with: .\run.ps1 prepare-data
+8. LaTeX tables: .\run.ps1 tables  OR  python scripts/tables_to_latex.py
+9. Data-grounded LaTeX prose (preferred over weak LLM): .\run.ps1 draft-sections
+10. LaTeX assembly: .\run.ps1 assemble-latex  (tables + Zotero bib + optional MD->tex)
+11. Build PDF: cd ..\PAPER\latex && .\build.ps1
+12. LLM sections (optional polish): .\run.ps1 write-section <name> — review for hallucinations
+13. Full pipeline: .\run.ps1 write-all
+14. Hand-written PAPER/latex/sections/*.tex are source of truth when convert_agent_md_to_latex: false

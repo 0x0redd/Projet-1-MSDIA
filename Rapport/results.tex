@@ -1,0 +1,55 @@
+%=======================================================================
+%  results.tex  —  EDIT ONLY THIS FILE AFTER TRAINING/BENCHMARKING
+%-----------------------------------------------------------------------
+%  Every number that depends on your final run is a macro below.
+%  Replace the "\dots" / "TBD" values, recompile main.tex, done.
+%  Anything already filled (Phase 1, dataset, dimensions) is fixed truth
+%  from the notebook and normally needs no change.
+%=======================================================================
+
+% ---------- handy placeholder marker (shows in red until filled) -------
+\newcommand{\TODO}[1]{{\color{red}\textbf{[#1]}}}
+
+%========================= PHASE 1 (already known) =====================
+% These came from the notebook; change only if you re-run Phase 1.
+\newcommand{\NClasses}{3}
+\newcommand{\NTrain}{1{,}200}
+\newcommand{\NTest}{300}
+\newcommand{\NTotal}{1{,}500}
+
+\newcommand{\glcmParams}{distances $=[1,2,4,8]$; angles $=[0]$; levels $=128$; symmetric $=$ True}
+\newcommand{\glcmScore}{0.7809}
+\newcommand{\lbpParams}{$P=8$; $R=1$; method $=$ uniform}
+\newcommand{\lbpScore}{1.0000}
+\newcommand{\dwtParams}{wavelet $=$ bior1.3; level $=1$}
+\newcommand{\dwtScore}{0.9941}
+\newcommand{\hogParams}{orientations $=6$; pixels\_per\_cell $=(16,16)$; cells\_per\_block $=(2,2)$; block\_norm $=$ L2-Hys}
+\newcommand{\hogScore}{0.9969}
+
+%========================= PHASE 2 — MODEL BENCHMARK ===================
+% Fill from the GridSearchCV / finalize cell output.
+% Pattern: \def\<model><field>{value}
+% Fields: CV (best CV macro-F1) | Acc (test accuracy) | F1 (test macro-F1) | BP (best params summary)
+
+\def\svmCV{\TODO{CV}}     \def\svmAcc{\TODO{Acc}}   \def\svmFone{\TODO{F1}}   \def\svmBP{\TODO{params}}
+\def\knnCV{\TODO{CV}}     \def\knnAcc{\TODO{Acc}}   \def\knnFone{\TODO{F1}}   \def\knnBP{\TODO{params}}
+\def\rfCV{\TODO{CV}}      \def\rfAcc{\TODO{Acc}}    \def\rfFone{\TODO{F1}}    \def\rfBP{\TODO{params}}
+\def\xgbCV{\TODO{CV}}     \def\xgbAcc{\TODO{Acc}}   \def\xgbFone{\TODO{F1}}   \def\xgbBP{\TODO{params}}
+\def\lgbmCV{\TODO{CV}}    \def\lgbmAcc{\TODO{Acc}}  \def\lgbmFone{\TODO{F1}}  \def\lgbmBP{\TODO{params}}
+\def\lrCV{\TODO{CV}}      \def\lrAcc{\TODO{Acc}}    \def\lrFone{\TODO{F1}}    \def\lrBP{\TODO{params}}
+\def\mlpCV{\TODO{CV}}     \def\mlpAcc{\TODO{Acc}}   \def\mlpFone{\TODO{F1}}   \def\mlpBP{\TODO{params}}
+\def\etCV{\TODO{CV}}      \def\etAcc{\TODO{Acc}}    \def\etFone{\TODO{F1}}    \def\etBP{\TODO{params}}
+
+% Headline result (best feature-set x model)
+\def\bestModel{\TODO{best model}}
+\def\bestFeatureSet{\TODO{best feature set}}
+\def\bestAcc{\TODO{acc}}
+\def\bestFone{\TODO{macro-F1}}
+
+%========================= STATISTICAL VALIDATION =====================
+\def\kappaModel{\TODO{model}}      \def\kappaVal{\TODO{kappa}}      \def\kappaInterp{\TODO{interpretation}}
+\def\bootModel{\TODO{model}}       \def\bootCI{\TODO{[lo, hi]}}
+\def\cvModel{\TODO{model}}         \def\cvMean{\TODO{mean}}         \def\cvStd{\TODO{std}}
+\def\mcPair{\TODO{A vs B}}         \def\mcChi{\TODO{chi2}}          \def\mcP{\TODO{p}}        \def\mcConc{\TODO{sig / not sig}}
+\def\wxPair{\TODO{A vs B}}         \def\wxW{\TODO{W}}               \def\wxP{\TODO{p}}        \def\wxConc{\TODO{sig / not sig}}
+\def\frChi{\TODO{chi2}}            \def\frP{\TODO{p}}               \def\frConc{\TODO{sig / not sig}}

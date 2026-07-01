@@ -1,0 +1,25 @@
+\documentclass[journal]{IEEEtran}
+\usepackage{graphicx,booktabs}
+\graphicspath{{../../figures/}}
+\title{Supplementary Material: Brain Tumor MRI Feature Integration Ablation}
+\begin{document}
+\maketitle
+
+\section{Phase 1 Full Search Histories}
+Full GLCM, LBP, DWT, and HOG parameter search tables are in \texttt{LLM agent/data/experiments/}.
+
+\section{Training Loss Curves}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{training_loss_curve}
+\caption{Training loss for all Phase~3 models.}
+\end{figure}
+
+\section{Full Grad-CAM Gallery}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{phase3_gradcam_all_models}
+\caption{Grad-CAM for all ten Phase~3 models.}
+\end{figure}
+
+\end{document}

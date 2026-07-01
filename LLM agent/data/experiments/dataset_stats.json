@@ -1,0 +1,813 @@
+{
+  "task": "brain_tumor_mri_classification",
+  "classes": [
+    "Glioma",
+    "Meningioma",
+    "Pituitary Tumor"
+  ],
+  "modalities": [
+    "MRI"
+  ],
+  "pipeline": "Phase1_ML -> Phase3_DL_Tier0_1_2 -> VLM",
+  "cache_root": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\cache\\brain_tumor",
+  "phase1_best": {
+    "phase1_run_id": "20260526T024123_ea9f75c9",
+    "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+    "fingerprint": "afa224e7cd12851202911c9e214abae6",
+    "outcome_hash": "ea9f75c97293847501445580f2676791",
+    "cache_tag": "sz128x128_clahe1_test0.2_maxNone",
+    "class_names": [
+      "Glioma",
+      "Meningioma",
+      "Pituitary Tumor"
+    ],
+    "best": {
+      "GLCM": {
+        "distances": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "angles": [
+          0.0
+        ],
+        "levels": 128,
+        "symmetric": true
+      },
+      "LBP": {
+        "P": 8,
+        "R": 1,
+        "method": "uniform"
+      },
+      "DWT": {
+        "wavelet": "bior1.3",
+        "level": 1
+      },
+      "HOG": {
+        "orientations": 6,
+        "pixels_per_cell": [
+          16,
+          16
+        ],
+        "cells_per_block": [
+          2,
+          2
+        ],
+        "block_norm": "L2-Hys"
+      }
+    },
+    "scores": {
+      "glcm": 0.780899113151805,
+      "lbp": 1.0,
+      "dwt": 0.9941474848903945,
+      "hog": 0.9968630281117118
+    },
+    "bundle_path": "/home/red/Desktop/Projet-1-MSDIA/cache/brain_tumor/phase_artifacts/phase1_bundle.joblib"
+  },
+  "phase1_param_search": {
+    "extractors": {
+      "glcm": {
+        "history_file": "glcm_history.csv",
+        "n_configs": 144,
+        "best": {
+          "phase1_run_id": "20260526T024123_ea9f75c9",
+          "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+          "outcome_hash": "ea9f75c97293847501445580f2676791",
+          "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+          "distances": "[1, 2, 4, 8]",
+          "n_distances": 4,
+          "angles": "[0]",
+          "n_angles": 1,
+          "levels": 128,
+          "symmetric": true,
+          "n_features": 6,
+          "label": "d=[1, 2, 4, 8] a=1ang l=128 sym=True",
+          "FDR": 0.3125820092072696,
+          "MI": 0.1959944248194067,
+          "DBI": 4.033372041076179,
+          "FDR_n": 0.7766570914995535,
+          "MI_n": 0.8109184218287722,
+          "DBI_n": 0.7551218261270891,
+          "score": 0.780899113151805
+        },
+        "top5": [
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "distances": "[1, 2, 4, 8]",
+            "n_distances": 4,
+            "angles": "[0]",
+            "n_angles": 1,
+            "levels": 128,
+            "symmetric": true,
+            "n_features": 6,
+            "label": "d=[1, 2, 4, 8] a=1ang l=128 sym=True",
+            "FDR": 0.3125820092072696,
+            "MI": 0.1959944248194067,
+            "DBI": 4.033372041076179,
+            "FDR_n": 0.7766570914995535,
+            "MI_n": 0.8109184218287722,
+            "DBI_n": 0.7551218261270891,
+            "score": 0.780899113151805
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "distances": "[1, 2, 4, 8]",
+            "n_distances": 4,
+            "angles": "[0]",
+            "n_angles": 1,
+            "levels": 64,
+            "symmetric": false,
+            "n_features": 6,
+            "label": "d=[1, 2, 4, 8] a=1ang l=64 sym=False",
+            "FDR": 0.3144164492141597,
+            "MI": 0.1907271612031807,
+            "DBI": 3.94883765886658,
+            "FDR_n": 0.7870828716920396,
+            "MI_n": 0.7390268284635522,
+            "DBI_n": 0.796264138408195,
+            "score": 0.7741246128545956
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "distances": "[1, 2, 4, 8]",
+            "n_distances": 4,
+            "angles": "[0]",
+            "n_angles": 1,
+            "levels": 256,
+            "symmetric": true,
+            "n_features": 6,
+            "label": "d=[1, 2, 4, 8] a=1ang l=256 sym=True",
+            "FDR": 0.2962862571443099,
+            "MI": 0.2046884161949994,
+            "DBI": 4.139011278310033,
+            "FDR_n": 0.6840424906177905,
+            "MI_n": 0.929580584620364,
+            "DBI_n": 0.7037079235964385,
+            "score": 0.7724436662781976
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "distances": "[1, 2, 4, 8]",
+            "n_distances": 4,
+            "angles": "[0]",
+            "n_angles": 1,
+            "levels": 128,
+            "symmetric": false,
+            "n_features": 6,
+            "label": "d=[1, 2, 4, 8] a=1ang l=128 sym=False",
+            "FDR": 0.3128923819004292,
+            "MI": 0.1930025538657432,
+            "DBI": 4.032139165280509,
+            "FDR_n": 0.7784210507811208,
+            "MI_n": 0.770083106630308,
+            "DBI_n": 0.7557218584413194,
+            "score": 0.7680753386175828
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "distances": "[1, 2, 4, 8]",
+            "n_distances": 4,
+            "angles": "[0]",
+            "n_angles": 1,
+            "levels": 64,
+            "symmetric": true,
+            "n_features": 6,
+            "label": "d=[1, 2, 4, 8] a=1ang l=64 sym=True",
+            "FDR": 0.3141379241033208,
+            "MI": 0.1889571543744968,
+            "DBI": 3.949820530125199,
+            "FDR_n": 0.7854999136379263,
+            "MI_n": 0.7148684379874404,
+            "DBI_n": 0.7957857816118568,
+            "score": 0.7653847110790745
+          }
+        ]
+      },
+      "lbp": {
+        "history_file": "lbp_history.csv",
+        "n_configs": 36,
+        "best": {
+          "phase1_run_id": "20260526T024123_ea9f75c9",
+          "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+          "outcome_hash": "ea9f75c97293847501445580f2676791",
+          "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+          "P": 8,
+          "R": 1,
+          "method": "uniform",
+          "n_features": 10,
+          "label": "P= 8 R=1 method=uniform",
+          "FDR": 0.1962685095431424,
+          "MI": 0.110743423988791,
+          "DBI": 2.848471138992408,
+          "FDR_n": 1.0,
+          "MI_n": 1.0,
+          "DBI_n": 1.0,
+          "score": 1.0
+        },
+        "top5": [
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "P": 8,
+            "R": 1,
+            "method": "uniform",
+            "n_features": 10,
+            "label": "P= 8 R=1 method=uniform",
+            "FDR": 0.1962685095431424,
+            "MI": 0.110743423988791,
+            "DBI": 2.848471138992408,
+            "FDR_n": 1.0,
+            "MI_n": 1.0,
+            "DBI_n": 1.0,
+            "score": 1.0
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "P": 12,
+            "R": 1,
+            "method": "uniform",
+            "n_features": 14,
+            "label": "P=12 R=1 method=uniform",
+            "FDR": 0.1910449560428541,
+            "MI": 0.0989007986148011,
+            "DBI": 3.0726092474338795,
+            "FDR_n": 0.973204078469739,
+            "MI_n": 0.8889123595334402,
+            "DBI_n": 0.981998177323244,
+            "score": 0.9480382051088077
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "P": 16,
+            "R": 1,
+            "method": "uniform",
+            "n_features": 18,
+            "label": "P=16 R=1 method=uniform",
+            "FDR": 0.1864938867673981,
+            "MI": 0.1004073231740968,
+            "DBI": 3.111420542834136,
+            "FDR_n": 0.9498578841257604,
+            "MI_n": 0.9030440451446948,
+            "DBI_n": 0.9788810186102131,
+            "score": 0.943927649293556
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "P": 24,
+            "R": 1,
+            "method": "uniform",
+            "n_features": 26,
+            "label": "P=24 R=1 method=uniform",
+            "FDR": 0.1705491111762912,
+            "MI": 0.0876299874007698,
+            "DBI": 3.2511094194514976,
+            "FDR_n": 0.8680639567670492,
+            "MI_n": 0.7831885200661667,
+            "DBI_n": 0.9676618002262156,
+            "score": 0.8729714256864772
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "P": 12,
+            "R": 2,
+            "method": "uniform",
+            "n_features": 14,
+            "label": "P=12 R=2 method=uniform",
+            "FDR": 0.1360963993413194,
+            "MI": 0.0716539955406157,
+            "DBI": 3.475391560181256,
+            "FDR_n": 0.6913275334139337,
+            "MI_n": 0.6333285706198769,
+            "DBI_n": 0.9496484094866636,
+            "score": 0.7581015045068247
+          }
+        ]
+      },
+      "dwt": {
+        "history_file": "dwt_history.csv",
+        "n_configs": 21,
+        "best": {
+          "phase1_run_id": "20260526T024123_ea9f75c9",
+          "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+          "outcome_hash": "ea9f75c97293847501445580f2676791",
+          "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+          "wavelet": "bior1.3",
+          "level": 1,
+          "n_features": 16,
+          "label": "wavelet=bior1.3  level=1",
+          "FDR": 0.193115860859995,
+          "MI": 0.1042138832151786,
+          "DBI": 3.9927063681763486,
+          "FDR_n": 1.0,
+          "MI_n": 1.0,
+          "DBI_n": 0.9824424546711836,
+          "score": 0.9941474848903944
+        },
+        "top5": [
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "wavelet": "bior1.3",
+            "level": 1,
+            "n_features": 16,
+            "label": "wavelet=bior1.3  level=1",
+            "FDR": 0.193115860859995,
+            "MI": 0.1042138832151786,
+            "DBI": 3.9927063681763486,
+            "FDR_n": 1.0,
+            "MI_n": 1.0,
+            "DBI_n": 0.9824424546711836,
+            "score": 0.9941474848903944
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "wavelet": "coif1",
+            "level": 1,
+            "n_features": 16,
+            "label": "wavelet=coif1    level=1",
+            "FDR": 0.1806933159728123,
+            "MI": 0.0982583799426427,
+            "DBI": 3.96008753535824,
+            "FDR_n": 0.8239403710802864,
+            "MI_n": 0.8569373870835433,
+            "DBI_n": 1.0,
+            "score": 0.8936259193879432
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "wavelet": "haar",
+            "level": 1,
+            "n_features": 16,
+            "label": "wavelet=haar     level=1",
+            "FDR": 0.1828850601377668,
+            "MI": 0.099927063303986,
+            "DBI": 4.154408543322465,
+            "FDR_n": 0.8550030613642217,
+            "MI_n": 0.8970223624213767,
+            "DBI_n": 0.8954039856454004,
+            "score": 0.8824764698103329
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "wavelet": "db1",
+            "level": 1,
+            "n_features": 16,
+            "label": "wavelet=db1      level=1",
+            "FDR": 0.1828850601377668,
+            "MI": 0.099927063303986,
+            "DBI": 4.154408543322465,
+            "FDR_n": 0.8550030613642217,
+            "MI_n": 0.8970223624213767,
+            "DBI_n": 0.8954039856454004,
+            "score": 0.8824764698103329
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "wavelet": "db2",
+            "level": 1,
+            "n_features": 16,
+            "label": "wavelet=db2      level=1",
+            "FDR": 0.180364247730283,
+            "MI": 0.0944515221713842,
+            "DBI": 4.000143255092059,
+            "FDR_n": 0.8192766219696872,
+            "MI_n": 0.765489360806888,
+            "DBI_n": 0.9784394457390132,
+            "score": 0.8544018095051961
+          }
+        ]
+      },
+      "hog": {
+        "history_file": "hog_history.csv",
+        "n_configs": 12,
+        "best": {
+          "phase1_run_id": "20260526T024123_ea9f75c9",
+          "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+          "outcome_hash": "ea9f75c97293847501445580f2676791",
+          "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+          "orientations": 6,
+          "pixels_per_cell": "(16, 16)",
+          "cells_per_block": "(2, 2)",
+          "block_norm": "L2-Hys",
+          "n_features": 1176,
+          "label": "ori=6 ppc=(16, 16) cpb=(2, 2) norm=L2-Hys",
+          "FDR": 0.021216995636333,
+          "MI": 0.0247173542650849,
+          "DBI": 6.625630813400572,
+          "FDR_n": 0.9905890843351352,
+          "MI_n": 1.0,
+          "DBI_n": 1.0,
+          "score": 0.9968630281117118
+        },
+        "top5": [
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "orientations": 6,
+            "pixels_per_cell": "(16, 16)",
+            "cells_per_block": "(2, 2)",
+            "block_norm": "L2-Hys",
+            "n_features": 1176,
+            "label": "ori=6 ppc=(16, 16) cpb=(2, 2) norm=L2-Hys",
+            "FDR": 0.021216995636333,
+            "MI": 0.0247173542650849,
+            "DBI": 6.625630813400572,
+            "FDR_n": 0.9905890843351352,
+            "MI_n": 1.0,
+            "DBI_n": 1.0,
+            "score": 0.9968630281117118
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "orientations": 6,
+            "pixels_per_cell": "(16, 16)",
+            "cells_per_block": "(3, 3)",
+            "block_norm": "L2-Hys",
+            "n_features": 1944,
+            "label": "ori=6 ppc=(16, 16) cpb=(3, 3) norm=L2-Hys",
+            "FDR": 0.0213067425865987,
+            "MI": 0.0241458151417859,
+            "DBI": 6.678849895076168,
+            "FDR_n": 1.0,
+            "MI_n": 0.9515143853544016,
+            "DBI_n": 0.9175921816634922,
+            "score": 0.9563688556726312
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "orientations": 9,
+            "pixels_per_cell": "(16, 16)",
+            "cells_per_block": "(3, 3)",
+            "block_norm": "L2-Hys",
+            "n_features": 2916,
+            "label": "ori=9 ppc=(16, 16) cpb=(3, 3) norm=L2-Hys",
+            "FDR": 0.0198423901926145,
+            "MI": 0.0220737006499474,
+            "DBI": 6.809159176913796,
+            "FDR_n": 0.8464471846382917,
+            "MI_n": 0.7757298403298616,
+            "DBI_n": 0.7158129835425271,
+            "score": 0.7793300028368936
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "orientations": 9,
+            "pixels_per_cell": "(16, 16)",
+            "cells_per_block": "(2, 2)",
+            "block_norm": "L2-Hys",
+            "n_features": 1764,
+            "label": "ori=9 ppc=(16, 16) cpb=(2, 2) norm=L2-Hys",
+            "FDR": 0.0198969906871129,
+            "MI": 0.0227463239652096,
+            "DBI": 6.860635322046774,
+            "FDR_n": 0.8521726231903837,
+            "MI_n": 0.8327907720071273,
+            "DBI_n": 0.6361040392461916,
+            "score": 0.7736891448145675
+          },
+          {
+            "phase1_run_id": "20260526T024123_ea9f75c9",
+            "input_fingerprint": "afa224e7cd12851202911c9e214abae6",
+            "outcome_hash": "ea9f75c97293847501445580f2676791",
+            "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+            "orientations": 12,
+            "pixels_per_cell": "(16, 16)",
+            "cells_per_block": "(2, 2)",
+            "block_norm": "L2-Hys",
+            "n_features": 2352,
+            "label": "ori=12 ppc=(16, 16) cpb=(2, 2) norm=L2-Hys",
+            "FDR": 0.0190728063342615,
+            "MI": 0.0207671820730912,
+            "DBI": 6.915643994651781,
+            "FDR_n": 0.765748188554763,
+            "MI_n": 0.6648934099572337,
+            "DBI_n": 0.5509251042431753,
+            "score": 0.660522234251724
+          }
+        ]
+      }
+    },
+    "source_dir": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\cache\\brain_tumor\\phase_artifacts\\phase1_full_search_archive",
+    "phase1_best": {
+      "phase1_run_id": "20260526T024123_ea9f75c9",
+      "saved_at_utc": "2026-05-26T02:41:23.047628+00:00",
+      "fingerprint": "afa224e7cd12851202911c9e214abae6",
+      "outcome_hash": "ea9f75c97293847501445580f2676791",
+      "cache_tag": "sz128x128_clahe1_test0.2_maxNone",
+      "class_names": [
+        "Glioma",
+        "Meningioma",
+        "Pituitary Tumor"
+      ],
+      "best": {
+        "GLCM": {
+          "distances": [
+            1,
+            2,
+            4,
+            8
+          ],
+          "angles": [
+            0.0
+          ],
+          "levels": 128,
+          "symmetric": true
+        },
+        "LBP": {
+          "P": 8,
+          "R": 1,
+          "method": "uniform"
+        },
+        "DWT": {
+          "wavelet": "bior1.3",
+          "level": 1
+        },
+        "HOG": {
+          "orientations": 6,
+          "pixels_per_cell": [
+            16,
+            16
+          ],
+          "cells_per_block": [
+            2,
+            2
+          ],
+          "block_norm": "L2-Hys"
+        }
+      },
+      "scores": {
+        "glcm": 0.780899113151805,
+        "lbp": 1.0,
+        "dwt": 0.9941474848903945,
+        "hog": 0.9968630281117118
+      },
+      "bundle_path": "/home/red/Desktop/Projet-1-MSDIA/cache/brain_tumor/phase_artifacts/phase1_bundle.joblib"
+    },
+    "latest_run_id": "20260526T024123_ea9f75c9",
+    "ablation": {
+      "glcm": {
+        "score": 0.780899113151805
+      },
+      "lbp": {
+        "score": 1.0
+      },
+      "dwt": {
+        "score": 0.9941474848903945
+      },
+      "hog": {
+        "score": 0.9968630281117118
+      }
+    }
+  },
+  "phase2_checkpoint_summary": {
+    "total_runs": 35,
+    "unique_jobs": 35,
+    "split_leaderboard_top5": [
+      {
+        "eval_mode": "split",
+        "feature_set": "Full(opt)",
+        "model": "KNN",
+        "acc": 0.9526916802610114,
+        "f1_macro": 0.946247526182859,
+        "best_cv": 0.9221894528789047,
+        "saved_at_utc": "2026-05-26T21:30:59.564524+00:00",
+        "source": "cache/phase2_checkpoint_manifest.json"
+      },
+      {
+        "eval_mode": "split",
+        "feature_set": "D \u2014 HOG",
+        "model": "KNN",
+        "acc": 0.9429037520391517,
+        "f1_macro": 0.9340675664205076,
+        "best_cv": 0.9171291588691354,
+        "saved_at_utc": "2026-05-26T21:20:55.978270+00:00",
+        "source": "cache/phase2_checkpoint_manifest.json"
+      },
+      {
+        "eval_mode": "split",
+        "feature_set": "Full(opt)",
+        "model": "SVM",
+        "acc": 0.9216965742251223,
+        "f1_macro": 0.9122686516189725,
+        "best_cv": 0.9275104116607213,
+        "saved_at_utc": "2026-05-26T11:52:16.380086+00:00",
+        "source": "cache/phase2_checkpoint_manifest.json"
+      },
+      {
+        "eval_mode": "split",
+        "feature_set": "D \u2014 HOG",
+        "model": "SVM",
+        "acc": 0.9086460032626428,
+        "f1_macro": 0.89596022183974,
+        "best_cv": 0.9078030665061956,
+        "saved_at_utc": "2026-05-26T09:49:31.408308+00:00",
+        "source": "cache/phase2_checkpoint_manifest.json"
+      },
+      {
+        "eval_mode": "split",
+        "feature_set": "A+B",
+        "model": "SVM",
+        "acc": 0.8515497553017944,
+        "f1_macro": 0.8381637850110358,
+        "best_cv": 0.8320176733098428,
+        "saved_at_utc": "2026-05-26T10:17:52.945299+00:00",
+        "source": "cache/phase2_checkpoint_manifest.json"
+      }
+    ]
+  },
+  "phase3_manifest_run_count": 80,
+  "phase3_metrics_rows": 20,
+  "best_split_model": {
+    "tier": 0,
+    "model": "vgg16",
+    "accuracy": 0.9560260586319218,
+    "f1_macro": 0.9501945339984138
+  },
+  "split_distribution": [
+    {
+      "split": "test",
+      "Glioma": 100,
+      "Meningioma": 100,
+      "Pituitary Tumor": 100
+    },
+    {
+      "split": "train",
+      "Glioma": 350,
+      "Meningioma": 350,
+      "Pituitary Tumor": 350
+    },
+    {
+      "split": "val",
+      "Glioma": 50,
+      "Meningioma": 50,
+      "Pituitary Tumor": 50
+    }
+  ],
+  "phase3_vs_phase2": [
+    {
+      "dl_model": "vgg16",
+      "dl_tier": 0,
+      "dl_f1_macro": 0.930095949538356,
+      "dl_acc": 0.93,
+      "phase2_feature_set": NaN,
+      "phase2_best_model": NaN,
+      "phase2_f1_macro": NaN,
+      "phase2_acc": NaN,
+      "delta_f1_dl_minus_p2": NaN
+    },
+    {
+      "dl_model": "resnet50",
+      "dl_tier": 0,
+      "dl_f1_macro": 0.9235565529989812,
+      "dl_acc": 0.9233333333333332,
+      "phase2_feature_set": NaN,
+      "phase2_best_model": NaN,
+      "phase2_f1_macro": NaN,
+      "phase2_acc": NaN,
+      "delta_f1_dl_minus_p2": NaN
+    },
+    {
+      "dl_model": "efficientnet_b0",
+      "dl_tier": 0,
+      "dl_f1_macro": 0.9203895605450008,
+      "dl_acc": 0.92,
+      "phase2_feature_set": NaN,
+      "phase2_best_model": NaN,
+      "phase2_f1_macro": NaN,
+      "phase2_acc": NaN,
+      "delta_f1_dl_minus_p2": NaN
+    },
+    {
+      "dl_model": "vit_b_16",
+      "dl_tier": 0,
+      "dl_f1_macro": 0.8999304981936205,
+      "dl_acc": 0.9,
+      "phase2_feature_set": NaN,
+      "phase2_best_model": NaN,
+      "phase2_f1_macro": NaN,
+      "phase2_acc": NaN,
+      "delta_f1_dl_minus_p2": NaN
+    },
+    {
+      "dl_model": "cnn_glcm",
+      "dl_tier": 1,
+      "dl_f1_macro": 0.92301180264533,
+      "dl_acc": 0.9233333333333332,
+      "phase2_feature_set": "B \u2014 Tex(opt)",
+      "phase2_best_model": "RF",
+      "phase2_f1_macro": 0.8117990579341977,
+      "phase2_acc": 0.8133333333333334,
+      "delta_f1_dl_minus_p2": 0.1112127447111321
+    },
+    {
+      "dl_model": "lbpnet",
+      "dl_tier": 1,
+      "dl_f1_macro": 0.9164610214811656,
+      "dl_acc": 0.9166666666666666,
+      "phase2_feature_set": "B \u2014 Tex(opt)",
+      "phase2_best_model": "RF",
+      "phase2_f1_macro": 0.8117990579341977,
+      "phase2_acc": 0.8133333333333334,
+      "delta_f1_dl_minus_p2": 0.104661963546968
+    },
+    {
+      "dl_model": "waveletcnn",
+      "dl_tier": 1,
+      "dl_f1_macro": 0.919414469926959,
+      "dl_acc": 0.92,
+      "phase2_feature_set": "C \u2014 DWT(opt)",
+      "phase2_best_model": "SVM",
+      "phase2_f1_macro": 0.7518131457356437,
+      "phase2_acc": 0.7533333333333333,
+      "delta_f1_dl_minus_p2": 0.1676013241913152
+    },
+    {
+      "dl_model": "cnn_hog",
+      "dl_tier": 1,
+      "dl_f1_macro": 0.9330631092731068,
+      "dl_acc": 0.9333333333333332,
+      "phase2_feature_set": "D \u2014 HOG",
+      "phase2_best_model": "SVM",
+      "phase2_f1_macro": 0.9028925656052972,
+      "phase2_acc": 0.9033333333333332,
+      "delta_f1_dl_minus_p2": 0.0301705436678094
+    },
+    {
+      "dl_model": "multibranch_fusion",
+      "dl_tier": 2,
+      "dl_f1_macro": 0.9057881237882288,
+      "dl_acc": 0.9066666666666666,
+      "phase2_feature_set": "Full(opt)",
+      "phase2_best_model": "SVM",
+      "phase2_f1_macro": 0.9299428104575164,
+      "phase2_acc": 0.93,
+      "delta_f1_dl_minus_p2": -0.0241546866692874
+    },
+    {
+      "dl_model": "attention_fusion",
+      "dl_tier": 2,
+      "dl_f1_macro": 0.93,
+      "dl_acc": 0.93,
+      "phase2_feature_set": "Full(opt)",
+      "phase2_best_model": "SVM",
+      "phase2_f1_macro": 0.9299428104575164,
+      "phase2_acc": 0.93,
+      "delta_f1_dl_minus_p2": 5.718954248368213e-05
+    }
+  ]
+}

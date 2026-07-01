@@ -1,0 +1,31 @@
+% Data-grounded draft
+\section{Deep Learning and Ablation Results}
+\label{sec:results_dl}
+
+\subsection{Tier-wise performance}
+Table~\ref{tab:dl_all} lists held-out split results for all ten Phase~3 models.
+Within Tier~0, VGG16 achieves the highest macro-F1 ($0.950$) and accuracy ($0.956$), followed by EfficientNet-B0 (F1 $=0.940$) and ResNet50 (F1 $=0.905$).
+ViT-B/16 lags at F1 $=0.871$, consistent with transformer data hunger on 1{,}500 images.
+
+Tier~1 hybrids cluster between F1 $=0.910$--$0.917$: WaveletCNN (DWT branch) leads at $0.917$, followed by CNN+HOG ($0.912$), LBPNet ($0.912$), and CNN+GLCM ($0.911$).
+Tier~2 fusion models underperform every Tier~1 single-branch variant: MultiBranchFusion F1 $=0.895$ and AttentionFusion F1 $=0.886$.
+This ordering contradicts the naive assumption that more branches always help; instead, fusion introduces optimisation difficulty or redundant/conflicting gradients when all four descriptors are stacked without selection.
+
+\input{tables/dl_all_models}
+
+\subsection{Feature-branch ablation}
+Table~\ref{tab:ablation} isolates branch contributions relative to the best Tier~1 hybrid (WaveletCNN, $\Delta$F1 $=0$).
+Removing all handcrafted branches and retaining only the VGG16 Tier~0 baseline yields F1 $=0.950$, showing that transfer learning remains strong on this dataset.
+Among hybrids, attaching DWT alone matches the best single-branch score, whereas GLCM, LBP, and HOG branches incur $\Delta$F1 of $-0.007$ to $-0.005$.
+Aggregating all four branches (MultiBranchFusion) degrades F1 by $0.022$ relative to WaveletCNN---the largest penalty in the ablation.
+
+\input{tables/ablation_features}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{phase3_tier_comparison}
+\caption{Macro-F1 by model on the held-out split, coloured by tier.}
+\label{fig:tier_bar}
+\end{figure}
+
+Training-time differences are substantial: ResNet50 converges in ${\sim}120$\,s versus ${\sim}5{,}078$\,s for ViT-B/16 on the same hardware, informing deployment trade-offs independent of accuracy.

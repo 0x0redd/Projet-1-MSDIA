@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "sections": {
+    "introduction": {
+      "status": "drafted",
+      "updated_at": "2026-06-16T14:05:47Z",
+      "dry_run": false,
+      "output": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\sections\\introduction.md",
+      "rag_queries": [
+        "brain tumor MRI classification glioma meningioma pituitary motivation",
+        "handcrafted texture features GLCM LBP HOG DWT separability",
+        "classical machine learning SVM brain tumor limited data"
+      ]
+    },
+    "related_work": {
+      "status": "drafted",
+      "updated_at": "2026-06-16T14:07:48Z",
+      "dry_run": false,
+      "output": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\sections\\related_work.md",
+      "rag_queries": [
+        "brain tumor MRI classification machine learning texture features",
+        "LBP GLCM HOG DWT medical image feature extraction",
+        "SVM random forest XGBoost radiomics brain MRI",
+        "parameter selection grid search separability metrics"
+      ]
+    },
+    "methods": {
+      "status": "drafted",
+      "updated_at": "2026-06-16T14:10:33Z",
+      "dry_run": false,
+      "output": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\sections\\methods.md",
+      "rag_queries": [
+        "brain tumor dataset glioma meningioma pituitary MRI split",
+        "LBP GLCM HOG DWT parameter grid search feature extraction",
+        "SVM KNN random forest XGBoost texture features benchmark",
+        "stratified cross validation FDR mutual information Davies-Bouldin"
+      ]
+    },
+    "phase1_results": {
+      "status": "drafted",
+      "updated_at": "2026-06-16T14:11:28Z",
+      "dry_run": false,
+      "output": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\sections\\phase1_results.md",
+      "rag_queries": [
+        "GLCM LBP DWT HOG optimal parameters separability score",
+        "Phase 1 parameter search Fisher discriminant mutual information"
+      ]
+    },
+    "results_ml": {
+      "status": "drafted",
+      "updated_at": "2026-06-16T14:13:10Z",
+      "dry_run": false,
+      "output": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\sections\\results_ml.md",
+      "rag_queries": [
+        "phase2 SVM KNN random forest Full opt F1 macro accuracy",
+        "classical ML leaderboard feature set comparison"
+      ]
+    },
+    "interpretability": {
+      "status": "drafted",
+      "updated_at": "2026-06-16T14:15:08Z",
+      "dry_run": false,
+      "output": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\sections\\interpretability.md",
+      "rag_queries": [
+        "random forest feature importance GLCM LBP HOG branch",
+        "XGBoost feature group importance brain MRI texture"
+      ]
+    },
+    "statistics": {
+      "status": "drafted",
+      "updated_at": "2026-06-16T14:16:34Z",
+      "dry_run": false,
+      "output": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\sections\\statistics.md",
+      "rag_queries": [
+        "bootstrap confidence interval McNemar brain tumor classification",
+        "Cohen kappa Friedman Nemenyi classifier comparison"
+      ]
+    },
+    "discussion": {
+      "status": "drafted",
+      "updated_at": "2026-06-16T14:18:28Z",
+      "dry_run": false,
+      "output": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\sections\\discussion.md",
+      "rag_queries": [
+        "why handcrafted features competitive brain MRI limited data",
+        "feature selection aggregation brain tumor MRI classical ML",
+        "separability metrics vs grid search classifier bias"
+      ]
+    },
+    "conclusion": {
+      "status": "drafted",
+      "updated_at": "2026-06-16T14:19:00Z",
+      "dry_run": false,
+      "output": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\sections\\conclusion.md",
+      "rag_queries": [
+        "future work handcrafted features brain MRI external validation",
+        "limitations single dataset brain tumor classification study"
+      ]
+    },
+    "abstract": {
+      "status": "drafted",
+      "updated_at": "2026-06-16T14:19:38Z",
+      "dry_run": false,
+      "output": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\sections\\abstract.md",
+      "rag_queries": [
+        "main contribution brain tumor MRI classical ML separability benchmark"
+      ]
+    }
+  },
+  "figures": {
+    "leaderboard_top10": {
+      "path": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\figures\\leaderboard_top10.pdf",
+      "updated_at": "2026-06-16T14:19:40Z",
+      "caption": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\figures\\leaderboard_top10.caption.txt"
+    },
+    "accuracy_bar": {
+      "path": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\figures\\accuracy_comparison.pdf",
+      "updated_at": "2026-06-16T14:19:41Z",
+      "caption": "C:\\Users\\FERRA\\OneDrive\\Documents\\github\\PEM-SDIA\\S8\\Projet-1-MSDIA\\LLM agent\\output\\figures\\accuracy_comparison.caption.txt"
+    }
+  },
+  "rag_call_count": 43,
+  "dry_run": false,
+  "updated_at": "2026-06-16T14:19:41Z"
+}

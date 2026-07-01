@@ -1,0 +1,33 @@
+%=======================================================================
+\section{Feature-Extraction Strategy}
+
+No single descriptor captures everything that distinguishes the three tumor types. The pipeline
+therefore uses a \textbf{multi-branch (multi-descriptor) design}: four complementary feature families
+are computed independently and then fused. The intuition is that their errors are partly
+uncorrelated, so the union is more discriminative than any one alone.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}l l Y Y@{}}
+\toprule
+\thd{Branch} & \thd{Descriptor} & \thd{Captures} & \thd{Question it answers} \\
+\midrule
+\textbf{A --- Stats}   & First-order statistics       & Global intensity distribution   & How bright / heterogeneous is the tissue overall? \\
+\textbf{B --- Texture} & GLCM + LBP                   & Spatial texture \& micro-patterns & How are intensities arranged relative to each other? \\
+\textbf{C --- DWT}     & Wavelet sub-band stats       & Multi-scale frequency content   & What structure appears at coarse vs.\ fine scales? \\
+\textbf{D --- HOG}     & Gradient orientation hist.   & Edge \& shape structure         & What are the dominant edge directions and contours? \\
+\bottomrule
+\end{tabularx}
+\renewcommand{\arraystretch}{1.0}
+\end{center}
+
+Each branch is extracted with its \textbf{own optimal hyper-parameters} (Section~\ref{sec:hyper}),
+concatenated with first-order statistics, and the resulting long vector is cleaned and standardised
+before modelling. Because the branches are produced separately, the pipeline can also benchmark them
+individually and in combinations (A, B, C, D, A+B, B+C, A+B+C, and the full fusion) to show exactly
+how much each contributes.
+
+\begin{notebox}[Design principle:]
+Diversity over redundancy. GLCM/LBP describe texture, DWT describes scale/frequency, HOG describes
+shape/edges, and Stats describe global intensity --- four different physical views of the same image.
+\end{notebox}

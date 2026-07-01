@@ -1,0 +1,26 @@
+{
+  "method": "phase3_cm_0_vgg16_split",
+  "labels": [
+    "Glioma",
+    "Meningioma",
+    "Pituitary Tumor"
+  ],
+  "confusion_matrix": [
+    [
+      279,
+      7,
+      0
+    ],
+    [
+      10,
+      127,
+      5
+    ],
+    [
+      2,
+      3,
+      181
+    ]
+  ],
+  "accuracy": 0.9560260586319218
+}

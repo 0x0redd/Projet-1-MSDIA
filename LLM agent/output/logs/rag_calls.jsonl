@@ -1,0 +1,87 @@
+{"kind": "papers", "query": "brain tumor MRI classification machine learning texture features", "cache_hit": false, "n_candidates": 4, "n_returned": 3, "elapsed_ms": 8832.21, "graph_concepts": 0}
+{"kind": "papers", "query": "LBP GLCM HOG DWT medical image feature extraction", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 438.75, "graph_concepts": 0}
+{"kind": "papers", "query": "SVM random forest XGBoost radiomics brain MRI", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 375.02, "graph_concepts": 0}
+{"kind": "papers", "query": "parameter selection grid search separability metrics", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 322.09, "graph_concepts": 0}
+{"kind": "papers", "query": "brain tumor MRI classification glioma meningioma pituitary motivation", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 242.09, "graph_concepts": 0}
+{"kind": "papers", "query": "handcrafted texture features GLCM LBP HOG DWT separability", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 234.08, "graph_concepts": 0}
+{"kind": "papers", "query": "classical machine learning SVM brain tumor limited data", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 227.81, "graph_concepts": 0}
+{"kind": "papers", "query": "brain tumor dataset glioma meningioma pituitary MRI split", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 406.38, "graph_concepts": 0}
+{"kind": "metrics", "query": "brain tumor dataset glioma meningioma pituitary MRI split", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 314.64}
+{"kind": "papers", "query": "LBP GLCM HOG DWT parameter grid search feature extraction", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 308.3, "graph_concepts": 0}
+{"kind": "metrics", "query": "LBP GLCM HOG DWT parameter grid search feature extraction", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 325.73}
+{"kind": "papers", "query": "SVM KNN random forest XGBoost texture features benchmark", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 304.39, "graph_concepts": 0}
+{"kind": "metrics", "query": "SVM KNN random forest XGBoost texture features benchmark", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 305.91}
+{"kind": "papers", "query": "stratified cross validation FDR mutual information Davies-Bouldin", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 315.88, "graph_concepts": 0}
+{"kind": "metrics", "query": "stratified cross validation FDR mutual information Davies-Bouldin", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 320.42}
+{"kind": "papers", "query": "GLCM LBP DWT HOG optimal parameters separability score", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 343.06, "graph_concepts": 0}
+{"kind": "metrics", "query": "GLCM LBP DWT HOG optimal parameters separability score", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 291.51}
+{"kind": "papers", "query": "Phase 1 parameter search Fisher discriminant mutual information", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 436.1, "graph_concepts": 0}
+{"kind": "metrics", "query": "Phase 1 parameter search Fisher discriminant mutual information", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 330.99}
+{"kind": "papers", "query": "phase2 SVM KNN random forest Full opt F1 macro accuracy", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 335.68, "graph_concepts": 0}
+{"kind": "metrics", "query": "phase2 SVM KNN random forest Full opt F1 macro accuracy", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 339.44}
+{"kind": "papers", "query": "classical ML leaderboard feature set comparison", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 301.11, "graph_concepts": 0}
+{"kind": "metrics", "query": "classical ML leaderboard feature set comparison", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 288.38}
+{"kind": "papers", "query": "random forest feature importance GLCM LBP HOG branch", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 350.76, "graph_concepts": 0}
+{"kind": "metrics", "query": "random forest feature importance GLCM LBP HOG branch", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 305.11}
+{"kind": "papers", "query": "XGBoost feature group importance brain MRI texture", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 290.76, "graph_concepts": 0}
+{"kind": "metrics", "query": "XGBoost feature group importance brain MRI texture", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 315.86}
+{"kind": "papers", "query": "bootstrap confidence interval McNemar brain tumor classification", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 265.9, "graph_concepts": 0}
+{"kind": "metrics", "query": "bootstrap confidence interval McNemar brain tumor classification", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 248.09}
+{"kind": "papers", "query": "Cohen kappa Friedman Nemenyi classifier comparison", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 249.14, "graph_concepts": 0}
+{"kind": "metrics", "query": "Cohen kappa Friedman Nemenyi classifier comparison", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 391.48}
+{"kind": "papers", "query": "why handcrafted features competitive brain MRI limited data", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 252.91, "graph_concepts": 0}
+{"kind": "metrics", "query": "why handcrafted features competitive brain MRI limited data", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 248.46}
+{"kind": "papers", "query": "feature selection aggregation brain tumor MRI classical ML", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 262.31, "graph_concepts": 0}
+{"kind": "metrics", "query": "feature selection aggregation brain tumor MRI classical ML", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 260.87}
+{"kind": "papers", "query": "separability metrics vs grid search classifier bias", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 246.09, "graph_concepts": 0}
+{"kind": "metrics", "query": "separability metrics vs grid search classifier bias", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 251.78}
+{"kind": "papers", "query": "future work handcrafted features brain MRI external validation", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 257.4, "graph_concepts": 0}
+{"kind": "papers", "query": "limitations single dataset brain tumor classification study", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 257.09, "graph_concepts": 0}
+{"kind": "papers", "query": "main contribution brain tumor MRI classical ML separability benchmark", "cache_hit": false, "n_candidates": 0, "n_returned": 0, "elapsed_ms": 252.95, "graph_concepts": 0}
+{"kind": "metrics", "query": "main contribution brain tumor MRI classical ML separability benchmark", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 253.08}
+{"kind": "metrics", "query": "phase2 split leaderboard F1", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 257.77}
+{"kind": "metrics", "query": "accuracy comparison methods brain tumor", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 249.52}
+{"kind": "papers", "query": "brain tumor MRI classification glioma", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 1374.47, "graph_concepts": 0}
+{"kind": "papers", "query": "brain tumor MRI classification glioma meningioma pituitary motivation", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 124.42, "graph_concepts": 15}
+{"kind": "papers", "query": "handcrafted texture features GLCM LBP HOG DWT separability", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 94.84, "graph_concepts": 11}
+{"kind": "papers", "query": "classical machine learning SVM brain tumor limited data", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 84.15, "graph_concepts": 17}
+{"kind": "papers", "query": "brain tumor MRI classification machine learning texture features", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 63.22, "graph_concepts": 16}
+{"kind": "papers", "query": "LBP GLCM HOG DWT medical image feature extraction", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 58.09, "graph_concepts": 16}
+{"kind": "papers", "query": "SVM random forest XGBoost radiomics brain MRI", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 62.02, "graph_concepts": 15}
+{"kind": "papers", "query": "parameter selection grid search separability metrics", "cache_hit": false, "n_candidates": 20, "n_returned": 0, "elapsed_ms": 60.96, "graph_concepts": 13}
+{"kind": "papers", "query": "brain tumor dataset glioma meningioma pituitary MRI split", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 69.6, "graph_concepts": 17}
+{"kind": "metrics", "query": "brain tumor dataset glioma meningioma pituitary MRI split", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 27.12}
+{"kind": "papers", "query": "LBP GLCM HOG DWT parameter grid search feature extraction", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 52.83, "graph_concepts": 18}
+{"kind": "metrics", "query": "LBP GLCM HOG DWT parameter grid search feature extraction", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 17.47}
+{"kind": "papers", "query": "SVM KNN random forest XGBoost texture features benchmark", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 52.56, "graph_concepts": 19}
+{"kind": "metrics", "query": "SVM KNN random forest XGBoost texture features benchmark", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 16.36}
+{"kind": "papers", "query": "stratified cross validation FDR mutual information Davies-Bouldin", "cache_hit": false, "n_candidates": 20, "n_returned": 0, "elapsed_ms": 61.94, "graph_concepts": 12}
+{"kind": "metrics", "query": "stratified cross validation FDR mutual information Davies-Bouldin", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 14.48}
+{"kind": "papers", "query": "GLCM LBP DWT HOG optimal parameters separability score", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 93.26, "graph_concepts": 18}
+{"kind": "metrics", "query": "GLCM LBP DWT HOG optimal parameters separability score", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 24.95}
+{"kind": "papers", "query": "Phase 1 parameter search Fisher discriminant mutual information", "cache_hit": false, "n_candidates": 20, "n_returned": 0, "elapsed_ms": 87.13, "graph_concepts": 20}
+{"kind": "metrics", "query": "Phase 1 parameter search Fisher discriminant mutual information", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 22.83}
+{"kind": "papers", "query": "phase2 SVM KNN random forest Full opt F1 macro accuracy", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 50.0, "graph_concepts": 13}
+{"kind": "metrics", "query": "phase2 SVM KNN random forest Full opt F1 macro accuracy", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 16.28}
+{"kind": "papers", "query": "classical ML leaderboard feature set comparison", "cache_hit": false, "n_candidates": 20, "n_returned": 0, "elapsed_ms": 67.01, "graph_concepts": 15}
+{"kind": "metrics", "query": "classical ML leaderboard feature set comparison", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 16.37}
+{"kind": "papers", "query": "random forest feature importance GLCM LBP HOG branch", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 70.87, "graph_concepts": 21}
+{"kind": "metrics", "query": "random forest feature importance GLCM LBP HOG branch", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 33.73}
+{"kind": "papers", "query": "XGBoost feature group importance brain MRI texture", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 64.62, "graph_concepts": 18}
+{"kind": "metrics", "query": "XGBoost feature group importance brain MRI texture", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 23.43}
+{"kind": "papers", "query": "bootstrap confidence interval McNemar brain tumor classification", "cache_hit": false, "n_candidates": 20, "n_returned": 0, "elapsed_ms": 78.37, "graph_concepts": 20}
+{"kind": "metrics", "query": "bootstrap confidence interval McNemar brain tumor classification", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 20.88}
+{"kind": "papers", "query": "Cohen kappa Friedman Nemenyi classifier comparison", "cache_hit": false, "n_candidates": 20, "n_returned": 1, "elapsed_ms": 64.9, "graph_concepts": 15}
+{"kind": "metrics", "query": "Cohen kappa Friedman Nemenyi classifier comparison", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 17.12}
+{"kind": "papers", "query": "why handcrafted features competitive brain MRI limited data", "cache_hit": false, "n_candidates": 20, "n_returned": 0, "elapsed_ms": 67.57, "graph_concepts": 10}
+{"kind": "metrics", "query": "why handcrafted features competitive brain MRI limited data", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 22.76}
+{"kind": "papers", "query": "feature selection aggregation brain tumor MRI classical ML", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 54.54, "graph_concepts": 15}
+{"kind": "metrics", "query": "feature selection aggregation brain tumor MRI classical ML", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 23.96}
+{"kind": "papers", "query": "separability metrics vs grid search classifier bias", "cache_hit": false, "n_candidates": 20, "n_returned": 0, "elapsed_ms": 51.5, "graph_concepts": 14}
+{"kind": "metrics", "query": "separability metrics vs grid search classifier bias", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 14.28}
+{"kind": "papers", "query": "future work handcrafted features brain MRI external validation", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 102.34, "graph_concepts": 15}
+{"kind": "papers", "query": "limitations single dataset brain tumor classification study", "cache_hit": false, "n_candidates": 20, "n_returned": 3, "elapsed_ms": 78.82, "graph_concepts": 15}
+{"kind": "papers", "query": "main contribution brain tumor MRI classical ML separability benchmark", "cache_hit": false, "n_candidates": 20, "n_returned": 1, "elapsed_ms": 85.4, "graph_concepts": 17}
+{"kind": "metrics", "query": "main contribution brain tumor MRI classical ML separability benchmark", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 28.85}
+{"kind": "metrics", "query": "phase2 split leaderboard F1", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 43.11}
+{"kind": "metrics", "query": "accuracy comparison methods brain tumor", "cache_hit": false, "n_candidates": 5, "n_returned": 5, "elapsed_ms": 29.04}

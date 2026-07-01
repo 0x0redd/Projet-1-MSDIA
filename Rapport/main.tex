@@ -1,0 +1,150 @@
+%=======================================================================
+%  Brain Tumor Detection & Classification — Project Report
+%  Compile:  pdflatex main.tex   (run twice for TOC/refs)
+%
+%  STRUCTURE
+%    main.tex            <- preamble + \input of every section (this file)
+%    results.tex         <- ALL fill-in metrics live here (edit ONLY this
+%                           file after training/benchmarking is done)
+%    sections/*.tex      <- one file per report section
+%
+%  To add your final numbers: open results.tex and replace the \newcommand
+%  placeholders. Nothing else needs to change.
+%
+%  FIGURES (figure-generator workflow):
+%    figures/plot_defaults.py     shared matplotlib styling
+%    figures/scripts/*.py         data plots (import plot_defaults)
+%    figures/tikz/*.tex           TikZ schematics -> pdflatex -> figures/*.pdf
+%    .\build_figures.ps1          regenerate all figures before compiling
+%=======================================================================
+\documentclass[11pt,a4paper]{article}
+
+% ---- packages ----
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage[hidelinks,colorlinks=true,linkcolor=accent,urlcolor=accent,citecolor=accent]{hyperref}
+
+% ---- colors ----
+\definecolor{accent}{HTML}{2E5A88}
+\definecolor{accent2}{HTML}{1F6F54}
+\definecolor{greytx}{HTML}{555555}
+\definecolor{notebg}{HTML}{FFF6E5}
+\definecolor{notebd}{HTML}{E0A85B}
+\definecolor{headbg}{HTML}{EAF1F8}
+
+% ---- listings (figure-generator / code snippets) ----
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\lstdefinestyle{mystyle}{%
+  backgroundcolor=\color{backcolour},
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{accent},
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  captionpos=b,
+  keepspaces=true,
+  numbers=left,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=2}
+\lstset{style=mystyle}
+
+% ---- section styling ----
+\titleformat{\section}{\Large\bfseries\color{accent}}{\thesection.}{0.6em}{}[\vspace{2pt}\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{black!75}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{black!65}}{\thesubsubsection}{0.6em}{}
+
+% ---- header / footer ----
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[R]{\small\color{greytx} Brain Tumor Detection \& Classification}
+\fancyfoot[C]{\small\color{greytx} \thepage}
+
+% ---- a tidy "note" / "figure-placeholder" box ----
+\newtcolorbox{notebox}[1][Note:]{%
+  colback=notebg,colframe=notebd,boxrule=0.4pt,leftrule=3pt,
+  arc=1pt,left=8pt,right=8pt,top=5pt,bottom=5pt,
+  fonttitle=\bfseries,title=#1,coltitle=accent2,
+  before skip=8pt,after skip=8pt}
+
+% ---- a full-width auto-wrapping table column ----
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% ---- table header helper ----
+\newcommand{\thd}[1]{\textbf{#1}}
+
+% ---- bring in the fill-in metrics ----
+\input{results.tex}
+
+%=======================================================================
+\begin{document}
+
+% ----------------------- TITLE PAGE ------------------------------------
+\begin{titlepage}
+\centering
+\vspace*{2.2cm}
+{\Huge\bfseries\color{accent} Brain Tumor Detection \& Classification\par}
+\vspace{0.5em}
+{\LARGE\bfseries\color{accent} from MRI Images using Classical Machine Learning\par}
+\vspace{1.2em}
+{\large\itshape\color{greytx} A Multi-Descriptor Feature-Fusion Pipeline with Separability-Driven\\
+Hyper-parameter Selection and Statistical Validation\par}
+\vspace{2.2cm}
+{\large\bfseries Project Report\par}
+\vspace{0.3cm}
+\rule{0.6\textwidth}{0.8pt}\par
+\vspace{1.6cm}
+{\color{greytx} GLCM \;\textperiodcentered\; LBP \;\textperiodcentered\; DWT \;\textperiodcentered\; HOG \;\textperiodcentered\; First-order Statistics\par}
+\vspace{0.4em}
+{\small\color{greytx} SVM \textperiodcentered{} KNN \textperiodcentered{} RF \textperiodcentered{} XGBoost \textperiodcentered{} LightGBM \textperiodcentered{} Logistic Regression \textperiodcentered{} MLP \textperiodcentered{} ExtraTrees\par}
+\vfill
+{\large Author: \rule{6cm}{0.4pt}\par}
+\vspace{0.5em}
+{\large Supervisor / Course: \rule{5.5cm}{0.4pt}\par}
+\vspace{0.5em}
+{\large Date: \rule{4cm}{0.4pt}\par}
+\vspace{1.5cm}
+\end{titlepage}
+
+% ----------------------- TOC -------------------------------------------
+\tableofcontents
+\newpage
+
+% ----------------------- ABSTRACT --------------------------------------
+\input{sections/00_abstract.tex}
+
+% ----------------------- BODY ------------------------------------------
+\input{sections/01_problem.tex}
+\input{sections/02_dataset.tex}
+\input{sections/03_strategy.tex}
+\input{sections/04_descriptors.tex}
+\input{sections/05_hyperparams.tex}
+\input{sections/06_fusion_benchmark.tex}
+\input{sections/07_statistical_validation.tex}
+\input{sections/08_results_discussion.tex}
+\input{sections/09_conclusion.tex}
+
+\end{document}

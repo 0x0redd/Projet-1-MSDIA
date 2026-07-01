@@ -1,0 +1,7 @@
+Macro accuracy comparison across Phase~2 classical ML configurations on the held-out split. Error bars show bootstrap 95\% CI when available in stats_top5.csv.
+
+# metadata
+{
+  "section": "results_ml",
+  "file": "accuracy_comparison.pdf"
+}

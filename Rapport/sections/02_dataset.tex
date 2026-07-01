@@ -1,0 +1,69 @@
+%=======================================================================
+\section{Dataset and Preprocessing}
+
+\subsection{Dataset}
+The dataset is organised as one folder per class (\texttt{images\_by\_class/<ClassName>/}). After
+loading and an 80/20 stratified split (random seed 42 for full reproducibility), the working set is:
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}lY@{}}
+\toprule
+\thd{Property} & \thd{Value} \\
+\midrule
+Classes (\NClasses) & Glioma \textperiodcentered{} Meningioma \textperiodcentered{} Pituitary Tumor \\
+Training images & \NTrain \\
+Test images & \NTest \\
+Total & \NTotal \\
+Image size after preprocessing & $128\times128$, single-channel (grayscale) \\
+Split & 80\,\% train / 20\,\% test, stratified by class, seed $=42$ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The split is \textbf{stratified} so that each class keeps the same proportion in train and test, and
+the seed is fixed so the experiment can be repeated exactly.
+Figure~\ref{fig:dataset-overview} summarises class counts and sample appearance.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{dataset}
+  \caption{Dataset overview. \textbf{Left:} stratified train/test counts per class.
+    \textbf{Right:} mosaic of training slices (raw resize preview; full preprocessing in
+    Figure~\ref{fig:preprocessing-pipeline}).}
+  \label{fig:dataset-overview}
+\end{figure}
+
+\subsection{Preprocessing pipeline}
+Every image passes through an identical normalisation chain before any feature is computed. This
+removes scanner- and acquisition-related nuisance variation so the descriptors describe anatomy, not
+artefacts (Figure~\ref{fig:preprocessing-pipeline}):
+
+\begin{enumerate}[leftmargin=1.6em,itemsep=2pt]
+  \item \textbf{Grayscale conversion} --- colour channels (if any) are collapsed; MRI intensity is
+        what matters.
+  \item \textbf{Black-border cropping} --- the surrounding black region is detected (intensity
+        $>0.05$) and cropped away so the brain fills the frame consistently.
+  \item \textbf{Resize to $128\times128$} with anti-aliasing --- gives every image a common, fixed
+        resolution so feature vectors are comparable.
+  \item \textbf{Gaussian smoothing} ($\sigma=0.5$) --- suppresses high-frequency acquisition noise
+        without blurring real structure.
+  \item \textbf{Min--max normalisation to $[0,1]$} --- puts every image on the same intensity scale.
+  \item \textbf{CLAHE} (Contrast-Limited Adaptive Histogram Equalisation, clip $=0.02$) --- locally
+        boosts contrast so subtle tumor texture becomes visible to the descriptors.
+\end{enumerate}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{preprocessing_pipeline}
+  \caption{Preprocessing pipeline. Each slice follows the same deterministic chain before
+    descriptor extraction.}
+  \label{fig:preprocessing-pipeline}
+\end{figure}
+
+\begin{notebox}[Why it matters:]
+Cropping $+$ resizing make features spatially comparable; smoothing $+$ CLAHE make texture
+descriptors (GLCM, LBP) respond to real tissue patterns instead of noise and global brightness. The
+whole chain is cached to disk so re-runs are fast.
+\end{notebox}
+
+

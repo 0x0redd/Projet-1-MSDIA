@@ -1,0 +1,16 @@
+% ML-only discussion — Phases 1 & 2
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Separability-first parameter selection}
+Phase~1 decouples descriptor tuning from classifier choice.
+High composite scores for LBP and HOG align with strong Phase~2 performance when those blocks dominate the feature vector (SVM HOG F1 $=0.896$; KNN HOG F1 $=0.934$).
+
+\subsection{Classical ML remains competitive}
+KNN on Full(opt) (F1 $=0.946$) and SVM on Full(opt) (F1 $=0.912$) demonstrate that separability-tuned radiomics on $\sim10^3$ balanced slices can match many published deep-learning benchmarks on the same public dataset~\cite{ref_access20253579727,ref_iasc2023032426,ref_s41598024772437}.
+
+\subsection{Feature set design}
+Concatenating all branches (Full(opt)) improves SVM F1 by only 0.016 over HOG alone despite $\sim$1{,}987 raw dimensions after cleaning.
+
+\subsection{Limitations}
+Single public 2D-slice dataset; incomplete Phase~2 runs for XGBoost/LightGBM/LR/MLP/ExtraTrees; statistical significance exports partially marked \texttt{TODO}.

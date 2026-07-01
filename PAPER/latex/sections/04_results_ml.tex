@@ -1,0 +1,30 @@
+% Phase 2 ML results — data from phase2_all_modes_metrics.csv / notebook exports
+\section{Phase 2 Results: Classifier Benchmark}
+\label{sec:results_ml}
+
+Table~\ref{tab:phase2_top10} ranks the ten best (model, feature-set) pairs on the held-out split by macro-F1.
+The overall winner is KNN on Full(opt): accuracy $=0.953$, F1 $=0.946$.
+Among kernel SVMs---a common clinical baseline---Full(opt) achieves F1 $=0.912$ (accuracy $=0.922$), while HOG-only (D) reaches F1 $=0.896$.
+Concatenating all optimised branches improves SVM F1 by $0.016$ over HOG alone, a modest gain relative to the $\sim$1{,}987-dimensional Full(opt) vector.
+
+Random forest on texture-only sets (B, C) reaches F1 $\approx 0.74$--$0.70$, below SVM/KNN on the same blocks, suggesting that distance-based and kernel methods exploit high-dimensional HOG more effectively than bagging alone on this sample size.
+Feature blocks A (Stats) and C (DWT) individually score below 0.78 F1 for SVM (not in the top-10 table), confirming that texture (B) and gradient (D) cues drive most classical performance.
+
+Fig.~\ref{fig:phase2_leaderboard} and Fig.~\ref{fig:phase2_dashboard} summarise the Phase~2 leaderboard and cross-feature-set comparison for all trained models (SVM, KNN, RF completed; XGBoost, LightGBM, LR, MLP, ExtraTrees populate as notebook runs finish).
+For publication we emphasise SVM Full(opt) (F1 $=0.912$) as the interpretable reference and KNN Full(opt) as the best overall classical result.
+
+\input{tables/phase2_top10}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{p2_leaderboard}
+\caption{Top Phase~2 configurations by macro-F1 on the held-out split (notebook export).}
+\label{fig:phase2_leaderboard}
+\end{figure}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{p2_overall_dashboard}
+\caption{Phase~2 dashboard: macro-F1, training time, and per-feature-set metrics for all benchmarked classifiers.}
+\label{fig:phase2_dashboard}
+\end{figure*}

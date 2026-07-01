@@ -1,0 +1,81 @@
+%=======================================================================
+\section{Selecting the Best Hyper-parameters per Descriptor (Phase 1)}
+\label{sec:hyper}
+
+\subsection{The problem with brute force}
+Each descriptor has many possible settings. Training a classifier for every combination would take
+hours and conflate \textbf{feature quality} with \textbf{model quality}. We want to judge the
+features themselves, quickly and fairly.
+
+\subsection{Classifier-free class-separability metrics}
+Instead, every candidate configuration is scored in milliseconds with three complementary metrics
+that measure how well the resulting feature distributions separate the three classes. All features
+are standardised first so the comparison is fair across configurations.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}l Y l@{}}
+\toprule
+\thd{Metric} & \thd{What it measures} & \thd{Direction} \\
+\midrule
+Fisher Discriminant Ratio (FDR) & Between-class variance $\div$ within-class variance, averaged over
+features. Large means class means are far apart relative to their spread. & Higher is better \\
+Mutual Information (MI) & Statistical dependency between each feature and the class label (averaged).
+Captures non-linear relationships FDR misses; scale-invariant. & Higher is better \\
+Davies--Bouldin Index (DBI) & Ratio of within-class scatter to between-class distance in
+(PCA-reduced) feature space. Measures cluster compactness \& separation. & Lower is better \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Combining them into one score}
+The three metrics are on different scales, so for each descriptor's set of candidates they are
+\textbf{min--max normalised to $[0,1]$}, the DBI is inverted (so that higher is always better), and
+the three normalised values are averaged:
+\begin{equation*}
+\text{score} = \frac{\text{FDR}_{\text{norm}} + \text{MI}_{\text{norm}} + (1 - \text{DBI}_{\text{norm}})}{3}.
+\end{equation*}
+The configuration with the highest composite score is selected for each descriptor. This composite is
+robust: a configuration must do well on \textbf{all three} complementary criteria to win, not just
+one.
+
+\subsection{Search space explored}
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\thd{Descriptor} & \thd{Configurations evaluated} \\
+\midrule
+GLCM & 6 distance sets $\times$ 4 angle sets $\times$ 3 levels $\times$ 2 symmetry $= 144$ \\
+LBP  & 4 $P$ $\times$ 3 $R$ $\times$ 3 methods $= 36$ \\
+DWT  & 7 wavelets $\times$ 3 levels $= 21$ \\
+HOG  & 3 orientations $\times$ 2 cell sizes $\times$ 2 block sizes $\times$ 1 norm $= 12$ \\
+\midrule
+\textbf{Total} & \textbf{213 configurations, all scored without training a classifier} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Selected optimal parameters (results)}
+Running Phase~1 on the training set produced the following winners:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{}l Y c c@{}}
+\toprule
+\thd{Descriptor} & \thd{Selected parameters} & \thd{Score} & \thd{Size} \\
+\midrule
+\textbf{GLCM} & \glcmParams & \glcmScore & 6 \\
+\textbf{LBP}  & \lbpParams  & \lbpScore  & 10 \\
+\textbf{DWT}  & \dwtParams  & \dwtScore  & 16 \\
+\textbf{HOG}  & \hogParams  & \hogScore  & 1176 \\
+\bottomrule
+\end{tabularx}
+\renewcommand{\arraystretch}{1.0}
+\end{center}
+
+Reading these results: \textbf{LBP} achieved a perfect composite score (\lbpScore) on the training
+set, indicating its uniform $P{=}8$/$R{=}1$ histograms separate the three classes extremely cleanly;
+\textbf{DWT (bior1.3)} and \textbf{HOG} are also very strong. \textbf{GLCM} scores lower
+(\glcmScore) --- its six averaged properties carry useful but less individually discriminative
+information --- yet it is still retained because it is cheap and adds a complementary texture view to
+the fusion. The chosen GLCM offsets $[1,2,4,8]$ deliberately span fine to coarse texture, while a
+single angle (0) keeps the descriptor compact.

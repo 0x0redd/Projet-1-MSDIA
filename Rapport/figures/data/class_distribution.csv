@@ -1,0 +1,4 @@
+class,train,test
+Glioma,400,100
+Meningioma,400,100
+Pituitary Tumor,400,100

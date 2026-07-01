@@ -1,0 +1,7 @@
+Top-10 Phase~2 (model, feature-set) pairs ranked by macro-F1 on the held-out split. Horizontal error bars denote bootstrap 95\% CI when matched in stats\_top5.csv.
+
+# metadata
+{
+  "section": "results_ml",
+  "file": "leaderboard_top10.pdf"
+}

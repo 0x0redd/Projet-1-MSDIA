@@ -1,0 +1,15 @@
+% Statistical validation — Phase 2 ML models (notebook §11)
+\section{Statistical Validation}
+\label{sec:statistics}
+
+We report agreement and significance for the top Phase~2 configurations on the held-out split: KNN Full(opt) (best overall), SVM Full(opt) (kernel baseline), KNN HOG, SVM HOG, and RF on texture (B).
+Table~\ref{tab:stats} lists macro-F1; bootstrap 95\% confidence intervals (2{,}000 resamples), Cohen's $\kappa$, paired McNemar $p$-values, and Friedman ranks are populated from the notebook export (\texttt{stats\_top5.csv}) as statistical cells complete.
+
+\input{tables/stats_top5}
+
+\textbf{Pairwise tests (planned/completed):}
+(i)~KNN Full(opt) versus SVM Full(opt)---distance-based versus kernel decision boundary on the same feature vector;
+(ii)~SVM Full(opt) versus SVM HOG---marginal gain from concatenating all optimised branches ($\Delta$F1 $=0.016$);
+(iii)~KNN Full(opt) versus RF B — Tex(opt)---instance-based versus ensemble trees on texture features.
+Wilcoxon signed-rank tests on 5-fold CV fold F1 scores complement split-based McNemar tests.
+Friedman--Nemenyi across all eight classifiers (SVM, KNN, RF, XGBoost, LightGBM, LR, MLP, ExtraTrees) ranks models by mean CV F1 once all Phase~2 runs finish.

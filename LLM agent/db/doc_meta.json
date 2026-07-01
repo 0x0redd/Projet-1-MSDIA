@@ -1,0 +1,242 @@
+{
+  "06_MEDIN52026540_online.pdf": {
+    "title": "NeuroBlend-3: Hybrid Deep and Machine Learning Framework with Explainable AI for Multi-class Brain Tumor Detection Using MRI Scans",
+    "authors": "",
+    "year": "2026",
+    "doi": "10.47852/bonviewmedin52026540",
+    "citation_key": "ref_bonviewmedin52026540",
+    "source": "06_MEDIN52026540_online.pdf",
+    "tables_detected": 0,
+    "extractor": "pdfplumber"
+  },
+  "1-s2.0-S2772442523000849-main.pdf": {
+    "title": "",
+    "authors": "",
+    "year": "2023",
+    "doi": "10.1016/j.health.2023.100217",
+    "citation_key": "ref_jhealth2023100217",
+    "source": "1-s2.0-S2772442523000849-main.pdf",
+    "tables_detected": 4,
+    "extractor": "pdfplumber"
+  },
+  "5 (1).pdf": {
+    "title": "",
+    "authors": "",
+    "year": "2025",
+    "doi": "10.1002/hsr2.71195",
+    "citation_key": "ref_hsr271195",
+    "source": "5 (1).pdf",
+    "tables_detected": 0,
+    "extractor": "pdfplumber"
+  },
+  "A_Comparative_Study_of_Feature_Extractio.pdf": {
+    "title": "",
+    "authors": "",
+    "year": "2017",
+    "doi": "10.5815/ijigsp.2015.03.03",
+    "citation_key": "ref_ijigsp20150303",
+    "source": "A_Comparative_Study_of_Feature_Extractio.pdf",
+    "tables_detected": 3,
+    "extractor": "pdfplumber"
+  },
+  "bioengineering-11-00266-v2.pdf": {
+    "title": "Brain Tumor Detection and Categorization with Segmentation of Improved Unsupervised Clustering Approach and Machine Learning Classifier",
+    "authors": "Usharani Bhimavarapu, Nalini Chintalapudi and Gopi Battineni",
+    "year": "2024",
+    "doi": "10.3390/bioengineering11030266",
+    "citation_key": "ref_bioengineering11030266",
+    "source": "bioengineering-11-00266-v2.pdf",
+    "tables_detected": 0,
+    "extractor": "pdfplumber"
+  },
+  "BPJ_Vol_15_No_2_p_699-716.pdf": {
+    "title": "",
+    "authors": "",
+    "year": "2022",
+    "doi": "10.13005/bpj/2409",
+    "citation_key": "ref_2409",
+    "source": "BPJ_Vol_15_No_2_p_699-716.pdf",
+    "tables_detected": 0,
+    "extractor": "pdfplumber"
+  },
+  "Brain Tumor Classification Based on Hybrid Optimized Multi-features Analysis Using Magnetic Resonance Imaging Dataset.pdf": {
+    "title": "Brain Tumor Classification Based on Hybrid Optimized Multi-features Analysis Using Magnetic Resonanc",
+    "authors": "",
+    "year": "2022",
+    "doi": "10.1080/08839514.2022.2031824",
+    "citation_key": "ref_0883951420222031824",
+    "source": "Brain Tumor Classification Based on Hybrid Optimized Multi-features Analysis Using Magnetic Resonance Imaging Dataset.pdf",
+    "tables_detected": 0,
+    "extractor": "pdfplumber"
+  },
+  "CMIM-21-E15734056365191.pdf": {
+    "title": "",
+    "authors": "",
+    "year": "2025",
+    "doi": "10.2174/0115734056365191250602124819",
+    "citation_key": "ref_011573405636519125060212",
+    "source": "CMIM-21-E15734056365191.pdf",
+    "tables_detected": 3,
+    "extractor": "pdfplumber"
+  },
+  "diagnostics-13-02650.pdf": {
+    "title": "Brain Tumor Segmentation from MRI Images Using Handcrafted Convolutional Neural Network",
+    "authors": "Faizan Ullah, Muhammad Nadeem, Mohammad Abrar, Muna Al-Razgan, Taha Alfakih, Farhan Amin and Abdu Salam",
+    "year": "2023",
+    "doi": "10.3390/diagnostics13162650",
+    "citation_key": "ref_diagnostics13162650",
+    "source": "diagnostics-13-02650.pdf",
+    "tables_detected": 0,
+    "extractor": "pdfplumber"
+  },
+  "diagnostics-15-02692.pdf": {
+    "title": "Machine Learning in MRI Brain Imaging: A Review of Methods, Challenges, and Future Directions",
+    "authors": "Martyna Ottoni, Anna Kasperczuk and Luis M. N. Tavora",
+    "year": "2025",
+    "doi": "10.3390/diagnostics15212692",
+    "citation_key": "ref_diagnostics15212692",
+    "source": "diagnostics-15-02692.pdf",
+    "tables_detected": 0,
+    "extractor": "pdfplumber"
+  },
+  "document.pdf": {
+    "title": "",
+    "authors": "",
+    "year": "2025",
+    "doi": "10.1007/s11831-025-10340-6",
+    "citation_key": "ref_s11831025103406",
+    "source": "document.pdf",
+    "tables_detected": 0,
+    "extractor": "pdfplumber"
+  },
+  "fnins-15-634926.pdf": {
+    "title": "Characterizing Brain Tumor Regions Using Texture Analysis in Magnetic Resonance Imaging",
+    "authors": "Xinhua Hu and Yun Liu",
+    "year": "2021",
+    "doi": "10.3389/fnins.2021.634926",
+    "citation_key": "ref_fnins2021634926",
+    "source": "fnins-15-634926.pdf",
+    "tables_detected": 0,
+    "extractor": "pdfplumber"
+  },
+  "fonc-13-1248452.pdf": {
+    "title": "",
+    "authors": "",
+    "year": "2023",
+    "doi": "10.3389/fonc.2023.1248452",
+    "citation_key": "ref_fonc20231248452",
+    "source": "fonc-13-1248452.pdf",
+    "tables_detected": 8,
+    "extractor": "pdfplumber"
+  },
+  "jdaip_2020112011230954.pdf": {
+    "title": "Basic Tenets of Classification Algorithms K-Nearest-Neighbor, Support Vector Machine, Random Forest and Neural Network: A Review",
+    "authors": "Ernest Yeboah Boateng, Joseph Otoo, Daniel A. Abaye",
+    "year": "2020",
+    "doi": "10.4236/jdaip.2020.84020",
+    "citation_key": "ref_jdaip202084020",
+    "source": "jdaip_2020112011230954.pdf",
+    "tables_detected": 1,
+    "extractor": "pdfplumber"
+  },
+  "ref_14_10-1007_s00330-020-07108-w.pdf": {
+    "title": "A decade of radiomics research: are images really data or just patterns in the noise?",
+    "authors": "Daniel Pinto dos Santos",
+    "year": "2020",
+    "doi": "10.1007/s00330-020-07108-w",
+    "citation_key": "ref_14_10_1007_s00330_020_07108_w",
+    "source": "ref_14_10-1007_s00330-020-07108-w.pdf",
+    "tables_detected": 0,
+    "extractor": "pdfplumber"
+  },
+  "ref_74_10-32604_iasc-2023-032426.pdf": {
+    "title": "Machine Learning-Based Models for Magnetic Resonance Imaging (MRI)-Based Brain Tumor Classification",
+    "authors": "Fazal Muhammad",
+    "year": "2022",
+    "doi": "10.32604/iasc.2023.032426",
+    "citation_key": "ref_74_10_32604_iasc_2023_032426",
+    "source": "ref_74_10-32604_iasc-2023-032426.pdf",
+    "tables_detected": 0,
+    "extractor": "pypdf"
+  },
+  "ref_75_10-32604_csse-2023-035455.pdf": {
+    "title": "Computer-Aided Diagnosis Model Using Machine Learning for Brain Tumor Detection and Classification",
+    "authors": "M. Baskar",
+    "year": "2022",
+    "doi": "10.32604/csse.2023.035455",
+    "citation_key": "ref_75_10_32604_csse_2023_035455",
+    "source": "ref_75_10-32604_csse-2023-035455.pdf",
+    "tables_detected": 0,
+    "extractor": "pypdf"
+  },
+  "s41598-024-77243-7.pdf": {
+    "title": "",
+    "authors": "",
+    "year": "2024",
+    "doi": "10.1038/s41598-024-77243-7",
+    "citation_key": "ref_s41598024772437",
+    "source": "s41598-024-77243-7.pdf",
+    "tables_detected": 4,
+    "extractor": "pdfplumber"
+  },
+  "s41598-026-38672-8_reference.pdf": {
+    "title": "",
+    "authors": "",
+    "year": "2026",
+    "doi": "10.1038/s41598-026-38672-8",
+    "citation_key": "ref_s41598026386728",
+    "source": "s41598-026-38672-8_reference.pdf",
+    "tables_detected": 7,
+    "extractor": "pdfplumber"
+  },
+  "s44163-024-00214-4.pdf": {
+    "title": "Machine learning for brain tumor classification: evaluating feature extraction and algorithm efficiency",
+    "authors": "Krishan Kumar",
+    "year": "2024",
+    "doi": "10.1007/s44163-024-00214-4",
+    "citation_key": "ref_s44163024002144",
+    "source": "s44163-024-00214-4.pdf",
+    "tables_detected": 0,
+    "extractor": "pdfplumber"
+  },
+  "SVM.pdf": {
+    "title": "",
+    "authors": "hp",
+    "year": "2022",
+    "doi": null,
+    "citation_key": "ref_hp2022",
+    "source": "SVM.pdf",
+    "tables_detected": 0,
+    "extractor": "pdfplumber"
+  },
+  "TSP_IASC_24635.pdf": {
+    "title": "Bendlets and Ensemble Learning Based MRI Brain Classification System",
+    "authors": "R. Muthaiyan",
+    "year": "2021",
+    "doi": "10.32604/iasc.2022.024635",
+    "citation_key": "ref_iasc2022024635",
+    "source": "TSP_IASC_24635.pdf",
+    "tables_detected": 0,
+    "extractor": "pypdf"
+  },
+  "TSP_IASC_32256.pdf": {
+    "title": "Multi Class Brain Cancer Prediction System Empowered with BRISK Descriptor",
+    "authors": "Madona B. Sahaai",
+    "year": "2022",
+    "doi": "10.32604/iasc.2023.032256",
+    "citation_key": "ref_iasc2023032256",
+    "source": "TSP_IASC_32256.pdf",
+    "tables_detected": 0,
+    "extractor": "pypdf"
+  },
+  "WO_Art_50030-10.pdf": {
+    "title": "",
+    "authors": "",
+    "year": "2023",
+    "doi": "10.5114/wo.2023.124612",
+    "citation_key": "ref_wo2023124612",
+    "source": "WO_Art_50030-10.pdf",
+    "tables_detected": 4,
+    "extractor": "pdfplumber"
+  }
+}

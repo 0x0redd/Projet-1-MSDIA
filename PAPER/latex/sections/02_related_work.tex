@@ -1,0 +1,22 @@
+% ML-only related work — citations from filtered ML reference set
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Handcrafted texture features for MRI}
+Grey-level co-occurrence matrices (GLCM), local binary patterns (LBP), histogram of oriented gradients (HOG), and discrete wavelet transforms (DWT) encode complementary tumour micro-texture~\cite{ref_fonc20231248452,ref_hsr271195,ref_s44163024002144}.
+Yu \textit{et al.}~\cite{ref_fnins2021634926} showed that texture features with an SVM classifier differentiate tumour from healthy regions on MRI with high sensitivity.
+Comparative studies consistently rank texture and gradient descriptors among the strongest classical representations~\cite{ref_ijigsp20150303,ref_iasc2023032426}.
+Our Phase~1 differs by selecting parameters through \emph{classifier-free} separability metrics before any model is trained.
+
+\subsection{Classical ML classifiers in brain tumour classification}
+Support vector machines with RBF kernels remain a dominant baseline on radiomic feature vectors~\cite{ref_s0033002007108w,ref_s41598024772437}.
+Ensemble tree methods provide native feature-importance scores for interpretability~\cite{ref_iasc2023032426,ref_jdaip202084020}.
+Prior benchmarks rarely compare more than three classifiers on identical handcrafted features and splits.
+
+\subsection{Parameter selection strategies}
+Default scikit-learn parameters are common; grid search coupled to a single classifier is expensive and risks overfitting the validation objective to one model family.
+Separability metrics offer a lightweight alternative used in feature selection but seldom applied systematically across texture families for brain MRI.
+
+\subsection{Gap}
+No study combines classifier-free separability scoring for GLCM, LBP, DWT, and HOG with an eight-model benchmark and full statistical validation on the same dataset and preprocessing chain.
+We fill this gap with a reproducible two-phase notebook pipeline on a fixed stratified 80/20 split.

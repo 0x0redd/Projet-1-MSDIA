@@ -1,0 +1,38 @@
+% Phase 1 results — separability scores and parameter plots
+\section{Phase 1 Results: Parameter Selection}
+\label{sec:phase1_results}
+
+Phase~1 evaluates 213 handcrafted configurations without training a classifier.
+Table~\ref{tab:phase1} lists the optimal setting per descriptor family.
+LBP ($P=8$, $R=1$, uniform) and HOG (6 orientations, $16\times16$ cells) achieve composite separability scores near unity ($\geq 0.997$), indicating strong class structure in ordinal and gradient features.
+DWT with \texttt{bior1.3} at level~1 scores 0.994; GLCM peaks at 0.781 with distances $[1,2,4,8]$, angles $[0]$, 128 grey levels, and symmetric co-occurrence---reflecting that co-occurrence matrices are more sensitive to quantisation and distance choices than LBP/HOG on $128\times128$ slices.
+
+Fig.~\ref{fig:phase1_grids} plots the top configurations per family (FDR, MI, DBI composite).
+GLCM exhibits a clearer optimum over distance sets than over angle subsets; LBP performance is stable across $P\in\{8,16\}$ at small radius; DWT favours biorthogonal wavelets over Haar at level~1; HOG is robust to cell size but sensitive to orientation count (6 vs.\ 12).
+
+These locked parameters feed all Phase~2 feature sets.
+Agreement between high Phase~1 scores and strong Phase~2 performance on HOG and texture blocks (Section~\ref{sec:results_ml}) supports the classifier-free selection strategy: separability metrics identify informative descriptors before expensive model sweeps.
+
+\begin{figure*}[!t]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+\includegraphics[width=\linewidth]{glcm_param_search}
+\caption{GLCM (144 configs)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+\includegraphics[width=\linewidth]{lbp_param_search}
+\caption{LBP (36 configs)}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.48\textwidth}
+\includegraphics[width=\linewidth]{dwt_param_search}
+\caption{DWT (21 configs)}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+\includegraphics[width=\linewidth]{hog_param_search}
+\caption{HOG (12 configs)}
+\end{subfigure}
+\caption{Phase~1 separability scores (composite FDR + MI + DBI) for top parameter configurations per descriptor family.}
+\label{fig:phase1_grids}
+\end{figure*}

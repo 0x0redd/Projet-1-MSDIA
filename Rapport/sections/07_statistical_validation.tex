@@ -1,0 +1,61 @@
+%=======================================================================
+\section{Statistical Validation}
+\label{sec:stats}
+
+A single accuracy number on one test split is weak evidence: it could be luck. This stage establishes
+whether the observed differences between models are \textbf{real, stable, and reproducible}. Six
+complementary tests are applied, moving from per-model agreement to rigorous multi-classifier
+comparison.
+
+\subsection{Cohen's Kappa ($\kappa$)}
+Measures agreement between predictions and ground truth \textbf{beyond chance}, correcting for class
+imbalance (so it is stricter than accuracy). Interpretation: $<0.20$ slight, $0.20$--$0.40$ fair,
+$0.40$--$0.60$ moderate, $0.60$--$0.80$ substantial, $>0.80$ almost perfect. Computed for every
+(feature-set $\times$ model) on the test split.
+
+\subsection{Bootstrap Confidence Intervals (95\,\%)}
+The test predictions are resampled with replacement $N=2{,}000$ times; the 2.5th and 97.5th
+percentiles of the resulting metric distribution form a \textbf{95\,\% confidence interval} around
+accuracy and macro-F1. Non-overlapping intervals between two models are strong evidence of a genuine
+difference.
+
+\subsection{Cross-validation fold statistics}
+The mean $\pm$ standard deviation of macro-F1 across the CV folds quantifies \textbf{stability}: a
+model with a high mean but large variance is less trustworthy than a slightly lower but consistent
+one.
+
+\subsection{McNemar's test (pairwise, same test set)}
+The standard significance test for two classifiers evaluated on the \textbf{same} samples. It builds
+a contingency table of where the two models disagree (A right/B wrong vs.\ A wrong/B right) and tests,
+with continuity correction, whether those disagreements are balanced. $p<0.05$ means the two
+classifiers make significantly different errors. Run across all model pairs on the best feature set,
+\texttt{Full(opt)}.
+
+\subsection{Wilcoxon signed-rank test (paired, across folds)}
+A non-parametric paired test comparing two classifiers' per-fold macro-F1 scores. It is preferred
+over a paired $t$-test because, with only five folds, normality cannot be assumed. $H_0$: the median
+per-fold difference is zero (the models are equivalent).
+
+\subsection{Friedman test + Nemenyi post-hoc}
+The gold standard for comparing \textbf{many} classifiers over multiple folds (Dem\v{s}ar, 2006). The
+Friedman test (a non-parametric repeated-measures ANOVA) first asks whether \textbf{any} classifier
+differs from the others; if it is significant ($p<0.05$), the \textbf{Nemenyi post-hoc} test
+identifies exactly which pairs differ while controlling for multiple comparisons.
+
+\subsection{Statistical summary (results)}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{}l Y l l Y@{}}
+\toprule
+\thd{Test} & \thd{Model / pair} & \thd{Statistic} & \thd{$p$-value} & \thd{Conclusion} \\
+\midrule
+Cohen's $\kappa$ (best)      & \kappaModel & $\kappa=\kappaVal$ & --- & \kappaInterp \\
+Bootstrap 95\,\% CI (F1)     & \bootModel  & \bootCI            & --- & --- \\
+CV fold mean $\pm$ std        & \cvModel    & $\cvMean \pm \cvStd$ & --- & --- \\
+McNemar (top pair)           & \mcPair     & $\chi^2=\mcChi$    & \mcP & \mcConc \\
+Wilcoxon (top pair)          & \wxPair     & $W=\wxW$           & \wxP & \wxConc \\
+Friedman (\texttt{Full(opt)}) & all models  & $\chi^2=\frChi$    & \frP & \frConc \\
+\bottomrule
+\end{tabularx}
+\renewcommand{\arraystretch}{1.0}
+\end{center}

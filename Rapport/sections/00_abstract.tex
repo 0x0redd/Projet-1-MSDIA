@@ -1,0 +1,27 @@
+%=======================================================================
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+This project builds a complete, reproducible pipeline that classifies brain MRI slices into
+\textbf{three tumor categories --- Glioma, Meningioma, and Pituitary tumor --- using classical
+(non-deep) machine learning}. Rather than learning features end-to-end with a CNN, the pipeline
+extracts four complementary families of handcrafted descriptors (GLCM texture statistics, Local
+Binary Patterns, Discrete Wavelet Transform sub-band statistics, and Histogram of Oriented
+Gradients), augments them with first-order intensity statistics, and fuses everything into a single
+feature vector.
+
+The work is organised in two phases. \textbf{Phase~1} selects the optimal hyper-parameters of every
+descriptor using three fast, classifier-free class-separability metrics (Fisher Discriminant Ratio,
+Mutual Information, Davies--Bouldin Index) combined into one composite score, avoiding the cost of
+training a model for every parameter combination. \textbf{Phase~2} extracts features with those
+optimal settings, cleans and standardises them, and benchmarks eight classifiers (SVM, KNN, Random
+Forest, XGBoost, LightGBM, Logistic Regression, MLP, ExtraTrees) with exhaustive \texttt{GridSearchCV}
+tuning. A dedicated statistical-validation stage (Cohen's $\kappa$, bootstrap confidence intervals,
+McNemar, Wilcoxon, Friedman + Nemenyi) then establishes whether the performance differences between
+models are statistically meaningful.
+
+\begin{notebox}[Keywords:]
+brain tumor, MRI, texture analysis, GLCM, LBP, DWT, HOG, feature fusion, GridSearchCV,
+statistical validation, class separability.
+\end{notebox}
+\newpage

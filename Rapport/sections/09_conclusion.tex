@@ -1,0 +1,35 @@
+%=======================================================================
+\section{Conclusion}
+
+This project delivered an end-to-end, reproducible, and interpretable pipeline for classifying brain
+MRI slices into glioma, meningioma, and pituitary tumor using only classical machine learning. Its
+main contributions are a \textbf{multi-descriptor feature design} (GLCM, LBP, DWT, HOG, plus
+first-order statistics) that captures texture, multi-scale frequency, and edge structure; a
+\textbf{fast, classifier-free hyper-parameter selection} stage that scores 213 descriptor
+configurations with three complementary separability metrics; an \textbf{exhaustive eight-model
+benchmark} tuned by GridSearchCV; and a \textbf{thorough statistical-validation} stage that tests
+whether the results are genuinely meaningful rather than noise.
+
+Phase~1 cleanly selected optimal settings for every descriptor (LBP scoring a perfect composite
+separability of \lbpScore, with DWT and HOG close behind), and the fused feature vector of 1{,}219
+dimensions provides a rich, complementary representation for the model benchmark.
+
+\subsection{Future work}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item Validate on an independent external dataset and with patient-level (not slice-level)
+        splitting to rule out leakage.
+  \item Add a learned feature-selection or dimensionality-reduction step (e.g.\ recursive feature
+        elimination) to shrink the 1{,}176-dim HOG branch.
+  \item Compare against a lightweight CNN baseline to quantify the interpretability-vs-accuracy
+        trade-off.
+  \item Build a statistically tied ensemble (e.g.\ soft-voting over SVM, XGBoost, and LightGBM) as a
+        final deployable model.
+\end{itemize}
+
+\subsection{Reproducibility checklist}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item Fixed random seed (42) for splitting, models, and bootstrap.
+  \item Stratified 80/20 split; 5-fold StratifiedKFold; macro-F1 scoring throughout.
+  \item Disk caching of the dataset, Phase-1 scans, fused features, and each benchmark job, so the
+        whole study can be regenerated exactly.
+\end{itemize}

@@ -1,0 +1,97 @@
+%=======================================================================
+\section{Building Optimal Features and Benchmarking Models (Phase 2)}
+
+With the optimal parameters fixed, Phase~2 carries out the five steps quoted in the project brief:
+(1) extract features with the best GLCM/LBP/DWT/HOG settings, (2) add first-order statistics,
+(3) fuse all branches, (4) run \texttt{GridSearchCV} per model across eight classifiers, and
+(5) produce a final performance dashboard.
+
+\subsection{First-order statistics (Branch A)}
+Before fusion, an extra branch of 11 global intensity statistics is computed per image --- these have
+no tunable parameters and give the model a cheap summary of overall tissue appearance:
+\texttt{mean, std, variance, entropy, skewness, kurtosis}, and the $10/25/50/75/90$ intensity
+percentiles.
+
+\subsection{Fusing the branches}
+All branches are concatenated into one feature vector per image. The dimensions are:
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}l Y r@{}}
+\toprule
+\thd{Branch} & \thd{Descriptor(s)} & \thd{Features} \\
+\midrule
+A & First-order statistics & 11 \\
+B & Texture $=$ GLCM (6) + LBP (10) & 16 \\
+C & DWT (bior1.3, level 1) & 16 \\
+D & HOG & 1{,}176 \\
+\midrule
+\textbf{FULL} & \textbf{Fused A + B + C + D} & \textbf{1{,}219} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+To quantify each branch's contribution, eight feature sets are benchmarked:
+\texttt{A, B, C, D, A+B, B+C, A+B+C}, and \texttt{Full(opt)}.
+
+\subsection{Cleaning and scaling}
+Each feature set passes through an identical cleaning pipeline so that the classifier sees only
+informative, non-redundant inputs:
+\begin{enumerate}[leftmargin=1.6em,itemsep=2pt]
+  \item \textbf{Variance threshold} --- constant (zero-variance) features are removed.
+  \item \textbf{Correlation filter} --- for sets under 5{,}000 dimensions, one of any pair of
+        features with $|\text{correlation}| > 0.95$ is dropped to reduce redundancy.
+  \item \textbf{Standardisation} --- every remaining feature is $z$-scored using statistics fit on
+        the training set only, then applied to the test set, preventing data leakage.
+\end{enumerate}
+
+\subsection{Model benchmark with GridSearchCV}
+Eight classifiers are tuned independently. For each, an exhaustive \texttt{GridSearchCV} searches its
+hyper-parameter grid using \textbf{5-fold StratifiedKFold cross-validation} and optimises
+\textbf{macro-F1} (chosen over accuracy because it weights all three classes equally despite
+imbalance). The best estimator is refit on the full training set and evaluated on the held-out test
+set.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\toprule
+\thd{Model} & \thd{Key hyper-parameters searched} \\
+\midrule
+SVM & kernel (linear/RBF/poly/sigmoid), $C$, $\gamma$, degree, coef0 \\
+KNN & n\_neighbors, distance metric, weights, $p$ \\
+Random Forest & n\_estimators, max\_depth, max\_features, split/leaf sizes, bootstrap, criterion \\
+XGBoost & n\_estimators, max\_depth, learning\_rate, subsample, colsample\_bytree, min\_child\_weight, gamma \\
+LightGBM & n\_estimators, max\_depth, learning\_rate, num\_leaves, subsample, colsample\_bytree, min\_child\_samples \\
+Logistic Regression & $C$, penalty (l1/l2/elasticnet), class\_weight, l1\_ratio (scaler + saga solver) \\
+MLP & hidden\_layer\_sizes, activation, alpha, learning\_rate\_init, batch\_size (early stopping) \\
+ExtraTrees & n\_estimators, max\_features, split/leaf sizes, criterion \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Beyond the held-out split, the pipeline also records cross-validation evaluation modes
+(\texttt{cv\_1}\dots\texttt{cv\_5}) so that per-fold scores are available for the statistical tests in
+Section~\ref{sec:stats}. Every (model $\times$ feature-set) job is cached to disk, making the long
+benchmark resumable.
+
+\subsection{Benchmark results}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{}l c c c Y@{}}
+\toprule
+\thd{Model} & \thd{Best CV F1} & \thd{Test Acc} & \thd{Test F1} & \thd{Best params (summary)} \\
+\midrule
+SVM           & \svmCV  & \svmAcc  & \svmFone  & \svmBP  \\
+KNN           & \knnCV  & \knnAcc  & \knnFone  & \knnBP  \\
+Random Forest & \rfCV   & \rfAcc   & \rfFone   & \rfBP   \\
+XGBoost       & \xgbCV  & \xgbAcc  & \xgbFone  & \xgbBP  \\
+LightGBM      & \lgbmCV & \lgbmAcc & \lgbmFone & \lgbmBP \\
+Logistic Reg. & \lrCV   & \lrAcc   & \lrFone   & \lrBP   \\
+MLP           & \mlpCV  & \mlpAcc  & \mlpFone  & \mlpBP  \\
+ExtraTrees    & \etCV   & \etAcc   & \etFone   & \etBP   \\
+\bottomrule
+\end{tabularx}
+\renewcommand{\arraystretch}{1.0}
+\end{center}
+
+\noindent\textbf{Headline result.} The best configuration was \bestModel{} on the
+\bestFeatureSet{} feature set, reaching a test accuracy of \bestAcc{} and a macro-F1 of \bestFone{}.

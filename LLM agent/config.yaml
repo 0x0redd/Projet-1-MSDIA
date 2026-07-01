@@ -1,0 +1,75 @@
+# GraphRAG Paper Agent — brain tumor MRI (ML-only: Phase 1 + Phase 2)
+llm:
+  model: "mistral:7b-instruct-q4_K_M"
+  base_url: "http://localhost:11434"
+  context_window: 8192
+  temperature: 0.3
+  top_p: 0.9
+  repeat_penalty: 1.1
+
+retrieval:
+  embedder: "all-MiniLM-L6-v2"
+  chunk_size: 450
+  chunk_overlap: 60
+  retrieve_k: 20
+  rerank_k: 3
+  # Faster reranker (~6× speed vs MiniLM-L-6-v2, ~97% quality on MS MARCO)
+  reranker: "cross-encoder/ms-marco-TinyBERT-L-2-v2"
+  relevance_threshold: 0.45   # legacy; pre-rerank filter disabled — use min_rerank_score
+  min_rerank_score: -4.0     # cross-encoder logit floor after reranking
+  dedup_threshold: 0.92
+
+cache:
+  query_cache_enabled: true
+  query_cache_dir: "db/query_cache/"
+  doc_meta_path: "db/doc_meta.json"
+
+logging:
+  rag_log_dir: "output/logs/"
+  level: "INFO"
+
+runtime:
+  dry_run: false
+
+figures:
+  error_bars: true
+  caption_suffix: ".caption.txt"
+
+paths:
+  papers_dir: "data/papers/"
+  experiments_dir: "data/experiments/"
+  chroma_dir: "db/chroma/"
+  output_dir: "output/"
+  sections_dir: "output/sections/"
+  figures_dir: "output/figures/"
+  state_file: "output/state.json"
+  citations_bib: "data/citations.bib"
+  latex_dir: "../PAPER/latex/"
+  latex_sections_dir: "../PAPER/latex/sections/"
+  latex_tables_dir: "../PAPER/latex/tables/"
+  # When false, assemble-latex keeps hand-written PAPER/latex/sections/*.tex
+  convert_agent_md_to_latex: false
+
+paper:
+  title: "Handcrafted Feature Optimisation and Classifier Benchmarking for Brain Tumor MRI Classification"
+  scope: "ML-only — Phase 1 (separability-guided parameter search) and Phase 2 (8-model benchmark)"
+  authors: ["Your Name"]
+  venue: "IEEE conference"
+  style: "IEEEtran conference"
+  zotero_csv: "../PAPER/filtered - ML/Exported Items.csv"
+
+agents:
+  max_rag_calls_per_section: 8
+  min_citations_per_section: 3
+  citation_validation: true
+  section_order:
+    - introduction
+    - related_work
+    - methods
+    - phase1_results
+    - results_ml
+    - interpretability
+    - statistics
+    - discussion
+    - conclusion
+    - abstract

@@ -1,0 +1,66 @@
+%=======================================================================
+\section{Problem Statement --- Image Classification with Machine Learning}
+
+\subsection{Clinical motivation}
+Brain tumors are among the most life-threatening conditions, and the \textbf{type of tumor dictates
+the treatment}. Gliomas, meningiomas, and pituitary tumors differ in origin, location, growth
+pattern, and prognosis, so distinguishing them from an MRI scan is a decisive early step. In practice
+this reading is done manually by radiologists, which is \textbf{time-consuming, requires scarce
+expertise, and is subject to inter-observer variability}. An automated classifier can act as a fast,
+consistent second opinion and a triage aid.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{dataset}
+  \caption{Dataset overview for the classification task. \textbf{Left:} class distribution
+    after an 80/20 stratified split (train in blue, test in orange) for the three tumor
+    types. \textbf{Right:} mosaic of preprocessed training slices showing acquisition
+    variability in orientation, contrast, and tumor appearance --- the visual diversity the
+    classifier must handle.}
+  \label{fig:dataset-overview}
+\end{figure}
+
+\subsection{Why this is a hard machine-learning problem}
+Casting tumor identification as an image-classification task exposes several difficulties that the
+rest of the report is designed to address:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item \textbf{High dimensionality.} A modest $128\times128$ grayscale image already has $16{,}384$
+        raw pixels. Feeding raw pixels to a classical model invites the curse of dimensionality and
+        overfitting.
+  \item \textbf{Subtle, texture-based differences.} Tumor classes are not separated by simple colour
+        or shape cues; the discriminative information lives in fine texture, intensity heterogeneity,
+        and edge structure --- properties a single feature type rarely captures alone.
+  \item \textbf{Acquisition variability.} MRI slices vary in contrast, orientation, field of view,
+        and the amount of black background around the brain. Without normalisation, the model learns
+        the scanner rather than the disease.
+  \item \textbf{Limited, imbalanced data.} Medical datasets are small relative to natural-image
+        datasets; class balance depends on the source corpus (Figure~\ref{fig:dataset-overview}).
+        Stratification and macro-averaged metrics are therefore required.
+  \item \textbf{The need for trust.} A clinical model must be not only accurate but interpretable and
+        statistically credible --- a single accuracy number on one test split is not enough evidence.
+\end{itemize}
+
+\subsection{Our design choice: classical ML with handcrafted features}
+Deep CNNs are the obvious modern tool, but they need large datasets, heavy compute, and behave as
+black boxes. This project deliberately takes the \textbf{classical route}: engineer interpretable
+descriptors that encode domain knowledge (texture, frequency content, gradient structure), then let
+well-understood classifiers learn from a compact, meaningful feature space. This is fast to train,
+runs on a CPU, is fully reproducible, and --- crucially for a clinical context --- every feature has
+a clear physical meaning.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{problem_pipeline}
+  \caption{Classical machine-learning pipeline adopted in this project: one preprocessed MRI
+    slice is converted into compact handcrafted descriptors, fused and scaled, then classified
+    by a tuned classical model. This design trades end-to-end deep learning for interpretability,
+    low compute cost, and reproducibility.}
+  \label{fig:problem-pipeline}
+\end{figure}
+
+\begin{notebox}[Task summary:]
+Input $=$ one preprocessed MRI slice. Output $=$ one of \{Glioma, Meningioma, Pituitary tumor\}.
+Method $=$ handcrafted multi-descriptor features $\rightarrow$ fusion $\rightarrow$ tuned classical
+classifier, validated statistically.
+\end{notebox}

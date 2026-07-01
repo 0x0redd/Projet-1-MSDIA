@@ -1,0 +1,12 @@
+% ML-only conclusion
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented a two-phase framework for three-class brain tumour MRI classification on 1{,}500 balanced axial slices.
+Phase~1 selected GLCM, LBP, DWT, and HOG parameters using classifier-free separability metrics over 213 configurations.
+Phase~2 benchmarked eight classical models with stratified 5-fold \texttt{GridSearchCV} on eight optimised feature compositions.
+
+On the held-out split, KNN with Full(opt) features achieved the best macro-F1 ($=0.946$); SVM Full(opt) reached F1 $=0.912$, providing a strong interpretable baseline without deep learning.
+
+\textbf{Practical recommendation:} begin with separability-guided texture extraction and a kernel SVM or KNN on HOG or Full(opt) features when labelled data are limited.
+Complete the remaining Phase~2 model runs and statistical tests, then validate on external multi-institutional MRI before clinical deployment.
