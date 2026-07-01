@@ -1,0 +1,29 @@
+Model A,Model B,n₀₁ (A✓ B✗),n₁₀ (A✗ B✓),p-value,Significant (p<0.05),Interpretation
+SVM,KNN,20,14,0.391173,✗ No,No significant difference
+SVM,RF,18,4,0.005578,✓ Yes,A is significantly better than B
+SVM,XGBoost,17,5,0.019016,✓ Yes,A is significantly better than B
+SVM,LightGBM,14,6,0.117525,✗ No,No significant difference
+SVM,LR,19,4,0.003509,✓ Yes,A is significantly better than B
+SVM,MLP,15,4,0.021781,✓ Yes,A is significantly better than B
+SVM,ExtraTrees,18,5,0.012343,✓ Yes,A is significantly better than B
+KNN,RF,25,17,0.280087,✗ No,No significant difference
+KNN,XGBoost,24,18,0.440401,✗ No,No significant difference
+KNN,LightGBM,20,18,0.871131,✗ No,No significant difference
+KNN,LR,28,19,0.243243,✗ No,No significant difference
+KNN,MLP,23,18,0.532171,✗ No,No significant difference
+KNN,ExtraTrees,24,17,0.348737,✗ No,No significant difference
+RF,XGBoost,6,8,0.789268,✗ No,No significant difference
+RF,LightGBM,3,9,0.148915,✗ No,No significant difference
+RF,LR,13,12,1.0,✗ No,No significant difference
+RF,MLP,16,19,0.735317,✗ No,No significant difference
+RF,ExtraTrees,3,4,1.0,✗ No,No significant difference
+XGBoost,LightGBM,3,7,0.342782,✗ No,No significant difference
+XGBoost,LR,13,10,0.676657,✗ No,No significant difference
+XGBoost,MLP,12,13,1.0,✗ No,No significant difference
+XGBoost,ExtraTrees,7,6,1.0,✗ No,No significant difference
+LightGBM,LR,16,9,0.230139,✗ No,No significant difference
+LightGBM,MLP,15,12,0.700311,✗ No,No significant difference
+LightGBM,ExtraTrees,8,3,0.2278,✗ No,No significant difference
+LR,MLP,11,15,0.556298,✗ No,No significant difference
+LR,ExtraTrees,13,15,0.850107,✗ No,No significant difference
+MLP,ExtraTrees,17,15,0.859684,✗ No,No significant difference
