@@ -1,0 +1,51 @@
+\section{Jeu de données}
+
+\subsection{Vue d'ensemble}
+
+Nous utilisons un jeu de données IRM de tumeurs cérébrales publiquement disponible,
+contenant \NTotal{} images réparties équitablement entre \NClasses{} classes :
+\textbf{gliome}, \textbf{méningiome} et \textbf{tumeur hypophysaire}
+(Tableau~\ref{tab:dataset}).
+
+\begin{table}[H]
+  \centering
+  \caption{Synthèse du jeu de données.}
+  \label{tab:dataset}
+  \begin{tabular}{@{}lc@{}}
+    \toprule
+    \textbf{Propriété} & \textbf{Valeur} \\
+    \midrule
+    Nombre de classes & \NClasses{} (gliome, méningiome, hypophysaire) \\
+    Nombre total d'images & \NTotal{} \\
+    Échantillons par classe & \NPerClass{} \\
+    Partition d'entraînement & \NTrain{} (80\,\%, stratifiée) \\
+    Partition de test & \NTest{} (20\,\%, stratifiée) \\
+    Échantillons de test par classe & \NTestPerClass{} \\
+    Taille d'image (après prétraitement) & \ImgSize{} niveaux de gris \\
+    Graine aléatoire & 42 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Équilibre des classes}
+
+Le jeu de données est parfaitement équilibré : chaque classe contribue de manière
+égale aux partitions d'entraînement et de test. Cette conception élimine le biais
+lié au déséquilibre des classes et garantit que les métriques macro-moyennées
+reflètent directement la capacité de discrimination par classe, sans être biaisées
+par une classe dominante (Figure~\ref{fig:class_balance}).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.55\linewidth]{class_balance_train.png}
+  \caption{Répartition des classes dans la partition d'entraînement. Chaque classe
+           compte 400 échantillons d'entraînement.}
+  \label{fig:class_balance}
+\end{figure}
+
+\subsection{Choix des métriques d'évaluation}
+
+Compte tenu de l'équilibre des classes, nous utilisons le \textbf{F1-macro} comme
+métrique principale de classement. Elle accorde un poids égal aux trois types
+tumoraux et mesure directement la capacité du pipeline à distinguer chaque classe.
+La précision (accuracy) et le $\kappa$ de Cohen sont rapportés comme métriques secondaires.

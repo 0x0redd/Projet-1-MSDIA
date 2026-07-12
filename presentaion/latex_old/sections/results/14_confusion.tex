@@ -1,0 +1,24 @@
+% SLIDE 19 — Matrice de confusion
+\begin{frame}{Matrice de confusion — \BestPipeline}
+  \timing{1:30}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \textbf{Résultat principal :}
+    \begin{itemize}
+      \item F1-macro : \keyresult{\BestFOne}
+      \item Accuracy : \BestAcc
+      \item Cohen's $\kappa$ : \BestKappa
+    \end{itemize}
+    \vspace{0.4em}
+    Pipeline end-to-end : IRM $\rightarrow$ features $\rightarrow$ nettoyage $\rightarrow$ SVM.
+    \column{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{{p2_Full(opt)_confmat}.png}
+    \vspace{0.2em}
+    {\footnotesize Matrice de confusion sur le split test ($n{=}$\NTest).}
+  \end{columns}
+\end{frame}
+
+\note{
+Kappa 0.88 = accord quasi-parfait au-delà du hasard. La confusion reste principalement entre gliome et méningiome --- classes visuellement proches.
+}

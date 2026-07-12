@@ -1,0 +1,33 @@
+% SLIDE 14 — Classifieurs et protocole
+\begin{frame}{Classifieurs et protocole expérimental}
+  \timing{2:00}
+  \begin{columns}[T]
+    \column{0.55\textwidth}
+    \textbf{\NModels{} classifieurs :}
+    \begin{itemize}
+      \item \textbf{Linéaires / noyau :} SVM (RBF), LR
+      \item \textbf{Instance :} KNN
+      \item \textbf{Ensembles :} RF, ExtraTrees, XGBoost, LightGBM
+      \item \textbf{Réseau :} MLP
+    \end{itemize}
+    \vspace{0.3em}
+    \textbf{Évaluation :} 1 split hold-out + CV 5-fold stratifiée\\
+    $\Rightarrow$ \keyresult{\NRuns{} expériences} (\NBranches{} $\times$ \NModels{} $\times$ \NEvalModes{})
+    \column{0.4\textwidth}
+    \centering
+    \begin{tikzpicture}[
+      fold/.style={draw=accent, minimum width=2cm, minimum height=0.4cm, font=\scriptsize},
+      arr/.style={-{Stealth[length=1.2mm]}, thick, accent}
+    ]
+      \foreach \i in {1,...,5} {
+        \node[fold, fill=accent!\i0] (f\i) at (0,-\i*0.5) {Fold \i};
+      }
+      \node[font=\tiny, right=0.2cm of f3] {test rotatif};
+    \end{tikzpicture}
+  \end{columns}
+\end{frame}
+
+\note{
+GridSearchCV sur le train pour chaque couple (branche, modèle). Métrique de sélection CV : F1-macro.
+Rapport final sur le split test jamais vu pendant l'optimisation.
+}

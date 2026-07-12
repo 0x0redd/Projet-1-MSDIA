@@ -1,0 +1,56 @@
+% Rapport preamble
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{csquotes}
+\usepackage{microtype}
+\usepackage{lmodern}
+\usepackage{geometry}
+\geometry{a4paper, top=25mm, bottom=25mm, left=30mm, right=25mm}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc}
+\usepackage{siunitx}
+\usepackage[labelfont=bf,justification=justified]{caption}
+\usepackage[backend=biber,style=ieee,maxbibnames=3]{biblatex}
+\addbibresource{references.bib}
+\usepackage[colorlinks=true,linkcolor=blue!70!black,citecolor=green!50!black,urlcolor=blue!70!black]{hyperref}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+% colours
+\definecolor{accent}{HTML}{2E5A88}
+\definecolor{accent2}{HTML}{1F6F54}
+\definecolor{lightbg}{HTML}{EAF1F8}
+
+% figure path
+\graphicspath{
+  {../../output/}
+  {../../PAPER/latex/figures/}
+}
+
+% section formatting
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries\color{accent}}{}{0em}{}[\color{accent}\hrule\vspace{2pt}]
+\titleformat{\subsection}{\normalsize\bfseries\color{accent2}}{}{0em}{}
+
+% header/footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small Classification IRM de tumeurs cérébrales --- MSDIA S8}
+\rhead{\small [Student Name]}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}

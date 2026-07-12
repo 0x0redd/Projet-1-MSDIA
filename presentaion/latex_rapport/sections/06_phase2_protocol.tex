@@ -1,0 +1,67 @@
+\section{Phase 2 : Protocole de benchmark}
+\label{sec:phase2}
+
+\subsection{Jeux de caractéristiques}
+
+À partir des paramètres optimisés en Phase~1, nous définissons huit jeux de
+caractéristiques (Tableau~\ref{tab:feature_sets}). Les jeux mono-famille (A--D)
+évaluent chaque descripteur isolément ; les jeux combinés testent si la fusion
+ajoute une valeur discriminante.
+
+\begin{table}[H]
+  \centering
+  \caption{Jeux de caractéristiques évalués en Phase~2.}
+  \label{tab:feature_sets}
+  \begin{tabular}{@{}lp{0.48\linewidth}c@{}}
+    \toprule
+    \textbf{Label} & \textbf{Contenu} & \textbf{Dim. nettoyée} \\
+    \midrule
+    A --- Stats       & Statistiques du premier ordre uniquement   & 9 \\
+    B --- Tex(opt)    & Texture LBP optimisée                      & 18 \\
+    C --- DWT(opt)    & Statistiques des sous-bandes DWT optimisées & 12 \\
+    D --- HOG         & Histogrammes HOG forme/contours            & 490 \\
+    A+B               & Statistiques + LBP                         & 27 \\
+    B+C(opt)          & LBP + DWT                                  & 30 \\
+    A+B+C(opt)        & Statistiques + LBP + DWT                   & 36 \\
+    Full(opt)         & Les quatre familles (A+B+C+D)              & 526 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Chaque jeu de caractéristiques subit un nettoyage post-concaténation : un filtre
+de variance supprime les caractéristiques quasi nulles, suivi d'un élagage par
+corrélation (seuil $r > 0{,}95$), puis d'une normalisation StandardScaler dans
+chaque \texttt{Pipeline} sklearn.
+
+\subsection{Classifieurs}
+
+Huit classifieurs ont été benchmarkés :
+
+\begin{table}[H]
+  \centering
+  \caption{Classifieurs et leur rôle dans le benchmark.}
+  \label{tab:classifiers}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Famille} & \textbf{Classifieur} & \textbf{Propriété clé} \\
+    \midrule
+    Marge / noyau & SVM (RBF / polynomial) & frontières non linéaires \\
+    Basé sur instances & KNN & distances locales, sans entraînement \\
+    Arbres bagués & Random Forest, ExtraTrees & réduction de variance par ensemble \\
+    Arbres boostés & XGBoost, LightGBM & correction séquentielle des erreurs \\
+    Linéaire & Régression logistique & référence rapide et interprétable \\
+    Réseau peu profond & MLP (deux couches cachées) & activation non linéaire \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Protocole d'évaluation}
+
+Chaque classifieur est ajusté par \textbf{GridSearchCV à 5 plis} sur l'ensemble
+d'entraînement, puis évalué sur la partition de test tenue à l'écart. Six modes
+d'évaluation ont été suivis ; les résultats principaux rapportés ici correspondent
+à la partition de test. Cela donne
+\NModels{}~classifieurs $\times$ \NFeatureSets{}~jeux de caractéristiques = \textbf{\NRuns{}~pipelines}.
+
+Métrique principale : F1-macro. Métriques secondaires : précision (accuracy),
+précision et rappel macro-moyennés, et $\kappa$ de Cohen.

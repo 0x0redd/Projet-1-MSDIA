@@ -1,0 +1,49 @@
+% Slide 14 — Classifiers Compared
+\begin{frame}[shrink=3]{Classifiers Compared}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.56\textwidth}
+    \begin{block}{Model families (intuition)}
+      \small
+      \begin{tabular}{@{}p{0.26\linewidth}p{0.70\linewidth}@{}}
+        \toprule
+        \textbf{Family} & \textbf{Models in benchmark} \\
+        \midrule
+        Margin / kernel & SVM (captures non-linear boundaries) \\
+        Instance-based & KNN (local neighborhoods) \\
+        Tree ensembles & Random Forest, ExtraTrees (bagging) \\
+        Boosted trees & XGBoost, LightGBM (strong tabular baselines) \\
+        Linear baseline & Logistic Regression \\
+        Shallow NN & MLP \\
+        \bottomrule
+      \end{tabular}
+    \end{block}
+
+    \begin{block}{Why compare many models?}
+      \small Handcrafted features can favor different inductive biases:
+      HOG often benefits from margin methods, while compact stats can suit trees/linear models.
+    \end{block}
+
+    \column{0.42\textwidth}
+    \centering
+    \begin{tikzpicture}[
+      node distance=0.5cm,
+      box/.style={rectangle, rounded corners=2pt, draw=accent, fill=lightbg,
+                  minimum height=0.7cm, minimum width=0.92\linewidth, align=center, font=\small},
+      arr/.style={-{Stealth[length=2mm]}, thick, accent}
+    ]
+      \node[box] (fs) {Feature set (8)};
+      \node[box, below=of fs] (grid) {GridSearchCV (5-fold)};
+      \node[box, below=of grid] (test) {Held-out test};
+      \draw[arr] (fs) -- (grid);
+      \draw[arr] (grid) -- (test);
+    \end{tikzpicture}
+
+    \vspace{0.4em}
+    {\small \NModels{} models $\times$ \NFeatureSets{} sets = \keyresult{\NRuns{}} tuned configurations.}
+  \end{columns}
+\end{frame}
+
+\note{
+No algorithm math here --- just roles. Each classifier has different inductive bias
+for high-dimensional handcrafted features.
+}

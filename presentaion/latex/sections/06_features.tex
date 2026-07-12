@@ -1,0 +1,52 @@
+% Slide 6 — Feature Extraction Methods
+\begin{frame}[shrink=6]{Feature Extraction Methods}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.49\textwidth}
+    \begin{block}{A) Statistical features (intensity)}
+      \centering
+      \begin{tikzpicture}[x=1cm,y=1cm]
+        \draw[->,gray] (0,0) -- (3.1,0) node[below] {\scriptsize intensity};
+        \draw[->,gray] (0,0) -- (0,1.6) node[left] {\scriptsize count};
+        \draw[accent,thick] plot[smooth] coordinates {(0.2,0.1) (0.6,0.4) (1.1,1.0) (1.6,1.2) (2.1,0.7) (2.6,0.3) (2.9,0.15)};
+      \end{tikzpicture}
+      \vspace{-0.2em}
+
+      \scriptsize Compact summary of intensity distribution: mean, std, entropy,
+      skew/kurtosis, and percentiles (p10--p90).
+    \end{block}
+
+    \begin{block}{B) LBP (local texture)}
+      \centering
+      \includegraphics[width=\linewidth,height=0.19\textheight,keepaspectratio,trim=345 250 340 360,clip]{descriptor_demo.png}
+      \vspace{-0.2em}
+
+      \scriptsize Encodes local micro-patterns; robust texture fingerprint for tumor tissue.
+    \end{block}
+
+    \column{0.49\textwidth}
+    \begin{block}{C) DWT (frequency sub-bands)}
+      \centering
+      \includegraphics[width=\linewidth,height=0.19\textheight,keepaspectratio,trim=60 0 60 585,clip]{descriptor_demo.png}
+      \vspace{-0.2em}
+
+      \scriptsize Multi-scale decomposition (LL/LH/HL/HH) captures coarse vs. fine structures.
+    \end{block}
+
+    \begin{block}{D) HOG (edges \& shape)}
+      \centering
+      \includegraphics[width=\linewidth,height=0.19\textheight,keepaspectratio,trim=685 250 60 360,clip]{descriptor_demo.png}
+      \vspace{-0.2em}
+
+      \scriptsize Aggregates gradient orientations; strong for boundary/shape cues.
+    \end{block}
+  \end{columns}
+
+  \vspace{-0.2em}
+  \centering
+  {\scriptsize Four complementary views of the same slice: intensity, texture, frequency, and gradients.}
+\end{frame}
+
+\note{
+Each family captures a different aspect of tumor appearance.
+They are later fused after individual optimization.
+}

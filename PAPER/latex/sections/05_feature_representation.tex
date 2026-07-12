@@ -1,0 +1,167 @@
+\section{Feature Representation Construction and Cleaning}
+\label{sec:features}
+
+\subsection{Overview}
+
+Using the optimal descriptor configurations from Section~\ref{sec:phase1}
+(Phase~1), multiple feature representations were constructed for classifier
+evaluation. This serves two purposes: to investigate the individual contribution
+of each feature family, and to assess whether combining complementary descriptors
+improves discrimination. The construction progressively integrates intensity
+statistics, texture patterns, frequency-domain information, and structural
+gradients.
+
+\subsection{Statistical Features (A)}
+\label{sec:feat_stats}
+
+First-order statistical features summarize the global intensity distribution of
+an MRI image. For each preprocessed image, eleven descriptors were extracted:
+the mean, standard deviation, and variance of the intensities; the histogram
+entropy (Shannon entropy over $64$ intensity bins); the skewness and kurtosis of
+the intensity distribution; and five percentiles ($10^{\text{th}}$,
+$25^{\text{th}}$, $50^{\text{th}}$/median, $75^{\text{th}}$, and
+$90^{\text{th}}$). Together these capture the brightness level, spread, and shape
+of the intensity distribution associated with different tumor types. This set is
+denoted $A$.
+
+\subsection{Texture Features (B)}
+\label{sec:feat_texture}
+
+Texture is among the most informative cues in brain tumor MRI, since tumor
+tissues often exhibit distinct local patterns and structural heterogeneity. The
+texture representation concatenates the optimized GLCM and LBP descriptors. The
+GLCM component captures second-order spatial relationships through the six
+properties selected in Phase~1 (contrast, dissimilarity, homogeneity, energy,
+correlation, and ASM), while the LBP component encodes local micro-patterns as
+uniform binary signatures. The fused texture set is $B = \mathrm{GLCM_{opt}}
+\oplus \mathrm{LBP_{opt}}$, where $\oplus$ denotes concatenation.
+
+\subsection{Frequency-Domain Features (C)}
+\label{sec:feat_dwt}
+
+Many tumor-related structures are discriminative across spatial frequencies. The
+optimized DWT decomposes each image into sub-bands corresponding to different
+frequency ranges and orientations, and statistical measures from the
+approximation and detail coefficients summarize both coarse and fine structures.
+This set is $C = \mathrm{DWT_{opt}}$.
+
+\subsection{Gradient-Based Features (D)}
+\label{sec:feat_hog}
+
+Structural boundaries, edges, and shape cues help distinguish tumor classes. The
+optimized HOG descriptor characterizes these properties through local
+distributions of gradient orientations, focusing on the geometric and
+morphological aspects of tumor regions. This set is $D = \mathrm{HOG_{opt}}$.
+
+\subsection{Feature Fusion Strategies}
+\label{sec:feat_sets}
+
+Because individual families describe different aspects of the image, combining
+them may improve discrimination through complementary information. Four fusion
+representations were constructed: $A{+}B$ (statistics and texture), $B{+}C$
+(texture and frequency), $A{+}B{+}C$ (statistics, texture, and frequency), and
+$\mathrm{Full(opt)} = A{+}B{+}C{+}D$, which incorporates all optimized
+descriptors. Table~\ref{tab:featuresets} summarizes the eight evaluated
+representations together with their raw (pre-cleaning) dimensionality.
+
+\begin{table}[t]
+\centering
+\caption{Evaluated feature representations. Dimensionality is reported before
+cleaning; variance and correlation filtering subsequently reduce these counts.}
+\label{tab:featuresets}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}llc@{}}
+\toprule
+\textbf{Set} & \textbf{Components} & \textbf{Dim.} \\
+\midrule
+A            & Statistical features                         & $11$   \\
+B            & Optimized GLCM + LBP                          & $20$   \\
+C            & Optimized DWT                                 & $16$   \\
+D            & Optimized HOG                                 & $1176$ \\
+A+B          & Statistical + Texture                         & $31$   \\
+B+C          & Texture + Frequency                           & $36$   \\
+A+B+C        & Statistical + Texture + Frequency             & $47$   \\
+Full(opt)    & Statistical + Texture + Frequency + Gradient  & $1223$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Motivation for Feature Cleaning}
+\label{sec:feat_cleaning}
+
+Feature fusion increases dimensionality, which can introduce redundant and highly
+correlated variables, noise sensitivity, additional computational cost, and a
+greater risk of overfitting. A cleaning pipeline was therefore applied to each
+representation prior to classifier training.
+
+\subsection{Variance-Based Filtering}
+
+The first stage removes constant features, whose variance
+\begin{equation}
+\mathrm{Var}(f) = \frac{1}{N}\sum_{i=1}^{N}(f_i - \bar{f})^2
+\end{equation}
+is zero across the training set ($N$ samples, feature values $f_i$, mean
+$\bar{f}$). Such features carry no discriminative information and only increase
+model complexity.
+
+\subsection{Correlation-Based Reduction}
+
+Even after variance filtering, many handcrafted descriptors remain highly
+correlated and convey nearly identical information, which can harm model
+stability. Pairwise Pearson correlations
+\begin{equation}
+\rho_{ij} = \frac{\mathrm{Cov}(f_i, f_j)}{\sigma_i \sigma_j}
+\end{equation}
+were computed, and for each pair with $|\rho_{ij}| > 0.95$ one feature was
+removed. This pruning is applied whenever the representation is of moderate
+dimensionality (below $5000$ features), which holds for all eight sets
+considered here.
+
+\subsection{Standardization}
+
+The retained features were standardized by z-score normalization,
+\begin{equation}
+z = \frac{x - \mu}{\sigma},
+\end{equation}
+where $\mu$ and $\sigma$ are estimated on the training set only and applied
+unchanged to the test set, preventing information leakage. Standardization
+ensures that features on different scales contribute comparably and is
+particularly important for distance- and margin-based classifiers such as KNN
+and SVM.
+
+\subsection{Final Feature Spaces}
+
+After variance filtering, correlation reduction, and standardization, the cleaned
+representations are discriminative (owing to separability-guided descriptor
+selection), compact (owing to filtering), and classifier-ready (owing to
+standardization). Figure~\ref{fig:cleaning} summarizes the dimensionality
+reduction achieved by the cleaning pipeline; high-dimensional sets containing
+HOG retain a smaller fraction of features owing to correlation pruning.
+Figure~\ref{fig:tsne} visualizes class separability in the cleaned
+$\mathrm{Full(opt)}$ representation via t-SNE projection. These representations
+form the experimental basis for the classifier benchmarking study presented in
+the next section.
+
+\begin{figure}[t]
+\centering
+\begin{subfigure}[b]{0.48\linewidth}
+\includegraphics[width=\linewidth]{feature_cleaning_kept_ratio}
+\caption{Kept-feature ratio}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\linewidth}
+\includegraphics[width=\linewidth]{feature_cleaning_dims}
+\caption{Dimensions before/after}
+\end{subfigure}
+\caption{Effect of variance and correlation filtering on feature-set
+dimensionality.}
+\label{fig:cleaning}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{tsne_best_feature_set}
+\caption{t-SNE projection of the cleaned $\mathrm{Full(opt)}$ feature space
+(training set).}
+\label{fig:tsne}
+\end{figure}

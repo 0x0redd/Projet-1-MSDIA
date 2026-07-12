@@ -1,0 +1,287 @@
+%=======================================================================
+\chapter{Construction des ensembles de caractéristiques (Phase~2)}
+\label{ch:ensembles}
+
+\section{Construction des ensembles de caractéristiques}
+
+Après l'identification des paramètres optimaux lors de la Phase~1, la deuxième phase du
+projet consiste à construire plusieurs ensembles de caractéristiques afin d'étudier l'apport
+individuel et combiné des différents descripteurs.
+
+L'objectif est d'évaluer dans quelle mesure les informations statistiques, texturales,
+fréquentielles et structurelles sont complémentaires pour la classification des tumeurs
+cérébrales. Pour cela, plusieurs configurations de fusion ont été définies puis comparées à
+travers un benchmark systématique des modèles de Machine Learning.
+
+Les ensembles étudiés sont présentés dans le Tableau~\ref{tab:feature-sets}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Ensembles de caractéristiques évalués.}
+  \label{tab:feature-sets}
+  \begin{tabular}{@{}cl@{}}
+    \toprule
+    \thd{Nom} & \thd{Contenu} \\
+    \midrule
+    A     & Caractéristiques statistiques \\
+    B     & Texture (GLCM + LBP optimisés) \\
+    C     & DWT optimisé \\
+    D     & HOG optimisé \\
+    A+B   & Statistiques + Texture \\
+    B+C   & Texture + DWT \\
+    A+B+C & Statistiques + Texture + DWT \\
+    Full  & Statistiques + Texture + DWT + HOG \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Chaque ensemble représente un niveau différent de complexité et de richesse descriptive. Les
+ensembles simples permettent d'évaluer la contribution individuelle de chaque famille de
+caractéristiques, tandis que les ensembles fusionnés permettent d'analyser leur
+complémentarité.
+
+La Figure~\ref{fig:phase2-pipeline} illustre le pipeline de construction des huit ensembles
+à partir des branches A, B, C et D.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance=0.55cm and 0.35cm,
+    box/.style={rectangle, rounded corners=2pt, draw=accent, fill=headbg,
+                minimum height=0.65cm, align=center, font=\small},
+    fused/.style={rectangle, rounded corners=2pt, draw=accent2, fill=headbg,
+                  minimum height=0.65cm, align=center, font=\small},
+    arr/.style={-{Stealth[length=2mm]}, thick, accent}
+  ]
+    \node[box] (a) {A\\Stats (11)};
+    \node[box, right=of a] (b) {B\\GLCM+LBP (20)};
+    \node[box, right=of b] (c) {C\\DWT (16)};
+    \node[box, right=of c] (d) {D\\HOG (1944)};
+    \node[fused, below=1.2cm of b] (ab) {A+B};
+    \node[fused, below=1.2cm of c] (bc) {B+C};
+    \node[fused, below=2.4cm of b] (abc) {A+B+C};
+    \node[fused, below=3.6cm of b] (full) {Full (1991)};
+    \draw[arr] (a) -- (ab);
+    \draw[arr] (b) -- (ab);
+    \draw[arr] (b) -- (bc);
+    \draw[arr] (c) -- (bc);
+    \draw[arr] (ab) -- (abc);
+    \draw[arr] (c) -- (abc);
+    \draw[arr] (abc) -- (full);
+    \draw[arr] (d) |- (full);
+  \end{tikzpicture}
+  \caption{Pipeline de construction des ensembles de caractéristiques (Phase~2).}
+  \label{fig:phase2-pipeline}
+\end{figure}
+
+\subsection{Ensemble A : Caractéristiques statistiques}
+
+Cet ensemble regroupe uniquement les \dimStats{} mesures statistiques globales extraites des
+images IRM~: moyenne, écart-type, variance, entropie, asymétrie, kurtosis et les percentiles
+d'intensité (p10 à p90, dont p50 = médiane).
+
+Ces caractéristiques fournissent une représentation compacte de la distribution des niveaux
+de gris mais ne prennent pas en compte l'organisation spatiale des pixels.
+
+\subsection{Ensemble B : Texture (GLCM + LBP)}
+
+L'ensemble B combine les informations texturales obtenues à partir des descripteurs GLCM
+(\dimGLCM{} propriétés) et LBP (\dimLBP{} bins, $P=12$) optimisés en Phase~1, soit
+\dimTexture{} dimensions au total.
+
+Cette représentation vise à capturer les relations spatiales entre pixels ainsi que les
+microstructures locales présentes dans les tissus cérébraux.
+
+\subsection{Ensemble C : DWT}
+
+Cet ensemble contient exclusivement les \dimDWT{} caractéristiques fréquentielles extraites
+par Transformée en Ondelettes Discrètes (ondelette \texttt{db2}, niveau~1).
+
+L'objectif est d'étudier la capacité des informations multi-résolutions à discriminer les
+différentes catégories de tumeurs.
+
+\subsection{Ensemble D : HOG}
+
+L'ensemble D regroupe les \dimHOG{} caractéristiques issues du descripteur HOG optimisé.
+
+Ces caractéristiques représentent principalement les contours, les gradients et les
+structures géométriques présentes dans les images.
+
+\subsection{Ensembles fusionnés}
+
+Afin d'exploiter la complémentarité des différents descripteurs, plusieurs stratégies de
+fusion ont été étudiées~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item \textbf{A+B}~: combinaison des informations statistiques et texturales~;
+  \item \textbf{B+C}~: combinaison des textures et des informations fréquentielles~;
+  \item \textbf{A+B+C}~: fusion des statistiques, textures et ondelettes~;
+  \item \textbf{Full}~: fusion de l'ensemble des caractéristiques disponibles
+        (\dimFull{} dimensions brutes).
+\end{itemize}
+
+Cette approche permet d'évaluer l'impact de l'ajout progressif d'informations complémentaires
+sur les performances de classification.
+
+% -----------------------------------------------------------------------
+\section{Nettoyage et préparation des caractéristiques}
+
+La fusion de plusieurs familles de descripteurs conduit à la génération de vecteurs de grande
+dimension. Une telle représentation peut contenir des variables redondantes ou peu
+informatives susceptibles de dégrader les performances des modèles.
+
+Afin d'améliorer la qualité des données et de réduire le risque de surapprentissage, une
+procédure de nettoyage a été appliquée à chaque ensemble de caractéristiques avant
+l'entraînement des modèles.
+
+\subsection{Suppression des caractéristiques à faible variance}
+
+La première étape consiste à appliquer un filtre basé sur la variance
+(\emph{Variance Threshold}, seuil~$=0$).
+
+Les variables dont la variance est proche de zéro apportent généralement peu d'information
+discriminante puisqu'elles prennent pratiquement la même valeur pour l'ensemble des
+observations.
+
+La suppression de ces caractéristiques permet~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item de réduire la dimension des données~;
+  \item d'éliminer les variables non informatives~;
+  \item d'accélérer les étapes ultérieures de traitement.
+\end{itemize}
+
+Cette opération constitue un premier niveau de sélection automatique des caractéristiques.
+
+\subsection{Élimination des caractéristiques fortement corrélées}
+
+La présence de variables fortement corrélées introduit une redondance importante dans la
+représentation des données.
+
+Pour limiter ce phénomène, une matrice de corrélation est calculée sur l'ensemble des
+caractéristiques. Lorsqu'une paire de variables présente une corrélation absolue supérieure
+au seuil $\rho = \corrThreshold{}$, l'une des deux variables est supprimée.
+
+Cette étape permet~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item de réduire la multicolinéarité~;
+  \item d'améliorer la stabilité des modèles~;
+  \item de diminuer la complexité des ensembles fusionnés.
+\end{itemize}
+
+La suppression des variables redondantes est particulièrement importante pour les ensembles
+comportant plusieurs milliers de caractéristiques, comme HOG ou Full.
+
+\subsection{Standardisation des caractéristiques}
+
+Les différentes familles de descripteurs produisent des variables dont les échelles peuvent
+être très différentes. Par exemple, certaines caractéristiques statistiques prennent des
+valeurs comprises entre 0 et 1, tandis que certaines caractéristiques HOG ou DWT peuvent
+atteindre des amplitudes beaucoup plus élevées.
+
+Afin d'assurer une contribution équilibrée de chaque variable lors de l'apprentissage, une
+standardisation (\texttt{StandardScaler}) est appliquée à l'ensemble des caractéristiques
+après nettoyage. Chaque variable est transformée selon~:
+\begin{equation}
+  z = \frac{x-\mu}{\sigma}
+\end{equation}
+où $x$ représente la valeur initiale, $\mu$ la moyenne et $\sigma$ l'écart-type estimés sur
+l'ensemble d'apprentissage.
+
+Cette transformation produit des variables centrées et réduites, facilitant l'apprentissage
+des modèles sensibles à l'échelle des données tels que SVM, KNN, Logistic Regression et MLP.
+
+% -----------------------------------------------------------------------
+\section{Réduction de la redondance et analyse des dimensions}
+
+L'une des conséquences directes de la fusion de plusieurs descripteurs est l'augmentation
+significative du nombre de variables. Une analyse de la réduction dimensionnelle obtenue
+après le nettoyage a donc été réalisée.
+
+Pour chaque ensemble de caractéristiques, les éléments suivants ont été étudiés~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item nombre initial de caractéristiques~;
+  \item nombre de caractéristiques supprimées~;
+  \item nombre final de caractéristiques conservées~;
+  \item ratio de conservation.
+\end{itemize}
+
+Le ratio de conservation est défini par~:
+\begin{equation}
+  \mathrm{Ratio}_{\mathrm{conservation}}
+  = \frac{N_{\mathrm{conservées}}}{N_{\mathrm{initial}}}
+  \times 100
+\end{equation}
+
+Cette mesure permet d'évaluer l'impact du processus de nettoyage sur chaque ensemble.
+
+Le Tableau~\ref{tab:cleaning-dims} et les Figures~\ref{fig:cleaning-kept} et
+\ref{fig:cleaning-dims} synthétisent les résultats obtenus.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Dimensions avant et après nettoyage pour chaque ensemble.}
+  \label{tab:cleaning-dims}
+  \small
+  \begin{tabular}{@{}lrrrrr@{}}
+    \toprule
+    \thd{Ensemble} & \thd{Brut} & \thd{Après var.} & \thd{Nettoyé} & \thd{Supprimé} &
+    \thd{Conservé (\%)} \\
+    \midrule
+    A     & 11          & 11          & 9           & 2    & 81,8 \\
+    B     & 20          & 20          & 18          & 2    & 90,0 \\
+    C     & 16          & 16          & 12          & 4    & 75,0 \\
+    D     & 1944        & 1944        & 490         & 1454 & 25,2 \\
+    A+B   & 31          & 31          & 27          & 4    & 87,1 \\
+    B+C   & 36          & 36          & 30          & 6    & 83,3 \\
+    A+B+C & 47          & 47          & 36          & 11   & 76,6 \\
+    Full  & 1991        & 1991        & 526         & 1465 & 26,4 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Les résultats montrent que les ensembles de grande dimension, notamment ceux incluant HOG et
+les combinaisons fusionnées, présentent une proportion importante de caractéristiques
+redondantes. À l'inverse, l'ensemble statistique A possède naturellement une dimension
+réduite et nécessite peu de filtrage.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{feature_cleaning_kept_ratio}
+  \caption{Ratio de conservation des caractéristiques après nettoyage.}
+  \label{fig:cleaning-kept}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{feature_cleaning_dims}
+  \caption{Comparaison des dimensions des ensembles avant et après réduction.}
+  \label{fig:cleaning-dims}
+\end{figure}
+
+L'application conjointe du \emph{Variance Threshold} et de l'élimination des corrélations
+permet ainsi de conserver uniquement les caractéristiques les plus informatives tout en
+réduisant significativement la complexité des données. L'ensemble Full passe par exemple de
+1991 à \cleanFull{} variables (soit 26,4\% conservées).
+
+Cette étape constitue un élément essentiel du pipeline, car elle améliore à la fois la
+robustesse des modèles, leur temps d'entraînement et leur capacité de généralisation.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.88\textwidth]{tsne_best_feature_set}
+  \caption{Projection t-SNE (2D) de l'ensemble Full(opt) nettoyé (\cleanFull{}
+    caractéristiques) sur l'ensemble d'apprentissage.}
+  \label{fig:tsne-full}
+\end{figure}
+
+La Figure~\ref{fig:tsne-full} illustre la séparabilité visuelle des trois classes dans
+l'espace des caractéristiques de l'ensemble fusionné complet après nettoyage.
+
+\subsection{Synthèse de la Phase~2}
+
+À l'issue de cette phase, huit ensembles de caractéristiques nettoyés et standardisés sont
+obtenus. Ces représentations serviront de base au benchmark des algorithmes de Machine
+Learning présenté au chapitre suivant.
+
+L'objectif sera alors d'évaluer l'impact de chaque famille de descripteurs ainsi que
+l'intérêt des stratégies de fusion sur les performances de classification des tumeurs
+cérébrales.

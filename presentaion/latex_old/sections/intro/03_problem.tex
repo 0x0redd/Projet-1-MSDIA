@@ -1,0 +1,31 @@
+% SLIDE 3 — Problématique clinique
+\begin{frame}{Problématique clinique et choix méthodologique}
+  \timing{2:00}
+  \begin{columns}[T]
+    \column{0.58\textwidth}
+    \textbf{Enjeu :} distinguer gliome, méningiome et tumeur hypophysaire sur IRM
+    conditionne le traitement~\cite{ref_bioengineering11030266,ref_diagnostics15212692}.
+    \vspace{0.4em}
+
+    \textbf{Difficultés ML :}
+    \begin{itemize}
+      \item Haute dimensionnalité ($16{,}384$ pixels bruts)
+      \item Différences subtiles de texture et d'intensité
+      \item Variabilité d'acquisition ; besoin de métriques robustes (F1-macro)
+    \end{itemize}
+    \vspace{0.3em}
+    \begin{block}{Positionnement}
+      \small ML classique + features interprétables (CPU, reproductible)
+      vs.\ DL (GPU, données massives, boîte noire)~\cite{ref_diagnostics15212692}
+    \end{block}
+    \column{0.38\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{dataset}
+  \end{columns}
+\end{frame}
+
+\note{
+Le type tumoral dicte le traitement. La lecture manuelle est coûteuse et variable.
+Nous adoptons volontairement la voie classique : descripteurs explicites + classifieurs connus,
+pour un pipeline auditable et peu coûteux en calcul.
+}

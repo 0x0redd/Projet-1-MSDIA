@@ -1,0 +1,52 @@
+% Slide 5 — Preprocessing
+\begin{frame}{Preprocessing}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.56\textwidth}
+    \centering
+    \begin{tikzpicture}[
+      node distance=0.35cm,
+      box/.style={rectangle, rounded corners=2pt, draw=accent, fill=lightbg,
+                  minimum height=0.62cm, minimum width=0.92\linewidth,
+                  align=left, font=\scriptsize, inner xsep=0.35em},
+      arr/.style={-{Stealth[length=2mm]}, thick, accent}
+    ]
+      \node[box] (a) {\textbf{1) Standardize} \hfill grayscale, rescale to $[0,1]$};
+      \node[box, below=of a] (b) {\textbf{2) Crop borders} \hfill remove black background};
+      \node[box, below=of b] (c) {\textbf{3) Resize} \hfill \ImgSize{} with anti-aliasing};
+      \node[box, below=of c] (d) {\textbf{4) Denoise} \hfill Gaussian smoothing ($\sigma=0.5$)};
+      \node[box, below=of d] (e) {\textbf{5) Enhance} \hfill min--max + CLAHE (local contrast)};
+      \draw[arr] (a) -- (b);
+      \draw[arr] (b) -- (c);
+      \draw[arr] (c) -- (d);
+      \draw[arr] (d) -- (e);
+    \end{tikzpicture}
+
+    \vspace{0.4em}
+    \scriptsize
+    \begin{tabular}{@{}ll@{}}
+      \toprule
+      \textbf{Key setting} & \textbf{Value} \\
+      \midrule
+      Target size & \ImgSize{} \\
+      Smoothing & $\sigma = 0.5$ \\
+      Contrast & CLAHE (local) \\
+      \bottomrule
+    \end{tabular}
+
+    \column{0.42\textwidth}
+    \begin{block}{Why this matters}
+      \small Preprocessing reduces acquisition variability and stabilizes the
+      downstream descriptors (LBP texture, HOG gradients, DWT frequency).
+    \end{block}
+
+    \centering
+    \includegraphics[width=\linewidth,height=0.40\textheight,keepaspectratio,trim=130 520 130 70,clip]{descriptor_demo.png}
+
+    {\scriptsize Example preprocessed slice (CLAHE, \ImgSize{}).}
+  \end{columns}
+\end{frame}
+
+\note{
+Preprocessing is lightweight and fully reproducible. CLAHE improves local contrast
+without changing global intensity statistics dramatically.
+}

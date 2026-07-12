@@ -1,0 +1,24 @@
+% Slide 20 — Feature Space Visualization
+\begin{frame}[shrink=2]{Feature Space Visualization}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.70\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.70\textheight,keepaspectratio]{tsne_best_feature_set.png}
+
+    \column{0.28\textwidth}
+    \begin{block}{What is plotted}
+      \small 2D t-SNE projection of 526-dimensional Full(opt) feature vectors.
+    \end{block}
+
+    \begin{block}{Interpretation}
+      \small Partial separation indicates discriminative power.\vspace{0.2em}
+
+      Glioma vs.\ meningioma overlap helps explain residual confusion even in the best model.
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\note{
+2D t-SNE projection of 526-dimensional Full(opt) features.
+Good global structure but not perfect separation --- room for improvement.
+}

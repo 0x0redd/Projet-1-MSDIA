@@ -1,0 +1,57 @@
+% Slide 7 — Optimization Strategy
+\begin{frame}{Optimization Strategy}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.55\textwidth}
+    \begin{block}{Key idea}
+      \small We avoid training classifiers for all \NPhaseOneConfigs{} configurations.\vspace{0.3em}
+
+      Instead, we select descriptor parameters using a \textbf{separability score} computed directly
+      from the feature vectors:
+      \[
+        \text{Score}=\frac{1}{3}\Big(\widehat{\text{FDR}}+\widehat{\text{MI}}+\big(1-\widehat{\text{DBI}}\big)\Big)
+      \]
+      where hats denote min--max normalization across the search grid.
+    \end{block}
+
+    \begin{block}{Why it works}
+      \small High separability indicates class-specific structure before choosing a classifier,
+      reducing the Phase 2 search space while improving feature quality.
+    \end{block}
+
+    \column{0.43\textwidth}
+    \centering
+    \begin{tikzpicture}[
+      node distance=0.55cm,
+      box/.style={rectangle, rounded corners=2pt, draw=accent, fill=lightbg,
+                  minimum height=0.72cm, minimum width=0.92\linewidth, align=center, font=\small},
+      arr/.style={-{Stealth[length=2mm]}, thick, accent}
+    ]
+      \node[box] (grid) {Parameter grid\\(\NPhaseOneConfigs{} configs)};
+      \node[box, below=of grid] (feat) {Extract features};
+      \node[box, below=of feat] (score) {Compute separability\\(FDR, MI, DBI)};
+      \node[box, below=of score] (pick) {Pick best params\\per family};
+      \node[box, below=of pick] (bench) {Phase 2 benchmark\\(tuned classifiers)};
+      \draw[arr] (grid) -- (feat);
+      \draw[arr] (feat) -- (score);
+      \draw[arr] (score) -- (pick);
+      \draw[arr] (pick) -- (bench);
+    \end{tikzpicture}
+
+    \vspace{0.3em}
+    \scriptsize
+    \begin{tabular}{@{}ll@{}}
+      \toprule
+      \textbf{Metric} & \textbf{Meaning} \\
+      \midrule
+      FDR & class separation in feature space \\
+      MI & information about the label \\
+      DBI & cluster compactness / overlap \\
+      \bottomrule
+    \end{tabular}
+  \end{columns}
+\end{frame}
+
+\note{
+Composite separability score = mean of normalized FDR, MI, and inverted DBI.
+Best config per family is frozen for all Phase 2 experiments.
+}

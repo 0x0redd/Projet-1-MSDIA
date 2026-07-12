@@ -1,0 +1,42 @@
+\section{Introduction}
+
+Les tumeurs cérébrales comptent parmi les pathologies neurologiques les plus graves.
+Leur classification précise et rapide en gliome, méningiome et tumeur hypophysaire
+est indispensable pour orienter les décisions chirurgicales et thérapeutiques~\cite{ref_bioengineering11030266}.
+L'imagerie par résonance magnétique (IRM) constitue la modalité diagnostique de référence,
+mais l'interprétation manuelle par les radiologues reste chronophage et sujette à une
+variabilité inter-observateur.
+
+L'apprentissage automatique offre une voie prometteuse vers des pipelines de classification
+automatisés et reproductibles. Si les modèles d'apprentissage profond (CNN) rapportent
+des performances élevées sur de grands jeux de données~\cite{ref_diagnostics15212692},
+le ML classique avec descripteurs artisanaux reste compétitif sur des corpus modestes
+et, surtout, offre une interprétabilité : les caractéristiques utilisées pour la
+classification sont explicitement compréhensibles par l'opérateur.
+
+\subsection{Périmètre et motivation}
+
+Ce travail se concentre exclusivement sur le ML classique avec descripteurs artisanaux.
+Nous ne détaillons pas les dérivations mathématiques des algorithmes ; l'accent est
+mis sur la méthodologie expérimentale et les résultats obtenus. Les questions principales
+sont les suivantes :
+
+\begin{itemize}
+  \item Quels paramètres de descripteurs séparent le mieux les trois classes tumorales ?
+  \item La fusion de plusieurs familles de caractéristiques améliore-t-elle une famille isolée ?
+  \item Quel classifieur tire le plus de profit des caractéristiques optimisées ?
+  \item Les résultats sont-ils reproductibles et statistiquement significatifs ?
+\end{itemize}
+
+\subsection{Contributions}
+
+\begin{enumerate}
+  \item Un cadre d'optimisation de paramètres guidé par la séparabilité pour des
+        descripteurs IRM artisanaux, explorant \NPhaseOneConfigs{} configurations
+        sans entraînement de classifieur.
+  \item Un benchmark complet de \NModels{} classifieurs sur \NFeatureSets{} jeux
+        de caractéristiques, soit \NRuns{} pipelines évalués.
+  \item Une validation statistique multicouche (validation croisée, intervalles de
+        confiance bootstrap, test de McNemar, test de Friedman, stabilité par graine).
+  \item L'identification du meilleur pipeline : \BestPipeline{} avec \BestAcc{} de précision.
+\end{enumerate}

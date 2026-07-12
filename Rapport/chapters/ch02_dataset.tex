@@ -1,0 +1,200 @@
+%=======================================================================
+\chapter{Jeu de données et prétraitement}
+
+\section{Présentation du dataset}
+
+\subsection{Source du dataset}
+
+Dans le cadre de ce projet, nous avons utilisé un jeu de données d'images d'Imagerie par
+Résonance Magnétique (IRM) cérébrale destiné à la classification multiclasses des tumeurs
+cérébrales. Ce dataset est largement utilisé dans la littérature scientifique pour
+l'évaluation des algorithmes de classification médicale et contient des images représentant
+différents types de tumeurs cérébrales.
+
+Les images sont issues d'examens IRM réalisés sur des patients présentant diverses
+pathologies tumorales. Chaque image est associée à une étiquette indiquant la catégorie de
+tumeur correspondante, permettant ainsi l'utilisation de méthodes d'apprentissage supervisé.
+
+\subsection{Composition du dataset}
+
+Afin de garantir un apprentissage équilibré et d'éviter les biais liés au déséquilibre des
+classes, un sous-ensemble équilibré de \NTotal{} images a été constitué. Le jeu de données
+est réparti équitablement entre trois catégories de tumeurs cérébrales.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Répartition des images par classe.}
+  \label{tab:dataset-classes}
+  \begin{tabular}{@{}lc@{}}
+    \toprule
+    \thd{Classe} & \thd{Nombre d'images} \\
+    \midrule
+    Glioma          & 500 \\
+    Meningioma      & 500 \\
+    Pituitary Tumor & 500 \\
+    \midrule
+    \textbf{Total}  & \textbf{\NTotal} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Cette répartition équilibrée permet d'assurer une évaluation plus fiable des performances
+des modèles de classification en évitant qu'une classe ne domine le processus
+d'apprentissage.
+
+\subsection{Description des classes}
+
+Les trois catégories étudiées correspondent aux types de tumeurs cérébrales les plus
+fréquemment rencontrés dans les jeux de données publics d'IRM~:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item \textbf{Glioma}~: tumeur développée à partir des cellules gliales du cerveau. Elle
+        représente l'une des formes les plus courantes de tumeurs cérébrales primaires.
+  \item \textbf{Meningioma}~: tumeur provenant des méninges, les membranes entourant le
+        cerveau et la moelle épinière. Elle est généralement bénigne mais peut entraîner des
+        complications selon sa localisation.
+  \item \textbf{Pituitary Tumor}~: tumeur affectant l'hypophyse, une glande endocrine
+        située à la base du cerveau. Son diagnostic précoce est essentiel afin de prévenir
+        les perturbations hormonales associées.
+\end{itemize}
+
+L'objectif du projet consiste à identifier automatiquement la catégorie à laquelle
+appartient chaque image IRM à partir des caractéristiques visuelles extraites.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{dataset}
+  \caption{Vue d'ensemble du dataset~: répartition train/test par classe et échantillons
+    visuels des trois catégories de tumeurs.}
+  \label{fig:dataset-overview}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\section{Répartition des données d'apprentissage et de test}
+
+Afin d'évaluer correctement la capacité de généralisation des modèles, le jeu de données a
+été divisé en deux sous-ensembles distincts~: un ensemble d'apprentissage destiné à
+l'entraînement des modèles et un ensemble de test réservé à l'évaluation finale.
+
+Une stratégie de division stratifiée (\emph{Stratified Train-Test Split}) a été adoptée afin
+de préserver la proportion de chaque classe dans les deux sous-ensembles.
+
+La répartition retenue est de~:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item \textbf{80\,\% pour l'apprentissage}~;
+  \item \textbf{20\,\% pour le test}.
+\end{itemize}
+
+Cette configuration conduit à la distribution présentée dans le Tableau~\ref{tab:train-test}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Répartition Train/Test.}
+  \label{tab:train-test}
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    \thd{Ensemble} & \thd{Nombre d'images} & \thd{Pourcentage} \\
+    \midrule
+    Train & \NTrain & 80\,\% \\
+    Test  & \NTest  & 20\,\% \\
+    \midrule
+    Total & \NTotal & 100\,\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Grâce à cette stratégie, chaque classe reste représentée de manière équilibrée dans les
+ensembles d'apprentissage et de test, garantissant ainsi une évaluation impartiale des
+performances.
+
+% -----------------------------------------------------------------------
+\section{Prétraitement des images}
+
+Avant l'extraction des caractéristiques, plusieurs opérations de prétraitement ont été
+appliquées afin d'améliorer la qualité des images et d'homogénéiser les données. Ces étapes
+visent à réduire les variations non pertinentes et à faciliter l'extraction de descripteurs
+robustes.
+
+\subsection{Conversion en niveaux de gris}
+
+Les images IRM utilisées dans cette étude sont converties en niveaux de gris afin de
+simplifier leur représentation tout en conservant les informations anatomiques essentielles.
+
+Cette transformation permet de réduire la dimension des données et d'uniformiser les
+traitements ultérieurs. Elle est particulièrement adaptée aux images médicales IRM où les
+informations diagnostiques sont principalement contenues dans les variations d'intensité
+plutôt que dans les composantes colorimétriques.
+
+\subsection{Redimensionnement des images}
+
+Afin de garantir une représentation uniforme des données, toutes les images sont
+redimensionnées vers une résolution fixe avant l'extraction des caractéristiques.
+
+Cette étape permet~:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item d'assurer la cohérence des dimensions entre les échantillons~;
+  \item de faciliter l'extraction des descripteurs~;
+  \item de réduire le coût computationnel des traitements.
+\end{itemize}
+
+Le redimensionnement garantit également que les caractéristiques extraites soient
+comparables entre toutes les images du dataset.
+
+\subsection{Normalisation des intensités}
+
+Les images IRM peuvent présenter des variations importantes d'intensité liées aux conditions
+d'acquisition ou aux différences entre appareils médicaux.
+
+Une étape de normalisation est donc appliquée afin de ramener les niveaux de gris dans une
+plage commune de valeurs. Cette opération contribue à réduire l'influence des variations
+d'éclairage et améliore la robustesse des caractéristiques extraites.
+
+La normalisation facilite également l'apprentissage des modèles en garantissant une échelle
+homogène des données.
+
+\subsection{Amélioration du contraste par CLAHE}
+
+Afin de renforcer la visibilité des structures anatomiques et des régions tumorales, une
+méthode d'amélioration locale du contraste appelée \textbf{Contrast Limited Adaptive
+Histogram Equalization} (CLAHE) est appliquée.
+
+Contrairement à l'égalisation d'histogramme classique, CLAHE agit localement sur différentes
+régions de l'image tout en limitant l'amplification du bruit.
+
+Cette technique présente plusieurs avantages~:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item amélioration du contraste local~;
+  \item meilleure mise en évidence des textures~;
+  \item renforcement des contours et structures tumorales~;
+  \item amélioration de la qualité des caractéristiques extraites.
+\end{itemize}
+
+L'application de CLAHE s'avère particulièrement bénéfique pour les descripteurs de texture
+tels que GLCM et LBP, qui reposent fortement sur les variations locales d'intensité.
+
+\subsection{Pipeline complet de prétraitement}
+
+L'ensemble des opérations réalisées avant l'extraction des caractéristiques est résumé dans
+la Figure~\ref{fig:preprocessing-pipeline}.
+
+\begin{notebox}[Pipeline de prétraitement~:]
+Image IRM originale $\rightarrow$ Conversion en niveaux de gris $\rightarrow$
+Redimensionnement $\rightarrow$ Normalisation des intensités $\rightarrow$
+Amélioration du contraste (CLAHE) $\rightarrow$ Extraction des caractéristiques
+(Statistiques, GLCM, LBP, DWT, HOG).
+\end{notebox}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{preprocessing_pipeline}
+  \caption{Pipeline complet de prétraitement des images IRM avant extraction des
+    caractéristiques.}
+  \label{fig:preprocessing-pipeline}
+\end{figure}
+
+Ce pipeline permet d'obtenir des images homogènes et de meilleure qualité, favorisant ainsi
+l'extraction de caractéristiques discriminantes et l'amélioration des performances de
+classification.

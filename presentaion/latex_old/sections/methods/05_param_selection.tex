@@ -1,0 +1,21 @@
+% SLIDE 10 — Sélection sans classifieur
+\begin{frame}{Sélection des paramètres sans classifieur}
+  \timing{2:00}
+  \small
+  Pour chaque configuration $c$, on calcule sur le train :
+  \begin{align*}
+    \text{FDR} &= \frac{1}{p}\sum_{j=1}^{p}\frac{\sigma_B^2(j)}{\sigma_W^2(j)+\varepsilon}
+    \quad\text{(plus haut = mieux)} \\[0.3em]
+    \text{MI}(X_j;Y) &= \sum_{x,y} p(x,y)\log\frac{p(x,y)}{p(x)p(y)}
+    \quad\text{(dépendance non-linéaire)} \\[0.3em]
+    \text{Score}(c) &= \frac{\text{FDR}_n + \text{MI}_n + (1-\text{DBI}_n)}{3}
+  \end{align*}
+  \vspace{0.3em}
+  \normalsize
+  \textbf{Avantage :} rapide, sans fuite vers le classifieur, \NPhaseOneConfigs{} configs évaluées.
+\end{frame}
+
+\note{
+Chaque métrique est normalisée sur la grille. DBI est inversé (plus bas = clusters compacts).
+Le score composite sélectionne la meilleure config par famille avant Phase 2.
+}

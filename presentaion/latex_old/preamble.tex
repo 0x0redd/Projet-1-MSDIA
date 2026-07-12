@@ -1,0 +1,73 @@
+% Beamer preamble — présentation académique ML classique
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, calc}
+\usepackage{siunitx}
+\usepackage{csquotes}
+\usepackage[backend=biber,style=ieee,maxbibnames=2,minbibnames=1]{biblatex}
+\addbibresource{references.bib}
+
+% Theme — Metropolis with project accent (fallback: comment metropolis, use Madrid)
+\IfFileExists{beamerthememetropolis.sty}{%
+  \usetheme{metropolis}%
+  \usepackage{appendixnumberbeamer}%
+}{%
+  \usetheme{Madrid}%
+}
+\usecolortheme{default}
+
+\definecolor{accent}{HTML}{2E5A88}
+\definecolor{accent2}{HTML}{1F6F54}
+\definecolor{greytx}{HTML}{555555}
+\definecolor{lightbg}{HTML}{EAF1F8}
+
+\setbeamercolor{structure}{fg=accent}
+\setbeamercolor{frametitle}{fg=white,bg=accent}
+\setbeamercolor{title}{fg=white,bg=accent}
+\setbeamercolor{block title}{bg=accent!18,fg=accent}
+\setbeamercolor{block body}{bg=accent!6}
+\setbeamercolor{alerted text}{fg=accent2}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.45\paperwidth,ht=2.4ex,dp=1ex,leftskip=1em]{author in head/foot}%
+      \usebeamerfont{author in head/foot}\insertshortauthor
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.45\paperwidth,ht=2.4ex,dp=1ex,center]{title in head/foot}%
+      \usebeamerfont{title in head/foot}\insertshorttitle
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.1\paperwidth,ht=2.4ex,dp=1ex,rightskip=1em]{date in head/foot}%
+      \usebeamerfont{date in head/foot}\insertframenumber/\inserttotalframenumber
+    \end{beamercolorbox}%
+  }%
+}
+
+\graphicspath{
+  {../../output/}
+  {../../PAPER/latex/figures/}
+  {../../Rapport/figures/}
+}
+
+% Academic macros
+\newcommand{\timing}[1]{\textcolor{greytx}{\footnotesize #1}}
+\newcommand{\keyresult}[1]{\textcolor{accent2}{\textbf{#1}}}
+\newcommand{\partframe}[2]{%
+  \begin{frame}[plain,noframenumbering]%
+    \vfill%
+    \centering%
+    {\Large\color{greytx} Partie #1}\\[0.4em]%
+    {\LARGE\bfseries\color{accent} #2}%
+    \vfill%
+  \end{frame}%
+}
+
+% \setbeameroption{show notes on second screen=right}

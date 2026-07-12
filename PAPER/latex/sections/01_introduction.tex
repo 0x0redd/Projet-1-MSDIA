@@ -1,28 +1,93 @@
-% ML-only focus — aligned with paper_guideline.md
 \section{Introduction}
 \label{sec:introduction}
 
-Accurate discrimination of glioma, meningioma, and pituitary tumours on MRI supports treatment planning and reduces inter-observer variability in resource-limited settings~\cite{ref_bioengineering11030266,ref_diagnostics15212692}.
-While deep convolutional networks dominate recent benchmarks, they require GPU resources, large labelled corpora, and offer limited interpretability---constraints that remain relevant for single-centre studies and clinical prototyping~\cite{ref_access20253579727,ref_011573405636519125060212}.
-Handcrafted radiomics and texture descriptors (GLCM, LBP, DWT, HOG) remain competitive on brain MRI when parameters are tuned, yet most papers rely on library defaults or grid search tied to one classifier, conflating feature quality with classifier choice~\cite{ref_ijigsp20150303,ref_fonc20231248452}.
+Brain tumors represent one of the most critical neurological disorders,
+requiring accurate and timely diagnosis to improve treatment planning and
+patient outcomes. Magnetic Resonance Imaging (MRI) is widely used for brain
+tumor assessment because of its superior soft-tissue contrast and
+non-invasive nature. However, manual interpretation of MRI scans remains
+challenging due to the substantial variability in tumor appearance, shape,
+size, location, and texture. Consequently, computer-aided diagnosis (CAD)
+systems have emerged as valuable tools for assisting radiologists in the
+classification of brain tumors~\cite{ottoni2025}.
 
-We address a specific gap: \emph{no published work combines classifier-free separability scoring for joint GLCM/LBP/DWT/HOG optimisation with a comprehensive multi-classifier benchmark and full statistical validation on the same stratified split}.
-Our pipeline (Fig.~\ref{fig:pipeline}) separates parameter selection (Phase~1) from classifier comparison (Phase~2), avoiding the feedback loop that inflates cross-validation scores when features and models are co-optimised.
+Recent advances in artificial intelligence have significantly improved
+medical image analysis. Deep learning models, particularly Convolutional
+Neural Networks (CNNs), have achieved remarkable performance in brain tumor
+classification tasks~\cite{ottoni2025}. Nevertheless, these approaches often
+require large annotated datasets, extensive computational resources, and
+specialized hardware for training. Furthermore, their decision-making
+process is frequently difficult to interpret, which may limit their adoption
+in clinical environments where transparency and explainability are important
+considerations~\cite{ottoni2025}.
 
-Contributions are:
+In contrast, handcrafted feature-based approaches remain attractive for
+small- and medium-sized medical imaging datasets. Texture and structural
+descriptors such as the Gray-Level Co-occurrence Matrix
+(GLCM)~\cite{haralick1973}, Local Binary Patterns (LBP)~\cite{ojala2002},
+the Discrete Wavelet Transform (DWT)~\cite{mallat1989}, and the Histogram of
+Oriented Gradients (HOG)~\cite{dalal2005} provide interpretable
+representations of image characteristics while maintaining relatively low
+computational requirements. Numerous studies have demonstrated that
+carefully designed handcrafted features combined with classical machine
+learning classifiers can achieve competitive performance in brain tumor
+classification~\cite{pattanaik2022,dheepak2024,nawaz2022,basthikodi2024}.
+
+Despite their effectiveness, most existing studies rely on default descriptor
+parameters or optimize feature extractors using classifier-dependent
+criteria~\cite{pattanaik2022,dheepak2024,basthikodi2024}. In such settings,
+the quality of the extracted features becomes intertwined with the behavior
+of a specific classifier, making it difficult to determine whether
+performance improvements originate from the feature representation itself or
+from the learning algorithm. Moreover, many studies evaluate only a limited
+number of classifiers and rarely provide comprehensive statistical analyses
+to verify the significance of observed performance
+differences~\cite{pattanaik2022,ottoni2025}.
+
+To address these limitations, this work proposes a two-phase framework for
+brain tumor MRI classification. In the first phase, handcrafted feature
+extractors are configured using a classifier-independent optimization
+strategy based on feature separability. Three complementary separability
+metrics---Fisher Discriminant Ratio (FDR), Mutual Information (MI), and
+Davies--Bouldin Index (DBI)---are employed to evaluate and rank candidate
+parameter configurations for GLCM, LBP, DWT, and HOG descriptors. This
+approach enables the selection of feature representations that maximize class
+discrimination before any classifier training is performed.
+
+In the second phase, the optimized feature representations are used to
+conduct a comprehensive benchmarking study of eight classical machine
+learning classifiers, namely Support Vector Machine (SVM)~\cite{cortes1995},
+K-Nearest Neighbors (KNN), Random Forest (RF)~\cite{breiman2001},
+XGBoost~\cite{chen2016}, LightGBM~\cite{ke2017}, Logistic Regression (LR),
+Multi-Layer Perceptron (MLP), and Extra Trees (ET). The benchmarking process
+evaluates multiple feature combinations and employs a rigorous experimental
+protocol based on stratified cross-validation and hyperparameter
+optimization. In addition, statistical validation techniques are applied to
+assess the reliability and significance of the obtained results.
+
+The main contributions of this paper can be summarized as follows:
 \begin{enumerate}
-    \item A separability-first protocol (FDR + MI + DBI) over 213 descriptor configurations, yielding published optimal settings (Tables~\ref{tab:descriptor_grids}, \ref{tab:phase1}).
-    \item An eight-model Phase~2 benchmark (SVM, KNN, RF, XGBoost, LightGBM, LR, MLP, ExtraTrees) on eight feature sets with macro-F1 as the primary metric ($\sim$36{,}000 hyperparameter candidates; Table~\ref{tab:phase2_models}).
-    \item Feature-group importance analysis (RF/XGBoost on Full(opt)) linking unsupervised Phase~1 scores to supervised rankings (Section~\ref{sec:interpretability}).
-    \item Statistical validation: Cohen's $\kappa$, bootstrap 95\% CIs, McNemar, Wilcoxon, and Friedman--Nemenyi tests (Section~\ref{sec:statistics}).
-    \item A soft voting ensemble (SVM + XGBoost + LightGBM on Full(opt)) as a no-search fusion baseline.
+    \item A separability-guided methodology for classifier-independent
+    optimization of handcrafted feature extractors in brain tumor MRI
+    classification.
+    \item A systematic evaluation of GLCM, LBP, DWT, and HOG descriptor
+    configurations using Fisher Discriminant Ratio, Mutual Information, and
+    Davies--Bouldin Index.
+    \item A comprehensive benchmark of eight classical machine learning
+    classifiers across multiple optimized feature representations.
+    \item An analysis of feature-group importance that identifies which
+    descriptor families contribute most to classification performance.
+    % NOTE: softened from "the relationship between descriptor separability
+    % and classification performance"; restore only if that analysis is added.
+    \item A rigorous statistical validation framework incorporating Cohen's
+    kappa coefficient~\cite{cohen1960}, bootstrap confidence intervals,
+    McNemar's test~\cite{mcnemar1947}, the Wilcoxon signed-rank test, and
+    Friedman--Nemenyi analysis~\cite{demsar2006}.
 \end{enumerate}
 
-The remainder of the paper reviews related work (Section~\ref{sec:related}), describes the dataset and methods (Section~\ref{sec:methods}), reports Phase~1 and Phase~2 results (Sections~\ref{sec:phase1_results}--\ref{sec:results_ml}), analyses feature importance and significance, and discusses limitations.
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\linewidth]{phase1_summary}
-\caption{Phase~1 overview: separability-guided selection of GLCM, LBP, DWT, and HOG parameters before any classifier training.}
-\label{fig:pipeline}
-\end{figure}
+The results demonstrate that separability-guided feature configuration
+combined with statistically validated classifier benchmarking can provide
+competitive performance for brain tumor MRI classification while maintaining
+the interpretability and computational efficiency associated with handcrafted
+feature engineering.
+% NOTE: "highly competitive" -> "competitive" until final Phase 2 numbers are in.

@@ -1,0 +1,50 @@
+% Slide 15 — Evaluation Metrics
+\begin{frame}[shrink=2]{Evaluation Metrics}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.56\textwidth}
+    \begin{block}{What we measure (macro-averaged)}
+      \small
+      \begin{tabular}{@{}p{0.22\linewidth}p{0.72\linewidth}@{}}
+        \toprule
+        \textbf{Metric} & \textbf{Why it matters} \\
+        \midrule
+        Accuracy & overall correctness \\
+        Precision & avoid false positives (per class) \\
+        Recall & avoid missed tumors (per class) \\
+        F1-macro & balances precision/recall equally across classes \\
+        $\kappa$ & agreement beyond chance (robustness) \\
+        \bottomrule
+      \end{tabular}
+    \end{block}
+
+    \begin{block}{Ranking criterion}
+      \small We primarily rank configurations by \keyresult{macro-F1} to ensure fair
+      performance across the three tumor classes.
+    \end{block}
+
+    \column{0.42\textwidth}
+    \centering
+    \begin{tikzpicture}[
+      node distance=0.5cm,
+      box/.style={rectangle, rounded corners=2pt, draw=accent, fill=lightbg,
+                  minimum height=0.7cm, minimum width=0.92\linewidth, align=center, font=\small},
+      arr/.style={-{Stealth[length=2mm]}, thick, accent}
+    ]
+      \node[box] (train) {Train split (80\%)}; 
+      \node[box, below=of train] (cv) {5-fold CV + tuning};
+      \node[box, below=of cv] (test) {Held-out test (20\%)};
+      \node[box, below=of test] (stats) {CI + significance tests};
+      \draw[arr] (train) -- (cv);
+      \draw[arr] (cv) -- (test);
+      \draw[arr] (test) -- (stats);
+    \end{tikzpicture}
+
+    \vspace{0.3em}
+    {\scriptsize Bootstrap CI, McNemar (paired test errors), Friedman (multi-model comparison).}
+  \end{columns}
+\end{frame}
+
+\note{
+Macro averaging treats all tumor classes equally --- important for clinical fairness.
+F1-macro is the primary ranking metric.
+}

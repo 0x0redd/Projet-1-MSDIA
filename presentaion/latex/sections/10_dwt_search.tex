@@ -1,0 +1,42 @@
+% Slide 10 — DWT Optimization
+\begin{frame}[shrink=4]{DWT Optimization Results}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.62\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{dwt_param_search.png}
+
+    \column{0.36\textwidth}
+    \begin{block}{Search space}
+      \small
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        Wavelets & 7 families \\
+        Levels & 1--3 \\
+        Total & 21 configs \\
+        \bottomrule
+      \end{tabular}
+    \end{block}
+
+    \begin{block}{Selected configuration}
+      \small
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        Wavelet & \texttt{db2} \\
+        Level & 1 \\
+        \midrule
+        Separability & \dwtScore \\
+        \bottomrule
+      \end{tabular}
+    \end{block}
+
+    \begin{block}{Takeaway}
+      \small \texttt{db2} at level 1 captures discriminative mid-frequency structure
+      without over-fragmenting the image signal.
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\note{
+Tested haar, db1, db2, db4, sym2, coif1, bior1.3 at levels 1--3.
+db2 level 1 selected for Phase 2 branch C.
+}

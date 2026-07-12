@@ -1,0 +1,20 @@
+% SLIDE 16 — Conclusion
+\begin{frame}{Conclusion}
+  \timing{0:30}
+  \textbf{À retenir :}
+  \begin{enumerate}
+    \item Features artisanales + ML classique $\rightarrow$ \textbf{\BestAcc} / $\kappa{=}$\BestKappa{}
+          sur IRM à 3 classes, pipeline entièrement interprétable
+    \item \textbf{Sélection par métriques} (FDR / MI / DBI) --- rapide, sans fuite de données
+    \item \textbf{HOG seul = \HogSvmAcc} --- la fusion ajoute $<$\FusionGain{} pt ; simplicité vs gain marginal
+  \end{enumerate}
+  \vspace{0.8em}
+  \centering
+  \textcolor{accent}{\large Le deep learning n'est pas la seule voie.}
+\end{frame}
+
+\note{
+Le deep learning n'est pas le seul chemin.
+Avec une bonne ingénierie de features et une validation honnête,
+le ML classique est compétitif, moins coûteux, et explicable.
+}

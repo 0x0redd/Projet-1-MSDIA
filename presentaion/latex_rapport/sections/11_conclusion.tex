@@ -1,0 +1,44 @@
+\section{Conclusion et perspectives}
+\label{sec:conclusion}
+
+\subsection{Synthèse}
+
+Ce rapport a présenté un pipeline ML en deux phases pour la classification IRM
+de tumeurs cérébrales. La Phase~1 a utilisé trois métriques de séparabilité (FDR,
+MI, DBI) pour sélectionner les paramètres optimaux de quatre familles de descripteurs
+artisanaux sur \NPhaseOneConfigs{} configurations, sans entraînement de classifieur.
+La Phase~2 a benchmarké \NModels{} classifieurs sur \NFeatureSets{} jeux de
+caractéristiques (\NRuns{} pipelines évalués), avec une validation statistique complète.
+
+Les principaux résultats sont les suivants :
+\begin{itemize}
+  \item \textbf{Meilleur pipeline :} Full(opt) + SVM --- précision \BestAcc{},
+        F1-macro \BestFOne, $\kappa = \BestKappa$.
+  \item \textbf{La fusion améliore les familles isolées :} + \FusionGain{} points
+        de pourcentage par rapport à la référence HOG seul.
+  \item \textbf{Robustesse statistique :} variance CV $\leq 0{,}01$, IC bootstrap
+        [\BestFOneCILow, \BestFOneCIHigh], F1 moyen par graine \SeedFOneMean.
+  \item \textbf{Significativité du SVM :} significativement meilleur que RF et
+        XGBoost sur Full(opt) (McNemar, $p < 0{,}02$).
+\end{itemize}
+
+\subsection{Perspectives}
+
+\begin{enumerate}
+  \item \textbf{Comparaison avec l'apprentissage profond :} évaluer des CNN
+        (EfficientNet, ResNet) et des Vision Transformers sur le même jeu de données
+        et protocole pour une comparaison directe.
+  \item \textbf{Systèmes hybrides ML/DL :} combiner des caractéristiques artisanaux
+        optimisées avec des embeddings appris en profondeur pour un pool de
+        caractéristiques complémentaire.
+  \item \textbf{IA explicable :} intégrer Grad-CAM ou SHAP pour fournir des
+        explications spatiales aux côtés de la décision du classifieur, renforçant
+        la confiance clinique.
+  \item \textbf{Validation multi-centres :} évaluer le pipeline sur des jeux de
+        données hétérogènes en termes d'appareils pour mesurer la généralisabilité clinique.
+\end{enumerate}
+
+L'apprentissage automatique classique avec des descripteurs artisanaux optimisés
+reste une approche compétitive et transparente pour la classification IRM de
+tumeurs cérébrales, en particulier dans des scénarios à données limitées et à
+forte exigence d'interprétabilité.

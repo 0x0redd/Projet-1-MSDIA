@@ -1,0 +1,176 @@
+﻿=== CELL 46 ===
+## 13. Overall Performance Dashboard
+
+=== CELL 47 ===
+init_phase2_viz_context()
+
+# ΓöÇΓöÇ Figure 1: Grouped bar ΓÇö F1-macro ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+fig1, ax1 = plt.subplots(figsize=(20, 8))
+n_models = len(mnames)
+group_w  = 0.8                     # total width occupied by one group of bars
+w        = group_w / n_models      # width of a single bar
+x        = np.arange(len(fs_list))
+for i, mn in enumerate(mnames):
+    vals = [P2[fs][mn]["f1m"] if mn in P2[fs] else np.nan for fs in fs_list]
+    offset = (i - (n_models - 1) / 2) * w     # center the group on each x tick
+    bars = ax1.bar(x + offset, vals, w, label=mn,
+                   color=_model_color(mn), edgecolor="white", linewidth=0.4)
+    ax1.bar_label(bars, fmt="%.3f", fontsize=6, padding=1, rotation=90)
+ax1.set_xticks(x); ax1.set_xticklabels(fs_list, rotation=20, ha="right", fontsize=9)
+ax1.set_ylim(0, 1.20); ax1.set_ylabel("Test F1-macro")
+ax1.set_xlim(-0.5, len(fs_list) - 0.5)
+ax1.set_title("Test F1-macro ΓÇö All Feature Sets ├ù Models (Optimal Params)", fontsize=12, fontweight="bold")
+ax1.legend(fontsize=9, ncol=4, loc="upper center", bbox_to_anchor=(0.5, 1.0), framealpha=0.9)
+ax1.axhline(0.5, color="gray", lw=0.8, ls="--", alpha=0.4)
+plt.tight_layout()
+plt.savefig(OUTPUT_DIR / "p2_f1_grouped_bar.png", dpi=120, bbox_inches="tight")
+plt.show()
+print("Saved: p2_f1_grouped_bar.png")
+
+# ΓöÇΓöÇ Figure 2: Heatmap ΓÇö F1-macro ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+from matplotlib.colors import BoundaryNorm
+
+# ΓöÇΓöÇ Figure 2: Heatmap ΓÇö F1-macro (banded colors) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+fig2, ax2 = plt.subplots(figsize=(14, 8))
+hdata = pd.DataFrame(
+    {mn: [P2[fs][mn]["f1m"] if mn in P2[fs] else np.nan for fs in fs_list] for mn in mnames},
+    index=fs_list)
+
+# discrete bands: <0.7, 0.7ΓÇô0.8, 0.8ΓÇô0.9, 0.9ΓÇô1.0
+bounds = [0.0, 0.7, 0.8, 0.9, 1.0]
+cmap   = plt.get_cmap("YlGnBu", len(bounds) - 1)   # one color per band
+norm   = BoundaryNorm(bounds, cmap.N)
+
+sns.heatmap(hdata, ax=ax2, annot=True, fmt=".3f", cmap=cmap, norm=norm,
+            linewidths=0.5, linecolor="white",
+            cbar_kws={"label": "Test F1-macro", "ticks": bounds, "spacing": "proportional"})
+ax2.set_title("F1-macro Heatmap (banded: 0.7ΓÇô0.8 / 0.8ΓÇô0.9 / 0.9ΓÇô1.0)",
+              fontsize=12, fontweight="bold")
+ax2.tick_params(axis="x", rotation=0); ax2.tick_params(axis="y", rotation=0)
+plt.tight_layout()
+plt.savefig(OUTPUT_DIR / "p2_f1_heatmap.png", dpi=120, bbox_inches="tight")
+plt.show()
+print("Saved: p2_f1_heatmap.png")
+
+# ΓöÇΓöÇ Figure 3: Scatter ΓÇö training time vs F1-macro ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+fig3, ax3 = plt.subplots(figsize=(14, 9))
+for mn in mnames:
+    times = [P2[fs][mn]["fit_t"] if mn in P2[fs] else np.nan for fs in fs_list]
+    f1s   = [P2[fs][mn]["f1m"]   if mn in P2[fs] else np.nan for fs in fs_list]
+    ax3.scatter(times, f1s, s=90, label=mn, color=_model_color(mn),
+                edgecolors="white", zorder=3)
+    for fi, fs in enumerate(fs_list):
+        ax3.annotate(fs[:9], (times[fi], f1s[fi]),
+                     textcoords="offset points", xytext=(4,2), fontsize=6.5)
+ax3.set_xlabel("Training time (s)"); ax3.set_ylabel("Test F1-macro")
+ax3.set_title("Training Time vs F1-macro Trade-off", fontsize=12, fontweight="bold")
+ax3.legend(fontsize=10); ax3.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig(OUTPUT_DIR / "p2_time_vs_f1_scatter.png", dpi=120, bbox_inches="tight")
+plt.show()
+print("Saved: p2_time_vs_f1_scatter.png")
+
+=== CELL 48 ===
+## 14. Leaderboard & Final Summary
+
+=== CELL 49 ===
+init_phase2_viz_context()
+rows = []
+for fs in fs_list:
+    for mn in mnames:
+        if mn not in P2.get(fs, {}):
+            continue
+        r = P2[fs][mn]
+        rows.append({"Feature Set":fs, "Model":mn,
+                     "Accuracy":r["acc"], "F1-macro":r["f1m"],
+                     "F1-weighted":r["f1w"], "Precision":r["prec"],
+                     "Recall":r["rec"], "Fit Time (s)":r["fit_t"],
+                     "Best Params":str(r["best_params"])})
+leader = pd.DataFrame(rows)
+mms2 = MinMaxScaler()
+leader["time_n"] = mms2.fit_transform(leader[["Fit Time (s)"]])
+leader["Composite"] = (0.50*leader["F1-macro"] + 0.30*leader["Accuracy"]
+                       + 0.10*leader["Precision"] + 0.10*leader["Recall"]
+                       - 0.05*leader["time_n"]).round(4)
+leader = leader.sort_values("Composite", ascending=False).reset_index(drop=True)
+leader.index += 1
+print("LEADERBOARD")
+display(leader[["Feature Set","Model","Accuracy","F1-macro",
+                "Precision","Recall","Fit Time (s)","Composite"]].round(4))
+leader.to_csv("phase2_benchmark_results.csv", index=False)
+
+# ΓöÇΓöÇ Save leaderboard to JSON ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+leader.to_json(OUTPUT_DIR / "leaderbordML.json", orient="records", indent=2)
+
+# ΓöÇΓöÇ Leaderboard bar chart ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+fig, ax = plt.subplots(figsize=(14, 7))
+top = leader.head(min(20, len(leader)))
+bar_cols = [_model_color(m) for m in top["Model"]]
+bars = ax.barh(range(len(top))[::-1], top["Composite"],
+               color=bar_cols, edgecolor="white")
+ax.set_yticks(range(len(top))[::-1])
+ax.set_yticklabels([f"{r['Feature Set']} | {r['Model']}"
+                    for _, r in top.iterrows()], fontsize=9)
+ax.set_xlabel("Composite Score")
+ax.set_title("Final Leaderboard ΓÇö Optimal Feature Params + Tuned Models",
+             fontsize=13, fontweight="bold")
+from matplotlib.patches import Patch
+ax.legend(handles=[Patch(facecolor=_model_color(m),label=m) for m in mnames],
+          fontsize=10, loc="lower right")
+ax.bar_label(bars, fmt="%.4f", fontsize=8, padding=2)
+ax.set_xlim(0, 1.08)
+plt.tight_layout()
+plt.savefig(OUTPUT_DIR / "p2_leaderboard.png", dpi=120, bbox_inches="tight")
+plt.show()
+print("\nSaved: phase2_benchmark_results.csv, leaderbordML.json, p2_leaderboard.png")
+
+=== CELL 50 ===
+# ΓöÇΓöÇ Final print summary ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+if "leader" not in globals() or leader.empty:
+    raise ValueError("Run the leaderboard cell above first.")
+
+print("=" * 65)
+print("FINAL SUMMARY")
+print("=" * 65)
+
+best = leader.iloc[0]
+print(f"\n≡ƒÅå  Best overall:")
+print(f"     Feature Set : {best['Feature Set']}")
+print(f"     Model       : {best['Model']}")
+print(f"     Accuracy    : {best['Accuracy']:.4f}")
+print(f"     F1-macro    : {best['F1-macro']:.4f}")
+print(f"     Composite   : {best['Composite']:.4f}")
+
+print(f"\n≡ƒôè  Best per model:")
+for mn in leader["Model"].unique():
+    sub = leader[leader["Model"]==mn].iloc[0]
+    print(f"     {mn:4s}  Feature Set: {sub['Feature Set']:20s}  "
+          f"F1={sub['F1-macro']:.4f}")
+
+print(f"\n≡ƒôª  Best per feature set:")
+for fs in fs_list:
+    sub = leader[leader["Feature Set"]==fs].iloc[0]
+    print(f"     {fs:18s}  {sub['Model']:4s}  F1={sub['F1-macro']:.4f}")
+
+print(f"\nΓÜÖ∩╕Å   Optimal feature parameters used:")
+print(f"     GLCM: dist={BEST_GLCM_DIST}  ang={len(BEST_GLCM_ANG)} angles  "
+      f"lvl={BEST_GLCM_LVL}  sym={BEST_GLCM_SYM}")
+print(f"     LBP : P={BEST_LBP_P}  R={BEST_LBP_R}  method={BEST_LBP_METHOD}")
+print(f"     DWT : wavelet={BEST_DWT_WAV}  level={BEST_DWT_LEVEL}")
+
+print(f"\n≡ƒôü  Output files:")
+for f in [
+          "phase2_benchmark_results.csv",
+          "phase2_all_modes_metrics.csv",
+          "seed_stability_3seeds.csv",
+          "output/class_balance_train.png",
+          "output/rf_branch_importance.png",
+          "output/tsne_best_feature_set.png",
+          "output/glcm_param_search.png", "output/glcm_top15.png",
+          "output/lbp_param_search.png", "output/lbp_by_method.png",
+          "output/dwt_param_search.png", "output/dwt_wavelet_comparison.png",
+          "output/phase1_summary.png",
+          "output/p2_overall_dashboard.png", "output/p2_leaderboard.png"]:
+    print(f"     {f}")
+
+

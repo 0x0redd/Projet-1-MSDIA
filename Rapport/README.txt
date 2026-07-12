@@ -1,40 +1,46 @@
-BRAIN TUMOR DETECTION & CLASSIFICATION — LaTeX report
-=====================================================
+RAPPORT — Classification de tumeurs cérébrales (IRM)
+====================================================
 
 COMPILE
-  pdflatex main.tex        (run twice so the table of contents resolves)
-  # or:  latexmk -pdf main.tex
+  pdflatex main.tex        (deux passes pour la table des matières)
+  # ou:  latexmk -pdf main.tex
 
-FILE LAYOUT
-  main.tex                  preamble + \input of every section. Rarely edited.
-  results.tex               >>> EDIT ONLY THIS FILE after training/benchmarking <<<
-                            All fill-in metrics are \newcommand / \def macros here.
-                            Unfilled values show in RED as [CV], [Acc], etc.
-  sections/00_abstract.tex
-  sections/01_problem.tex
-  sections/02_dataset.tex
-  sections/03_strategy.tex
-  sections/04_descriptors.tex      (GLCM, LBP, DWT, HOG)
-  sections/05_hyperparams.tex      (Phase 1 — separability selection)
-  sections/06_fusion_benchmark.tex (Phase 2 — fusion + GridSearchCV)
-  sections/07_statistical_validation.tex
-  sections/08_results_discussion.tex
-  sections/09_conclusion.tex
+STRUCTURE ACADÉMIQUE (M1 IA / Data Science)
+  Page de garde
+  Résumé
+  Introduction Générale
+  Chapitre 1  — État de l'art
+  Chapitre 2  — Jeu de données et prétraitement
+  Chapitre 3  — Extraction des caractéristiques
+  Chapitre 4  — Optimisation des descripteurs (Phase 1)
+  Chapitre 5  — Construction des ensembles (Phase 2)
+  Chapitre 6  — Benchmark des modèles ML
+  Chapitre 7  — Validation statistique
+  Chapitre 8  — Analyse et discussion
+  Chapitre 9  — Ouverture Deep Learning / VLMs
+  Conclusion Générale
+  Bibliographie
+  Annexes A–E
 
-ADDING YOUR RESULTS
-  1. Open results.tex.
-  2. Replace each \TODO{...} placeholder with your value, e.g.
-        \def\svmAcc{0.961}   \def\svmFone{0.958}
-        \def\bestModel{SVM}  \def\bestFeatureSet{Full(opt)}
-  3. Recompile. The red markers turn into your numbers automatically.
+FICHIERS
+  main.tex                  préambule + assemblage
+  results.tex               >>> métriques à remplir après benchmark <<<
+  sections/00_resume.tex
+  sections/01_introduction.tex   (Introduction Générale — texte fourni)
+  chapters/ch01_*.tex … ch09_*.tex
+  sections/10_conclusion.tex
+  sections/11_bibliographie.tex
+  annexes/annexes.tex
 
-ADDING FIGURES
-  Put images in a figs/ folder and uncomment the \includegraphics blocks
-  (commented examples are in 02_dataset.tex; add more where the
-  "Figure placeholder" boxes are).
+WORKFLOW
+  Envoyer le texte section par section ; chaque bloc remplace les
+  marqueurs « À compléter » dans le fichier LaTeX correspondant.
 
-NOTES
-  - Phase 1 numbers, dataset sizes, and feature dimensions are already filled
-    (taken from the notebook) and normally need no change.
-  - lmodern + microtype expansion are optional; this compiles on a minimal
-    TeX Live too.
+ANCIEN CONTENU (référence, non compilé)
+  sections/01_problem.tex, 02_dataset.tex, 03_strategy.tex,
+  04_descriptors.tex, 05_hyperparams.tex, 06_fusion_benchmark.tex,
+  07_statistical_validation.tex, 08_results_discussion.tex,
+  09_conclusion.tex
+
+MÉTRIQUES
+  Ouvrir results.tex et remplacer les \TODO{...} par les valeurs finales.

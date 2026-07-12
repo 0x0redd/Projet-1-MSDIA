@@ -1,0 +1,106 @@
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+
+\subsection{Conclusion}
+\label{sec:concl_summary}
+
+This paper presented a two-phase framework for brain tumor MRI classification based
+on separability-guided handcrafted feature optimization and comprehensive machine
+learning classifier benchmarking. The proposed methodology was designed to address
+a key limitation of existing handcrafted feature-based approaches, namely the
+dependence of feature optimization on classifier performance. By separating feature
+configuration from classifier evaluation, the framework enables a more objective
+assessment of feature quality and provides a clearer understanding of the
+relationship between feature representation and classification performance.
+
+In the first phase, a classifier-independent optimization strategy was introduced
+to identify the most discriminative configurations of four widely used handcrafted
+descriptor families: Gray-Level Co-occurrence Matrix (GLCM), Local Binary Patterns
+(LBP), Discrete Wavelet Transform (DWT), and Histogram of Oriented Gradients (HOG).
+Candidate configurations were evaluated using a composite separability score derived
+from Fisher Discriminant Ratio, Mutual Information, and Davies--Bouldin Index. The
+results demonstrated that descriptor parameterization significantly affects feature
+discriminability and that systematic optimization can substantially improve
+representation quality compared with default settings.
+
+In the second phase, the optimized descriptors were employed to construct multiple
+feature representations and evaluate eight machine learning classifiers, including
+Support Vector Machine, K-Nearest Neighbors, Random Forest, XGBoost, LightGBM,
+Logistic Regression, Multi-Layer Perceptron, and Extra Trees. The benchmarking
+study revealed that optimized handcrafted features provide strong discriminative
+capability across diverse learning paradigms and that feature fusion strategies
+generally outperform individual descriptor families by combining complementary
+image characteristics.
+
+The experimental findings highlighted three principal observations. First, feature
+optimization plays a crucial role in maximizing classification performance and should
+be considered an integral component of the learning pipeline rather than a fixed
+preprocessing step. Second, texture-based descriptors emerged as particularly
+informative for brain tumor MRI classification, while frequency and gradient
+features contributed complementary information that enhanced hybrid representations.
+Third, ensemble learning methods consistently demonstrated strong predictive
+performance when combined with optimized handcrafted features, confirming their
+suitability for high-dimensional medical image analysis tasks.
+
+To ensure the reliability of the reported results, a comprehensive statistical
+validation framework was incorporated. Cohen's $\kappa$ coefficients, bootstrap
+confidence intervals, McNemar's tests, Wilcoxon signed-rank tests, and
+Friedman--Nemenyi analyses collectively confirmed the robustness and statistical
+significance of the observed performance differences. These analyses provide strong
+evidence that the reported improvements are meaningful and reproducible rather than
+resulting from random experimental variation.
+
+Overall, the proposed framework demonstrates that carefully optimized handcrafted
+feature engineering remains a highly competitive approach for brain tumor MRI
+classification. Beyond achieving strong predictive performance, the methodology
+offers important advantages in terms of interpretability, computational efficiency,
+reproducibility, and suitability for limited-data environments. These characteristics
+make the proposed approach particularly attractive for practical computer-aided
+diagnosis systems where transparency and resource efficiency are important
+considerations.
+
+\subsection{Future Work}
+\label{sec:concl_future}
+
+Although the proposed framework achieved promising results, several opportunities
+exist for further research and development.
+
+A natural extension of this work involves the integration of deep feature
+representations extracted from pretrained convolutional neural networks such as
+VGG16, ResNet50, EfficientNet, and DenseNet. Comparing separability-guided
+handcrafted features with deep representations under a unified benchmarking
+framework would provide valuable insights into the relative strengths and
+limitations of both approaches.
+
+Another promising direction is the development of hybrid feature representations
+that combine optimized handcrafted descriptors with deep features. Such systems may
+benefit from the interpretability of handcrafted features while simultaneously
+exploiting the powerful representation-learning capabilities of deep neural
+networks.
+
+Recent advances in Vision-Language Models (VLMs) also open new research
+opportunities. Medical adaptations of multimodal architectures, including CLIP,
+BioMedCLIP, and MedCLIP, could be investigated for brain tumor classification and
+diagnosis support. Future studies may explore whether separability-guided
+optimization principles can be extended to latent representations generated by
+these models.
+
+From a clinical perspective, future work should include evaluation on larger and
+more diverse multi-center datasets acquired using different MRI scanners and imaging
+protocols. Such experiments would provide stronger evidence regarding the
+robustness and generalizability of the proposed methodology in real-world clinical
+environments.
+
+Finally, the proposed optimization framework could be extended beyond brain tumor
+classification to other medical imaging applications, including neurological
+disorders, breast cancer diagnosis, lung disease classification, and
+histopathological image analysis. The generality of the separability-guided
+optimization strategy suggests that it may constitute a broadly applicable
+methodology for handcrafted feature engineering in medical image analysis.
+
+In conclusion, this work establishes a systematic and statistically rigorous
+framework for handcrafted feature optimization and classifier benchmarking in brain
+tumor MRI classification. The findings demonstrate that feature separability
+constitutes an effective optimization objective and provide a strong foundation
+for future research at the intersection of handcrafted feature engineering, machine
+learning, deep learning, and multimodal medical artificial intelligence.

@@ -1,0 +1,81 @@
+%=======================================================================
+%  metrics.tex — single source of truth for presentation numbers
+%=======================================================================
+
+% --- Dataset ---
+\newcommand{\NClasses}{3}
+\newcommand{\NTotal}{1\,500}
+\newcommand{\NPerClass}{500}
+\newcommand{\NTrain}{1\,200}
+\newcommand{\NTest}{300}
+\newcommand{\NTestPerClass}{100}
+\newcommand{\ImgSize}{$128\times128$}
+
+% --- Phase 1 best parameters ---
+\newcommand{\statsParams}{11 first-order intensity features}
+\newcommand{\lbpParams}{$P{=}12$, $R{=}1$, uniform}
+\newcommand{\dwtParams}{\texttt{db2}, level $=1$}
+\newcommand{\hogParams}{6 orient.; cell $(16,16)$; block $(3,3)$; L2-Hys}
+
+\newcommand{\lbpScore}{0.991}
+\newcommand{\dwtScore}{0.984}
+\newcommand{\hogScore}{0.990}
+\newcommand{\statsScore}{---}
+\newcommand{\NPhaseOneConfigs}{213}
+
+% --- Phase 2 protocol ---
+\newcommand{\NModels}{8}
+\newcommand{\NFeatureSets}{8}
+\newcommand{\NRuns}{64}
+
+% --- Best overall pipeline ---
+\newcommand{\BestPipeline}{\textbf{Full(opt) + SVM}}
+\newcommand{\BestAcc}{92.0\%}
+\newcommand{\BestFOne}{0.9204}
+\newcommand{\BestPrecision}{0.9228}
+\newcommand{\BestRecall}{0.9200}
+\newcommand{\BestKappa}{0.880}
+\newcommand{\BestFOneCILow}{0.8895}
+\newcommand{\BestFOneCIHigh}{0.9504}
+\newcommand{\BestAccCILow}{0.8900}
+\newcommand{\BestAccCIHigh}{0.9500}
+\newcommand{\BestAccCVMean}{0.8953}
+\newcommand{\BestAccCVStd}{0.0099}
+\newcommand{\BestFOneCVMean}{0.8951}
+\newcommand{\BestFOneCVStd}{0.0100}
+
+% --- HOG baseline ---
+\newcommand{\HogPipeline}{D — HOG + SVM}
+\newcommand{\HogSvmAcc}{90.3\%}
+\newcommand{\HogSvmFOne}{0.9032}
+\newcommand{\FusionGain}{1.7}
+
+% --- Per-branch best (split test) ---
+\newcommand{\AccAStats}{78.7\%}
+\newcommand{\FOneAStats}{0.7867}
+\newcommand{\ModelAStats}{SVM}
+\newcommand{\AccBTex}{82.7\%}
+\newcommand{\FOneBTex}{0.8268}
+\newcommand{\ModelBTex}{XGBoost}
+\newcommand{\AccCDwt}{75.7\%}
+\newcommand{\FOneCDwt}{0.7540}
+\newcommand{\ModelCDwt}{RF}
+\newcommand{\AccDHog}{90.3\%}
+\newcommand{\FOneDHog}{0.9032}
+\newcommand{\ModelDHog}{SVM}
+
+% --- Leaderboard ranks 2--5 ---
+\newcommand{\RankTwoFOne}{0.9032}
+\newcommand{\RankThreeFOne}{0.9002}
+\newcommand{\RankFourFOne}{0.8967}
+\newcommand{\RankFiveFOne}{0.8938}
+
+% --- Seed stability ---
+\newcommand{\SeedFOneMean}{0.9242}
+\newcommand{\SeedFOneCI}{0.0251}
+
+% --- Statistical tests (Full(opt), McNemar vs SVM) ---
+\newcommand{\McNemarRF}{0.0056}
+\newcommand{\McNemarXGB}{0.019}
+\newcommand{\McNemarKNN}{0.39}
+\newcommand{\FriedmanFullP}{0.0013}

@@ -1,0 +1,31 @@
+\section{Prétraitement}
+
+Toutes les images passent par le pipeline déterministe suivant avant toute extraction
+de caractéristiques :
+
+\begin{enumerate}
+  \item \textbf{Conversion en niveaux de gris et mise à l'échelle.} Les images RGB
+        sont converties en niveaux de gris ; les intensités sont ramenées à $[0, 1]$.
+  \item \textbf{Recadrage des bordures noires.} Les zones sombres autour de la région
+        cérébrale sont détectées et supprimées pour se concentrer sur le contenu anatomique.
+  \item \textbf{Redimensionnement à \ImgSize{}.} Les images sont rééchantillonnées
+        avec anti-crénelage, réduisant la dimensionnalité tout en préservant les textures fines.
+  \item \textbf{Lissage gaussien} ($\sigma = 0{,}5$). Un filtre passe-bas atténue
+        le bruit haute fréquence introduit lors de l'acquisition ou du redimensionnement.
+  \item \textbf{Normalisation par image et CLAHE.} Chaque image est normalisée
+        min--max individuellement, puis une égalisation adaptative de l'histogramme
+        à contraste limité (CLAHE, clip limit $= 0{,}02$) améliore le contraste local.
+\end{enumerate}
+
+Cette séquence de prétraitement standardise la plage d'intensités entre patients
+et appareils, et met en évidence les structures locales pertinentes pour les descripteurs
+de texture et de gradient. La Figure~\ref{fig:preprocessed} montre un exemple de
+coupe prétraitée.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.45\linewidth,trim=130 520 130 70,clip]{descriptor_demo.png}
+  \caption{Exemple de coupe IRM prétraitée (classe méningiome), \ImgSize{},
+           après amélioration CLAHE.}
+  \label{fig:preprocessed}
+\end{figure}

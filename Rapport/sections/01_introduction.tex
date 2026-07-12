@@ -1,0 +1,62 @@
+%=======================================================================
+\chapter*{Introduction Générale}
+\addcontentsline{toc}{chapter}{Introduction Générale}
+\setcounter{section}{0}
+\renewcommand{\thesection}{\arabic{section}}
+
+% -----------------------------------------------------------------------
+\section{Contexte}
+
+L'Imagerie par Résonance Magnétique (IRM) est un outil incontournable pour l'analyse des
+pathologies cérébrales. Les tumeurs cérébrales constituent toutefois un défi diagnostique
+majeur~: plusieurs types présentent des apparences visuelles proches, et leur interprétation
+requiert une expertise médicale approfondie.
+
+L'Intelligence Artificielle offre des perspectives prometteuses pour automatiser cette
+analyse. Si le Deep Learning domine la littérature récente, les approches fondées sur des
+caractéristiques manuelles (\emph{handcrafted features}) conservent un intérêt fort grâce à
+leur interprétabilité, leur faible coût computationnel et leur robustesse sur des jeux de
+données de taille modérée.
+
+% -----------------------------------------------------------------------
+\section{Problématique}
+
+La classification automatique des tumeurs cérébrales repose sur la qualité des descripteurs
+utilisés pour représenter les images. Statistiques d'intensité, textures (GLCM, LBP),
+informations fréquentielles (DWT) et contours (HOG) capturent chacun un aspect différent de
+l'image~; leur combinaison et leur optimisation conditionnent directement les performances
+des modèles de Machine Learning.
+
+Ce projet adopte donc une stratégie d'ingénierie des caractéristiques~: extraire,
+optimiser, fusionner et évaluer systématiquement plusieurs familles de descripteurs avant de
+comparer les algorithmes de classification.
+
+% -----------------------------------------------------------------------
+\section{Objectifs du projet}
+
+L'objectif principal est de développer un système complet de classification multiclasses des
+tumeurs cérébrales à partir d'images IRM. Les objectifs spécifiques sont~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item concevoir un pipeline de bout en bout (prétraitement, extraction, classification)~;
+  \item optimiser les paramètres des descripteurs GLCM, LBP, DWT et HOG~;
+  \item construire et comparer huit ensembles de caractéristiques fusionnés~;
+  \item benchmarker huit modèles de Machine Learning et identifier la meilleure configuration~;
+  \item valider statistiquement la robustesse des résultats obtenus.
+\end{itemize}
+
+% -----------------------------------------------------------------------
+\section{Contributions}
+
+Ce travail apporte~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item une optimisation systématique des descripteurs en Phase~1 (score de séparabilité)~;
+  \item une fusion multi-branches avec nettoyage des redondances (Phase~2)~;
+  \item un benchmark comparatif de 64 expériences (8 modèles $\times$ 8 ensembles)~;
+  \item une validation statistique complète (Kappa, Bootstrap, McNemar, Friedman)~;
+  \item une analyse d'interprétabilité par importance des branches de caractéristiques.
+\end{itemize}
+
+Le Chapitre~1 présente l'état de l'art~; les Chapitres~2 à~5 décrivent le dataset, l'extraction,
+l'optimisation et la construction des ensembles~; les Chapitres~6 et~7 rapportent le benchmark
+et la validation statistique~; les Chapitres~8 et~9 analysent les résultats et ouvrent vers le
+Deep Learning et les modèles Vision-Language.

@@ -1,0 +1,19 @@
+% Slide 16 — Individual Feature Results
+\begin{frame}[shrink=5]{Individual Feature Results}
+  \centering
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+    \includegraphics[width=\linewidth,height=0.30\textheight,keepaspectratio]{p2_A_—_Stats.png}\\[0.1em]
+    \includegraphics[width=\linewidth,height=0.30\textheight,keepaspectratio]{p2_C_—_DWT(opt).png}
+    \column{0.48\textwidth}
+    \includegraphics[width=\linewidth,height=0.30\textheight,keepaspectratio]{p2_B_—_Tex(opt).png}\\[0.1em]
+    \includegraphics[width=\linewidth,height=0.30\textheight,keepaspectratio]{p2_D_—_HOG.png}
+  \end{columns}
+  \vspace{-0.3em}
+  {\scriptsize \textbf{Best per branch:} A/SVM \AccAStats{} \quad B/XGB \AccBTex{} \quad C/RF \AccCDwt{} \quad D/SVM \AccDHog{}}
+\end{frame}
+
+\note{
+HOG alone reaches 90.3\% --- strongest individual family.
+Statistics and DWT are weaker alone but may contribute complementary signal when fused.
+}

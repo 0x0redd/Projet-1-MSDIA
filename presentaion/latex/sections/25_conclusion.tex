@@ -1,0 +1,48 @@
+% Slide 25 — Conclusion and Future Work
+\begin{frame}[shrink=2]{Conclusion and Future Work}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.56\textwidth}
+    \begin{block}{Main contributions}
+      \small
+      \begin{tabular}{@{}p{0.35\linewidth}p{0.60\linewidth}@{}}
+        \toprule
+        \textbf{Contribution} & \textbf{Outcome} \\
+        \midrule
+        Feature optimization & separability-driven parameter selection \\
+        Benchmarking & \NModels{} models $\times$ \NFeatureSets{} feature sets \\
+        Validation & CV + bootstrap CI + significance tests \\
+        Best pipeline & \BestPipeline{} at \keyresult{\BestAcc} \\
+        \bottomrule
+      \end{tabular}
+    \end{block}
+
+    \begin{block}{Final takeaway}
+      \small \keyresult{Optimized handcrafted features + classical ML can be strong on modest MRI datasets}
+      while remaining transparent and CPU-friendly.
+    \end{block}
+
+    \column{0.40\textwidth}
+    \begin{block}{Future work roadmap}
+      \centering
+      \begin{tikzpicture}[
+        node distance=0.45cm,
+        box/.style={rectangle, rounded corners=2pt, draw=accent, fill=lightbg,
+                    minimum height=0.7cm, minimum width=0.92\linewidth, align=center, font=\small},
+        arr/.style={-{Stealth[length=2mm]}, thick, accent}
+      ]
+        \node[box] (dl) {CNNs / Vision Transformers};
+        \node[box, below=of dl] (hyb) {Hybrid ML/DL\\(handcrafted + learned)};
+        \node[box, below=of hyb] (xai) {Explainable AI\\(Grad-CAM, SHAP)};
+        \node[box, below=of xai] (ext) {External validation\\(multi-center)};
+        \draw[arr] (dl) -- (hyb);
+        \draw[arr] (hyb) -- (xai);
+        \draw[arr] (xai) -- (ext);
+      \end{tikzpicture}
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\note{
+Thank the audience. Key takeaway: careful feature engineering still competes with
+deep learning on modest datasets. Open for questions.
+}

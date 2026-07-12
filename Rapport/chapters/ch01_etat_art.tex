@@ -1,0 +1,443 @@
+%=======================================================================
+\chapter{État de l'art}
+
+\section{Introduction}
+
+L'analyse automatique des images médicales constitue aujourd'hui l'un des domaines les plus
+actifs de la recherche en intelligence artificielle appliquée à la santé. Grâce aux progrès de
+l'imagerie médicale et à l'augmentation de la quantité de données disponibles, les systèmes
+d'aide au diagnostic assistés par ordinateur (\emph{Computer-Aided Diagnosis} --- CAD) sont
+devenus des outils prometteurs pour améliorer la précision et la rapidité des décisions
+cliniques.
+
+Parmi les différentes tâches d'analyse d'images médicales, la classification occupe une place
+centrale. Elle consiste à attribuer automatiquement une image à une catégorie prédéfinie en
+fonction des caractéristiques qu'elle contient. Dans le domaine de la neuro-oncologie, cette
+tâche vise notamment à distinguer différents types de tumeurs cérébrales (gliome, méningiome,
+tumeur pituitaire, ou absence de tumeur) à partir d'images d'Imagerie par Résonance
+Magnétique (IRM).
+
+L'IRM est considérée comme la modalité d'imagerie de référence pour l'étude du cerveau grâce à
+sa capacité à fournir des informations anatomiques détaillées sans exposition aux rayonnements
+ionisants. Elle permet de visualiser la localisation, la taille et certaines propriétés des
+tumeurs cérébrales, facilitant ainsi leur diagnostic et leur suivi clinique. Cependant,
+l'interprétation manuelle des examens IRM demeure une tâche complexe, chronophage et sujette à
+une variabilité inter- et intra-observateur susceptible d'affecter la reproductibilité du
+diagnostic.
+
+Afin d'améliorer la fiabilité des diagnostics, de nombreuses méthodes d'intelligence
+artificielle ont été proposées pour automatiser l'analyse des images médicales. Ces approches
+reposent principalement sur deux paradigmes~: le \emph{Machine Learning} traditionnel, fondé
+sur l'extraction de caractéristiques explicites suivie d'un classifieur, et le \emph{Deep
+Learning}, capable d'apprendre automatiquement des représentations à partir des données brutes.
+Ce chapitre présente les fondements de ces deux familles d'approches, discute l'opposition
+entre caractéristiques manuelles et caractéristiques profondes, puis dresse une synthèse
+critique des travaux récents consacrés à la classification des tumeurs cérébrales.
+
+% -----------------------------------------------------------------------
+\section{Machine Learning traditionnel}
+
+Les méthodes de Machine Learning traditionnel reposent généralement sur deux étapes
+principales~: l'extraction de caractéristiques descriptives à partir des images, puis
+l'apprentissage d'un modèle de classification à partir de ces caractéristiques. Cette
+approche présente l'avantage de produire des représentations interprétables tout en
+nécessitant moins de données et de ressources de calcul que les méthodes profondes.
+
+\subsection{Support Vector Machine (SVM)}
+
+Le Support Vector Machine (SVM) est l'un des algorithmes les plus utilisés en classification
+d'images médicales. Son principe consiste à rechercher l'hyperplan optimal séparant les
+différentes classes tout en maximisant la marge entre celles-ci.
+
+Grâce à l'utilisation de fonctions noyaux (\emph{kernels}), le SVM est capable de modéliser
+des frontières de décision complexes dans des espaces de grande dimension. Il est
+particulièrement adapté aux jeux de données comportant un nombre limité d'exemples mais un
+grand nombre de caractéristiques, situation fréquemment rencontrée dans les applications
+médicales, ce qui explique sa présence récurrente comme classifieur final dans les approches
+hybrides récentes.
+
+\subsection{K-Nearest Neighbors (KNN)}
+
+L'algorithme K-Nearest Neighbors (KNN) repose sur un principe simple~: un nouvel échantillon
+est affecté à la classe majoritaire parmi ses $k$ voisins les plus proches dans l'espace des
+caractéristiques.
+
+Cette méthode ne nécessite pas de phase d'apprentissage complexe et constitue souvent une
+référence efficace pour les problèmes de classification. Toutefois, ses performances peuvent
+être dégradées par la présence de caractéristiques redondantes ou par la malédiction de la
+dimensionnalité, ce qui rend souvent nécessaire une étape de réduction de dimension (par
+exemple par Analyse en Composantes Principales).
+
+\subsection{Random Forest}
+
+Random Forest est une méthode d'apprentissage par ensemble basée sur la combinaison de
+plusieurs arbres de décision construits sur des sous-échantillons aléatoires des données.
+
+La prédiction finale est obtenue par vote majoritaire des arbres individuels. Cette approche
+permet généralement d'améliorer la robustesse du modèle et de réduire les risques de
+surapprentissage tout en offrant des mécanismes d'évaluation de l'importance des
+caractéristiques.
+
+\subsection{Extra Trees}
+
+L'algorithme Extra Trees (\emph{Extremely Randomized Trees}) constitue une variante de
+Random Forest introduisant davantage d'aléatoire lors de la construction des arbres.
+
+Contrairement à Random Forest, les seuils de séparation sont sélectionnés de manière
+aléatoire, ce qui contribue à réduire davantage la variance du modèle et à améliorer sa
+capacité de généralisation dans certains contextes.
+
+\subsection{Régression Logistique}
+
+La Régression Logistique (\emph{Logistic Regression}) est une méthode statistique supervisée
+largement utilisée pour les tâches de classification.
+
+Bien que relativement simple, elle offre une bonne interprétabilité des résultats et
+constitue souvent une référence de base dans les études comparatives. Son efficacité dépend
+toutefois de la capacité des caractéristiques à séparer linéairement les différentes classes.
+
+% -----------------------------------------------------------------------
+\section{Deep Learning pour l'imagerie médicale}
+
+L'émergence du Deep Learning a profondément transformé le domaine de l'analyse d'images
+médicales. Contrairement aux approches traditionnelles, les modèles profonds apprennent
+automatiquement les représentations pertinentes directement à partir des pixels de l'image,
+supprimant ainsi l'étape d'ingénierie manuelle des caractéristiques.
+
+Cette capacité à extraire des caractéristiques hiérarchiques a permis d'obtenir des
+performances remarquables dans de nombreuses applications de détection, segmentation et
+classification médicale.
+
+\subsection{Convolutional Neural Networks (CNN)}
+
+Les réseaux de neurones convolutifs (CNN) constituent l'architecture de référence pour le
+traitement des images.
+
+Les couches convolutives permettent d'extraire automatiquement des motifs visuels tels que les
+contours, les textures ou les structures complexes présentes dans les images médicales. Les
+couches profondes apprennent progressivement des représentations de plus en plus abstraites
+favorisant la discrimination entre les différentes classes.
+
+\subsection{VGG}
+
+VGG est une architecture profonde caractérisée par l'utilisation répétée de petites
+convolutions de taille $3\times3$.
+
+Sa simplicité architecturale et ses bonnes performances ont contribué à sa popularité dans
+les applications médicales. Les versions pré-entraînées sur de grands jeux de données
+peuvent être adaptées aux tâches médicales grâce à des techniques de transfert
+d'apprentissage. Plusieurs travaux rapportent des précisions supérieures à 98\,\% avec des
+variantes VGG-16 et VGG-19 en classification binaire de tumeurs cérébrales.
+
+\subsection{ResNet}
+
+ResNet (\emph{Residual Network}) introduit le concept de connexions résiduelles permettant de
+faciliter l'apprentissage de réseaux très profonds.
+
+Cette innovation réduit les problèmes de disparition du gradient et améliore
+significativement les performances sur les tâches complexes de classification. Les
+architectures ResNet figurent aujourd'hui parmi les modèles les plus utilisés dans les
+travaux récents portant sur la classification des tumeurs cérébrales, souvent comme extracteur
+de caractéristiques au sein d'approches hybrides ou de transfert d'apprentissage.
+
+\subsection{Architectures récentes~: EfficientNet et Vision Transformers}
+
+Au-delà des architectures classiques, les travaux les plus récents s'appuient sur des modèles
+plus efficaces ou plus expressifs. EfficientNet propose un équilibrage systématique de la
+profondeur, de la largeur et de la résolution du réseau, permettant d'atteindre de hautes
+performances avec un nombre réduit de paramètres. Parallèlement, les Vision Transformers (ViT)
+et leurs variantes hiérarchiques telles que le Swin Transformer exploitent des mécanismes
+d'attention pour capturer des dépendances à longue portée dans l'image, et atteignent
+actuellement les meilleures performances rapportées sur les jeux de données de référence.
+
+% -----------------------------------------------------------------------
+\section{Handcrafted Features vs Deep Features}
+
+Les approches traditionnelles et profondes présentent chacune des avantages et des
+limitations. Le choix entre ces deux paradigmes dépend généralement du volume de données
+disponible, des ressources de calcul et des objectifs d'interprétabilité.
+
+\subsection{Familles de caractéristiques manuelles}
+
+Les caractéristiques conçues manuellement (\emph{Handcrafted Features}) sont traditionnellement
+regroupées en trois catégories complémentaires~:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item les caractéristiques \textbf{d'intensité}, qui décrivent la distribution locale des
+        niveaux de gris (moyenne, écart-type, asymétrie, aplatissement, mesures
+        histogrammiques)~;
+  \item les caractéristiques de \textbf{texture}, qui décrivent l'arrangement spatial des
+        intensités~: matrices de cooccurrence (GLCM), motifs binaires locaux (LBP), filtres
+        de Gabor et transformées en ondelettes (DWT)~;
+  \item les caractéristiques de \textbf{forme}, qui capturent les propriétés géométriques de
+        la région tumorale (aire, périmètre, compacité, moments), auxquelles s'ajoutent les
+        histogrammes de gradients orientés (HOG) décrivant les contours.
+\end{itemize}
+
+Dans ce projet, cinq familles de descripteurs sont étudiées~: Statistiques, GLCM, LBP, DWT et
+HOG.
+
+\subsection{Avantages des caractéristiques manuelles}
+
+Les caractéristiques manuelles offrent plusieurs avantages~:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item forte interprétabilité des informations extraites~;
+  \item besoins réduits en données d'entraînement~;
+  \item coût computationnel relativement faible~;
+  \item facilité d'analyse et de validation scientifique~;
+  \item compatibilité avec de nombreux algorithmes de Machine Learning.
+\end{itemize}
+
+\subsection{Limites des caractéristiques manuelles}
+
+Malgré leurs avantages, les caractéristiques manuelles présentent certaines limites. Leur
+qualité dépend fortement de l'expertise du concepteur et des choix effectués lors de
+l'extraction. Elles peuvent également être moins capables de capturer des représentations
+complexes ou de haut niveau présentes dans les données médicales.
+
+Par ailleurs, aucun descripteur unique n'est généralement suffisant pour représenter
+l'ensemble des informations pertinentes contenues dans une image IRM. Cette limitation motive
+les stratégies de \emph{fusion} de descripteurs étudiées dans ce travail. À titre
+d'illustration, une étude comparative sur un jeu T1 de 2\,870 IRM montre qu'un descripteur
+isolé plafonne autour de 85\,\% de précision (HOG avec un KNN de type \emph{subspace}), tandis
+que la fusion GLCM~+~HOG~+~LBP porte la précision à 91,1\,\% avec un classifieur \emph{fine}
+KNN~\cite{ref-pattanaik}. Ce gain confirme la complémentarité des descripteurs de texture et de forme.
+
+\subsection{Pourquoi les étudier encore aujourd'hui~?}
+
+Malgré la domination actuelle du Deep Learning, les approches basées sur les
+caractéristiques manuelles conservent un intérêt scientifique et pratique important. Elles
+demeurent particulièrement pertinentes lorsque les ressources de calcul sont limitées ou
+lorsque la quantité de données disponibles est insuffisante pour entraîner efficacement des
+réseaux profonds.
+
+De plus, l'interprétabilité constitue aujourd'hui un enjeu majeur dans les applications
+médicales. Les caractéristiques manuelles permettent de comprendre plus facilement les
+éléments utilisés par les modèles pour prendre leurs décisions, ce qui favorise leur
+acceptation dans les environnements cliniques. Enfin, elles ne s'opposent pas nécessairement
+aux approches profondes~: de nombreux travaux récents fusionnent descripteurs profonds et
+descripteurs manuels (par exemple CNN~+~GLCM ou CNN~+~HOG) afin de combiner sémantique de haut
+niveau et sensibilité aux textures fines.
+
+Dans ce contexte, ce projet s'inscrit dans la continuité de ces travaux en étudiant l'impact
+de plusieurs familles de descripteurs manuels sur la classification multiclasses des tumeurs
+cérébrales à partir d'images IRM, tout en évaluant leur complémentarité à travers différentes
+stratégies de fusion et plusieurs algorithmes de Machine Learning.
+
+% -----------------------------------------------------------------------
+\section{Synthèse des travaux récents sur la classification des tumeurs cérébrales}
+
+Au cours des dernières années, de nombreux travaux ont exploré l'utilisation des techniques
+de Machine Learning et de Deep Learning pour la classification automatique des tumeurs
+cérébrales à partir d'images IRM. Les performances rapportées dans la littérature ont connu
+une progression importante grâce à l'utilisation de réseaux convolutifs profonds, de stratégies
+de transfert d'apprentissage, ainsi que d'approches hybrides combinant extraction de
+caractéristiques et modèles de classification.
+
+Le Tableau~\ref{tab:etat-art} présente une synthèse de plusieurs travaux récents
+représentatifs de l'état de l'art. Les méthodes recensées couvrent aussi bien les approches
+traditionnelles basées sur des caractéristiques manuelles que les architectures profondes
+modernes utilisant le transfert d'apprentissage ou la fusion de caractéristiques.
+
+L'analyse de ces résultats montre que les architectures de Deep Learning atteignent
+généralement des performances supérieures à 98\,\% de précision sur les jeux de données les
+plus utilisés. Toutefois, ces performances reposent souvent sur des modèles complexes
+nécessitant des ressources computationnelles importantes, des techniques d'augmentation de
+données avancées et parfois des architectures hybrides difficiles à interpréter.
+
+À l'inverse, les approches fondées sur des caractéristiques manuelles conservent plusieurs
+avantages importants, notamment leur interprétabilité, leur faible coût de calcul et leur
+capacité à fonctionner efficacement sur des ensembles de données de taille limitée. Cette
+observation justifie l'intérêt de poursuivre l'étude des descripteurs classiques et de leurs
+combinaisons dans un contexte médical où la transparence des décisions constitue un critère
+essentiel.
+
+Le présent projet s'inscrit dans cette perspective en proposant une étude approfondie de
+plusieurs familles de caractéristiques manuelles (Statistiques, GLCM, LBP, DWT et HOG),
+associées à un benchmark exhaustif de huit algorithmes de Machine Learning et à une
+validation statistique rigoureuse des résultats obtenus.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Comparaison de travaux récents sur la classification des tumeurs cérébrales à
+           partir d'images IRM.}
+  \label{tab:etat-art}
+  \scriptsize
+  \setlength{\tabcolsep}{3.5pt}
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabularx}{\textwidth}{@{}
+    >{\raggedright\arraybackslash}p{1.45cm}
+    >{\raggedright\arraybackslash}X
+    >{\raggedright\arraybackslash}p{2.35cm}
+    >{\centering\arraybackslash}p{0.75cm}
+    >{\centering\arraybackslash}p{0.85cm}
+    >{\centering\arraybackslash}p{0.85cm}
+    >{\centering\arraybackslash}p{0.85cm}
+    >{\centering\arraybackslash}p{0.85cm}
+  @{}}
+    \toprule
+    \thd{Réf.} & \thd{Méthode} & \thd{Dataset} & \thd{Cl.} &
+    \thd{Acc.} & \thd{Prec.} & \thd{Rec.} & \thd{F1} \\
+    \midrule
+    Afzal et al.~\cite{ref-afzal}
+      & ResNet18 + Transfer Learning + CART-ANOVA
+      & Kaggle + Radiopaedia
+      & 4 & \textbf{99.7} & -- & -- & 99.7 \\
+    Ullah et al.~\cite{ref-ullahz}
+      & VGG-16 / VGG-19 Transfer Learning
+      & Brain Tumor MRI (Kaggle)
+      & 2 & \textbf{99.2} & 99.0 & 99.0 & 99.0 \\
+    Ullah et al.~\cite{ref-ullahn}
+      & InceptionResNetV2 (Transfer Learning)
+      & Glioma / Mening. / Pituit.
+      & 3 & \textbf{98.9} & 98.3 & 99.8 & 99.0 \\
+    Younis et al.~\cite{ref-younis}
+      & VGG-16 Fine-Tuning
+      & T1 MRI (253 images)
+      & 2 & \textbf{98.5} & -- & 94.5 & 92.6 \\
+    Shah et al.~\cite{ref-shah}
+      & EfficientNet-B0 (Fine-Tuning)
+      & Kaggle + BraTS2015 / TCIA
+      & 2 & \textbf{98.9} & 98.9 & 98.8 & 98.8 \\
+    Kundari et al.~\cite{ref-kundari}
+      & DCNN + LBP/ICA + SVM
+      & Glioma / Mening. / Pituit.
+      & 3 & \textbf{99.0} & -- & 97.3 & -- \\
+    Badža et al.~\cite{ref-badza}
+      & CNN personnalisé (22 couches)
+      & Figshare MRI Dataset
+      & 3 & \textbf{96.6} & -- & -- & 97.5 \\
+    Zahoor et al.~\cite{ref-zahoor}
+      & BRAIN-RENet + HOG + SVM (HFF-BTC)
+      & MRI Dataset
+      & 3 & \textbf{99.2} & -- & -- & 99.1 \\
+    Dixon et al.~\cite{ref-dixon}
+      & CNN + ViT + Radiomics (GLCM/LBP) + MLP
+      & Public + Local
+      & 4 & \textbf{99.4} & -- & 99.5 & -- \\
+    Pacal et al.~\cite{ref-pacal}
+      & Swin Transformer + MLP résiduel
+      & MRI Dataset
+      & 4 & \textbf{99.9} & 99.9 & 99.8 & 99.9 \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{2pt}
+  {\footnotesize\textit{Cl.} = nombre de classes ; métriques en \% (Accuracy, Precision, Recall, F1).}
+\end{table}
+
+\begin{notebox}[Note méthodologique~:]
+Les valeurs reportées correspondent aux meilleures configurations décrites par les auteurs.
+Certaines entrées sont issues d'une revue systématique récente~\cite{ref-review}, où les
+protocoles d'évaluation (découpage des données, augmentation, validation croisée) ne sont pas
+toujours homogènes. Les comparaisons directes entre lignes doivent donc être interprétées avec
+prudence (voir Section~\ref{sec:analyse-critique}).
+\end{notebox}
+
+\subsection{Approches basées sur la fusion de caractéristiques manuelles}
+
+Plusieurs travaux confirment spécifiquement l'apport de la fusion de descripteurs classiques,
+qui constitue le c\oe{}ur de notre étude. Sur un jeu T1 de 2\,870 IRM à quatre classes, la
+combinaison GLCM~+~HOG~+~LBP atteint 91,1\,\% de précision (fine KNN), contre au plus 85\,\%
+pour un descripteur isolé, démontrant la complémentarité texture/forme~\cite{ref-pattanaik}. D'autres
+études rapportent des combinaisons LBP~+~HOG associées à une réduction de dimension par ACP et
+un classifieur SVM, ou encore l'ajout de \emph{features} d'interaction obtenues par produit
+externe des vecteurs GLCM et LBP, atteignant des précisions de l'ordre de 96\,\% en
+classification multiclasses~\cite{ref-basthikodi,ref-review}. Ces résultats situent les approches
+purement manuelles dans une gamme de 85 à 96\,\%, inférieure aux modèles profonds les plus
+récents, mais obtenue avec des modèles nettement plus légers, plus rapides à entraîner et plus
+faciles à interpréter.
+
+Le Tableau~\ref{tab:etat-art-ml} synthétise plusieurs travaux récents fondés exclusivement sur
+des caractéristiques manuelles et des classifieurs classiques.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Travaux récents utilisant le Machine Learning traditionnel (caractéristiques
+           manuelles et classifieurs classiques) pour la classification des tumeurs cérébrales
+           à partir d'images IRM.}
+  \label{tab:etat-art-ml}
+  \scriptsize
+  \setlength{\tabcolsep}{3.5pt}
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabularx}{\textwidth}{@{}
+    >{\raggedright\arraybackslash}p{1.55cm}
+    >{\raggedright\arraybackslash}X
+    >{\raggedright\arraybackslash}p{2.35cm}
+    >{\centering\arraybackslash}p{0.75cm}
+    >{\centering\arraybackslash}p{0.85cm}
+    >{\centering\arraybackslash}p{0.85cm}
+    >{\centering\arraybackslash}p{0.85cm}
+    >{\centering\arraybackslash}p{0.85cm}
+  @{}}
+    \toprule
+    \thd{Réf.} & \thd{Méthode (descripteurs + classifieur)} & \thd{Dataset} &
+    \thd{Cl.} & \thd{Acc.} & \thd{Prec.} & \thd{Rec.} & \thd{F1} \\
+    \midrule
+    Kumar et al.~\cite{ref-kumar}
+      & Random Forest + Image Loading / HOG / LBP
+      & Kaggle (2 datasets)
+      & 2 & \textbf{99.0} & 99.0 & 97.0 & 98.0 \\
+    Muthaiyan \& Malleswaran~\cite{ref-muthaiyan}
+      & Bendlets (BCF, HPBC, HNBC) + Ensemble (kNN / NB / SVM)
+      & REMBRANDT
+      & 2 & \textbf{99.5} & -- & 99.0 & -- \\
+    Basthikodi et al.~\cite{ref-basthikodi}
+      & SVM + HOG + LBP + PCA
+      & Kaggle (7023 img.)
+      & 4 & \textbf{96.0} & 96.0 & 96.0 & 96.0 \\
+    Pattanaik et al.~\cite{ref-pattanaik}
+      & Fine KNN + fusion GLCM + HOG + LBP
+      & Figshare (2870 img.)
+      & 4 & \textbf{91.1} & -- & -- & -- \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{2pt}
+  {\footnotesize\textit{Cl.} = nombre de classes ; métriques en \% (Accuracy, Precision, Recall, F1).}
+\end{table}
+
+\begin{notebox}[Note~:]
+Pattanaik et al. rapportent une AUC de 0.96 pour la meilleure configuration (fusion
+GLCM+HOG+LBP, \emph{fine} KNN)~; la précision d'un descripteur isolé y plafonne à 85\,\% (HOG,
+\emph{subspace} KNN). Muthaiyan \& Malleswaran opèrent en deux étapes (normal/anormal puis
+faible/haut risque)~: 99.5\,\% et 99\,\% respectivement. Kumar et al. obtiennent 99\,\% avec
+Random Forest et le chargement d'image, SVM et régression logistique se situant entre 97 et
+99\,\%.
+\end{notebox}
+
+\subsection{Analyse critique de l'état de l'art}
+\label{sec:analyse-critique}
+
+L'analyse des travaux récents met en évidence plusieurs tendances majeures.
+
+Premièrement, les modèles de Deep Learning dominent actuellement la littérature grâce à leur
+capacité à apprendre automatiquement des représentations complexes à partir des images IRM.
+Les architectures fondées sur le transfert d'apprentissage (ResNet, VGG, EfficientNet,
+InceptionResNet) et, plus récemment, les Transformers hiérarchiques (Swin) atteignent
+régulièrement des taux de classification supérieurs à 99\,\%.
+
+Deuxièmement, les approches hybrides associant réseaux profonds et classificateurs
+traditionnels, ou fusionnant caractéristiques profondes et manuelles, égalent ou surpassent
+souvent les modèles purement neuronaux. Les travaux combinant CNN~+~SVM, BRAIN-RENet~+~HOG~+~SVM
+ou encore CNN~+~ViT~+~radiomique montrent que les informations extraites à différents niveaux
+sont complémentaires.
+
+Troisièmement, la majorité des études se concentrent sur l'amélioration des performances
+prédictives, tandis que peu abordent en profondeur l'interprétabilité et la validation
+statistique des résultats. Dans un contexte médical, cette limitation constitue un obstacle
+important à l'adoption clinique.
+
+Enfin, et surtout, les performances très élevées rapportées (souvent supérieures à 99\,\%)
+doivent être interprétées avec prudence. Une revue récente souligne notamment qu'une précision
+de 100\,\% a été obtenue par un CNN entraîné sur seulement 253 images IRM augmentées,
+illustrant comment des jeux de données de très petite taille peuvent gonfler artificiellement
+les estimations de performance~\cite{ref-review}. À cela s'ajoutent l'hétérogénéité des
+protocoles d'évaluation, les fuites potentielles entre patients lors des découpages
+image-par-image, et le manque de standardisation des jeux de données, qui limitent la
+comparabilité directe des résultats et leur généralisation aux données cliniques réelles.
+
+C'est dans cette optique que s'inscrit notre travail, qui vise à étudier systématiquement
+l'apport de plusieurs familles de descripteurs manuels, leur complémentarité et leur impact
+sur différents algorithmes de Machine Learning, à travers une méthodologie rigoureuse de
+benchmarking et de validation statistique, privilégiant la transparence et la reproductibilité
+plutôt que la seule maximisation de la précision.

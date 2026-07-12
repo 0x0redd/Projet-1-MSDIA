@@ -1,0 +1,19 @@
+% Slide 17 — Combined Feature Results
+\begin{frame}[shrink=8]{Combined Feature Results}
+  \centering
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+    \includegraphics[width=\linewidth,height=0.28\textheight,keepaspectratio]{p2_ApB.png}\\[0.1em]
+    \includegraphics[width=\linewidth,height=0.28\textheight,keepaspectratio]{p2_ApBpC(opt).png}
+    \column{0.48\textwidth}
+    \includegraphics[width=\linewidth,height=0.28\textheight,keepaspectratio]{p2_BpC(opt).png}\\[0.1em]
+    \includegraphics[width=\linewidth,height=0.28\textheight,keepaspectratio]{p2_Full(opt).png}
+  \end{columns}
+  \vspace{-0.2em}
+  {\scriptsize Fusion improves performance: Full(opt) reaches \BestAcc{} (+ \FusionGain{} pp over HOG alone).}
+\end{frame}
+
+\note{
+Fusion helps most when combined with kernel methods.
+Full(opt)+SVM is the clear winner at 92\% accuracy.
+}

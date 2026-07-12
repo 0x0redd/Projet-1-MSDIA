@@ -1,0 +1,18 @@
+% SLIDE 7 — Meilleurs paramètres
+\begin{frame}{Meilleurs paramètres par feature}
+  \timing{1:30}
+  \input{tables/best_params}
+  \vspace{0.3em}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \includegraphics[width=\linewidth]{glcm_param_search}
+    \column{0.5\textwidth}
+    \includegraphics[width=\linewidth]{hog_param_search}
+  \end{columns}
+\end{frame}
+
+\note{
+Ce sont les configurations gagnantes choisies uniquement par les trois métriques ---
+avant qu'aucun modèle n'ait vu les données.
+HOG et LBP atteignent des scores de séparabilité proches de 1 ; GLCM est plus sensible aux choix de quantification.
+}

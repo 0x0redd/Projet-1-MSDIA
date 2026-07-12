@@ -1,0 +1,38 @@
+% SLIDE 13 — Branches et nettoyage
+\begin{frame}{Architecture des branches et nettoyage}
+  \timing{2:00}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \textbf{\NBranches{} branches} : A (Stats), B (Tex), C (DWT), D (HOG)\\
+    + fusions A+B, B+C, A+B+C, \textbf{Full(opt)}
+    \vspace{0.4em}
+
+    \textbf{Nettoyage post-fusion :}
+    \begin{itemize}
+      \item Standardisation (StandardScaler)
+      \item Suppression NaN / constantes / faible variance
+      \item Élagage des corrélations redondantes
+    \end{itemize}
+    \column{0.48\textwidth}
+    \centering
+    \begin{tikzpicture}[
+      node distance=0.3cm,
+      br/.style={draw=accent, fill=accent!8, rounded corners, minimum width=1.4cm,
+                 minimum height=0.45cm, font=\scriptsize, align=center},
+      arr/.style={-{Stealth[length=1.2mm]}, thick, greytx}
+    ]
+      \node[br] (raw) {IRM};
+      \node[br, below left=0.5cm and 0.8cm of raw] (a) {A};
+      \node[br, below=0.5cm of raw] (b) {B};
+      \node[br, below right=0.5cm and 0.8cm of raw] (d) {D};
+      \node[br, below=1.4cm of b, minimum width=2cm] (full) {Full(opt)};
+      \draw[arr] (raw) -- (a); \draw[arr] (raw) -- (b); \draw[arr] (raw) -- (d);
+      \draw[arr] (a) -- (full); \draw[arr] (b) -- (full); \draw[arr] (d) -- (full);
+    \end{tikzpicture}
+  \end{columns}
+\end{frame}
+
+\note{
+La fusion augmente la dimensionnalité plus vite que le gain prédictif --- point central de la discussion.
+Le nettoyage est indispensable pour SVM et KNN.
+}

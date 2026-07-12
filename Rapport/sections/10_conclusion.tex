@@ -1,0 +1,68 @@
+%=======================================================================
+\chapter*{Conclusion Générale}
+\addcontentsline{toc}{chapter}{Conclusion Générale}
+
+\section*{Bilan du projet}
+Ce projet avait pour objectif de développer un système de classification automatique des
+tumeurs cérébrales à partir d'images IRM, en s'appuyant sur une démarche rigoureuse
+d'ingénierie des caractéristiques et d'évaluation expérimentale.
+
+L'approche proposée a couvert l'ensemble de la chaîne méthodologique : prétraitement des
+images, extraction de descripteurs complémentaires, optimisation des paramètres, construction
+d'ensembles de caractéristiques, benchmark de plusieurs algorithmes et validation statistique
+des résultats.
+
+Le travail réalisé montre qu'une approche de Machine Learning classique, lorsqu'elle est
+conçue de manière structurée et systématique, peut atteindre un niveau de performance élevé
+tout en conservant une bonne interprétabilité.
+
+\section*{Résultats obtenus}
+Les expérimentations menées sur les 8 ensembles de caractéristiques et les 8 modèles évalués
+montrent une hiérarchie claire des performances.
+
+La meilleure configuration est obtenue avec \textbf{SVM + Full(opt)}, qui atteint
+une Accuracy de \bestAcc{} et un F1-Macro de \bestFone{} sur l'ensemble de test.
+Cette performance est confirmée par les analyses de robustesse (Bootstrap, Kappa, tests
+statistiques) présentées au Chapitre~7.
+
+L'étude par branche met en évidence la forte contribution des descripteurs structurels (HOG),
+tandis que la fusion multi-caractéristiques apporte un gain supplémentaire en exploitant la
+complémentarité entre informations statistiques, texturales, fréquentielles et géométriques.
+
+Au-delà du score final, le projet fournit donc une compréhension fine de l'impact de chaque
+famille de caractéristiques sur la qualité de la classification.
+
+\section*{Contributions}
+Les principales contributions de ce travail peuvent être résumées comme suit :
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item mise en place d'un pipeline complet et reproductible pour la classification de
+  tumeurs cérébrales par IRM ;
+  \item optimisation systématique des descripteurs (GLCM, LBP, DWT, HOG) via une phase dédiée
+  de recherche d'hyperparamètres ;
+  \item comparaison exhaustive de huit modèles de Machine Learning sur huit ensembles de
+  caractéristiques, avec un leaderboard global ;
+  \item validation statistique avancée des résultats (Cohen's Kappa, intervalles Bootstrap,
+  McNemar, Friedman) ;
+  \item analyse d'interprétabilité par importance de branches, permettant de relier les
+  performances aux types d'information visuelle exploités.
+\end{itemize}
+
+Ces apports confèrent au projet une valeur à la fois applicative et méthodologique.
+
+\section*{Perspectives}
+Les perspectives identifiées s'inscrivent dans la continuité directe des résultats obtenus.
+
+Une première direction consiste à étendre le benchmark vers des approches de
+Deep Learning (VGG, ResNet, EfficientNet, Vision Transformers) afin de comparer de manière
+contrôlée les représentations manuelles et profondes.
+
+Une deuxième direction porte sur l'intégration de modèles Vision-Language capables de
+produire, en plus d'une classe prédite, des explications médicales textuelles structurées.
+Les stratégies de fine-tuning efficient (LoRA) et d'apprentissage guidé (Teacher Forcing)
+constituent ici des leviers prometteurs.
+
+Enfin, la perspective la plus ambitieuse est la construction d'un \textbf{framework hybride}
+combinant Handcrafted Features, Deep Features et VLMs dans une architecture multimodale
+unifiée. Une telle approche permettrait d'évoluer d'un classificateur performant vers un
+système d'aide au diagnostic plus complet, capable de \textbf{prédire, justifier et
+expliquer} ses décisions de façon exploitable par les professionnels de santé.

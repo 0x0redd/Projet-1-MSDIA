@@ -1,36 +1,39 @@
 %=======================================================================
-%  Brain Tumor Detection & Classification — Project Report
-%  Compile:  pdflatex main.tex   (run twice for TOC/refs)
+%  Rapport de projet — Classification de tumeurs cérébrales (IRM)
+%  Compile:  pdflatex main.tex && biber main && pdflatex main.tex && pdflatex main.tex
 %
-%  STRUCTURE
-%    main.tex            <- preamble + \input of every section (this file)
-%    results.tex         <- ALL fill-in metrics live here (edit ONLY this
-%                           file after training/benchmarking is done)
-%    sections/*.tex      <- one file per report section
+%  STRUCTURE ACADÉMIQUE (M1 IA / Data Science)
+%    Page de garde → Résumé → Introduction Générale
+%    Chapitres 1–9 → Conclusion → Bibliographie → Annexes
 %
-%  To add your final numbers: open results.tex and replace the \newcommand
-%  placeholders. Nothing else needs to change.
+%  FICHIERS
+%    main.tex              préambule + assemblage
+%    results.tex           métriques (remplir après benchmark)
+%    sections/00_resume.tex
+%    sections/01_introduction.tex
+%    chapters/ch01_*.tex … ch09_*.tex
+%    sections/10_conclusion.tex
+%    sections/11_bibliographie.tex
+%    annexes/annexes.tex
 %
-%  FIGURES (figure-generator workflow):
-%    figures/plot_defaults.py     shared matplotlib styling
-%    figures/scripts/*.py         data plots (import plot_defaults)
-%    figures/tikz/*.tex           TikZ schematics -> pdflatex -> figures/*.pdf
-%    .\build_figures.ps1          regenerate all figures before compiling
+%  ANCIEN CONTENU (référence, non inclus)
+%    sections/01_problem.tex, 02_dataset.tex, … 09_conclusion.tex
 %=======================================================================
-\documentclass[11pt,a4paper]{article}
+\documentclass[11pt,a4paper]{report}
 
 % ---- packages ----
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage[french]{babel}
 \IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}
-\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage[a4paper,margin=2cm]{geometry}
 \usepackage[protrusion=true,expansion=false]{microtype}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \graphicspath{{figures/}}
 \usepackage{listings}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, calc}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{tabularx}
@@ -42,6 +45,15 @@
 \usepackage{titlesec}
 \usepackage{fancyhdr}
 \usepackage{caption}
+\usepackage{pdfpages}
+\usepackage[
+  backend=biber,
+  style=numeric,
+  sorting=none,
+  maxbibnames=99,
+  giveninits=true
+]{biblatex}
+\addbibresource{references.bib}
 \usepackage[hidelinks,colorlinks=true,linkcolor=accent,urlcolor=accent,citecolor=accent]{hyperref}
 
 % ---- colors ----
@@ -52,7 +64,7 @@
 \definecolor{notebd}{HTML}{E0A85B}
 \definecolor{headbg}{HTML}{EAF1F8}
 
-% ---- listings (figure-generator / code snippets) ----
+% ---- listings ----
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \lstdefinestyle{mystyle}{%
@@ -71,80 +83,67 @@
   tabsize=2}
 \lstset{style=mystyle}
 
-% ---- section styling ----
-\titleformat{\section}{\Large\bfseries\color{accent}}{\thesection.}{0.6em}{}[\vspace{2pt}\titlerule]
-\titleformat{\subsection}{\large\bfseries\color{black!75}}{\thesubsection}{0.6em}{}
-\titleformat{\subsubsection}{\normalsize\bfseries\color{black!65}}{\thesubsubsection}{0.6em}{}
+% ---- chapter / section styling ----
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{accent}}
+  {\chaptertitlename\ \thechapter}{12pt}{\Huge}
+\titleformat{\section}{\Large\bfseries\color{accent}}{\thesection}{0.3em}{}[\vspace{2pt}\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{black!75}}{\thesubsection}{0.3em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{black!65}}{\thesubsubsection}{0.3em}{}
 
 % ---- header / footer ----
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0.4pt}
-\fancyhead[R]{\small\color{greytx} Brain Tumor Detection \& Classification}
+\fancyhead[R]{\small\color{greytx} CLASSIFICATION DES IMAGES PAR MACHINE LEARNING}
 \fancyfoot[C]{\small\color{greytx} \thepage}
 
-% ---- a tidy "note" / "figure-placeholder" box ----
-\newtcolorbox{notebox}[1][Note:]{%
+% ---- helpers ----
+\newtcolorbox{notebox}[1][Note~:]{%
   colback=notebg,colframe=notebd,boxrule=0.4pt,leftrule=3pt,
   arc=1pt,left=8pt,right=8pt,top=5pt,bottom=5pt,
   fonttitle=\bfseries,title=#1,coltitle=accent2,
   before skip=8pt,after skip=8pt}
-
-% ---- a full-width auto-wrapping table column ----
+\newcommand{\aCompleter}{\begin{notebox}[À compléter]Texte à fournir.\end{notebox}}
+\newcommand{\thd}[1]{\textbf{#1}}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
-% ---- table header helper ----
-\newcommand{\thd}[1]{\textbf{#1}}
-
-% ---- bring in the fill-in metrics ----
+% ---- métriques ----
 \input{results.tex}
 
 %=======================================================================
 \begin{document}
 
-% ----------------------- TITLE PAGE ------------------------------------
-\begin{titlepage}
-\centering
-\vspace*{2.2cm}
-{\Huge\bfseries\color{accent} Brain Tumor Detection \& Classification\par}
-\vspace{0.5em}
-{\LARGE\bfseries\color{accent} from MRI Images using Classical Machine Learning\par}
-\vspace{1.2em}
-{\large\itshape\color{greytx} A Multi-Descriptor Feature-Fusion Pipeline with Separability-Driven\\
-Hyper-parameter Selection and Statistical Validation\par}
-\vspace{2.2cm}
-{\large\bfseries Project Report\par}
-\vspace{0.3cm}
-\rule{0.6\textwidth}{0.8pt}\par
-\vspace{1.6cm}
-{\color{greytx} GLCM \;\textperiodcentered\; LBP \;\textperiodcentered\; DWT \;\textperiodcentered\; HOG \;\textperiodcentered\; First-order Statistics\par}
-\vspace{0.4em}
-{\small\color{greytx} SVM \textperiodcentered{} KNN \textperiodcentered{} RF \textperiodcentered{} XGBoost \textperiodcentered{} LightGBM \textperiodcentered{} Logistic Regression \textperiodcentered{} MLP \textperiodcentered{} ExtraTrees\par}
-\vfill
-{\large Author: \rule{6cm}{0.4pt}\par}
-\vspace{0.5em}
-{\large Supervisor / Course: \rule{5.5cm}{0.4pt}\par}
-\vspace{0.5em}
-{\large Date: \rule{4cm}{0.4pt}\par}
-\vspace{1.5cm}
-\end{titlepage}
+% ----------------------- PAGE DE GARDE --------------------------------
+\includepdf[pages=1,pagecommand={\thispagestyle{empty}}]{cover-page.pdf}
+\cleardoublepage
+\setcounter{page}{1}
 
-% ----------------------- TOC -------------------------------------------
+% ----------------------- TABLE DES MATIÈRES -----------------------------
 \tableofcontents
 \newpage
 
-% ----------------------- ABSTRACT --------------------------------------
-\input{sections/00_abstract.tex}
 
-% ----------------------- BODY ------------------------------------------
-\input{sections/01_problem.tex}
-\input{sections/02_dataset.tex}
-\input{sections/03_strategy.tex}
-\input{sections/04_descriptors.tex}
-\input{sections/05_hyperparams.tex}
-\input{sections/06_fusion_benchmark.tex}
-\input{sections/07_statistical_validation.tex}
-\input{sections/08_results_discussion.tex}
-\input{sections/09_conclusion.tex}
+% ----------------------- INTRODUCTION GÉNÉRALE --------------------------
+\input{sections/01_introduction.tex}
+
+% ----------------------- CORPS DU RAPPORT -------------------------------
+\input{chapters/ch01_etat_art.tex}
+\input{chapters/ch02_dataset.tex}
+\input{chapters/ch03_extraction.tex}
+\input{chapters/ch04_optimisation.tex}
+\input{chapters/ch05_ensembles.tex}
+\input{chapters/ch06_benchmark.tex}
+\input{chapters/ch07_validation.tex}
+\input{chapters/ch08_discussion.tex}
+\input{chapters/ch09_dl_vlm.tex}
+
+% ----------------------- CONCLUSION & RÉFÉRENCES ------------------------
+\input{sections/10_conclusion.tex}
+\input{sections/11_bibliographie.tex}
+
+% ----------------------- ANNEXES --------------------------------------
+\appendix
+
 
 \end{document}

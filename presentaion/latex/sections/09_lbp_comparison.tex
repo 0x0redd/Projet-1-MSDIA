@@ -1,0 +1,37 @@
+% Slide 9 — LBP Comparison
+\begin{frame}[shrink=4]{LBP Method Comparison}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.62\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{lbp_by_method.png}
+
+    \column{0.36\textwidth}
+    \begin{block}{Methods compared}
+      \small
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{Encoding} & \textbf{Property} \\
+        \midrule
+        \texttt{uniform} & compact + robust \\
+        \texttt{nri\_uniform} & less invariant \\
+        \texttt{ror} & rotation-invariant \\
+        \bottomrule
+      \end{tabular}
+    \end{block}
+
+    \begin{block}{Decision}
+      \small \texttt{uniform} wins consistently across $(P,R)$ settings.\vspace{0.2em}
+
+      \keyresult{Selected for Phase 2 branch B.}
+    \end{block}
+
+    \begin{block}{Takeaway}
+      \small Compact, rotation-tolerant patterns generalize best under inter-patient MRI variability.
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\note{
+Uniform encoding reduces histogram dimensionality while preserving discriminative texture.
+This is the method retained for Phase 2 branch B.
+}

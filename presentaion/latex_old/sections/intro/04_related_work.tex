@@ -1,0 +1,19 @@
+% SLIDE 4 — État de l'art
+\begin{frame}{État de l'art et lacune}
+  \timing{2:00}
+  \begin{enumerate}
+    \item \textbf{Texture MRI :} GLCM, LBP, DWT, HOG complémentaires~\cite{ref_fonc20231248452,ref_fnins2021634926}.
+    \item \textbf{Classifieurs :} SVM et forêts dominent les benchmarks radiomiques~\cite{ref_s41598024772437,ref_iasc2023032426}.
+    \item \textbf{Sélection de paramètres :} grid search couplé à un classifieur --- risque de co-optimisation~\cite{ref_s44163024002144,ref_ijigsp20150303}.
+  \end{enumerate}
+  \vspace{0.5em}
+  \begin{alertblock}{Lacune identifiée}
+    Aucune étude ne combine sélection \emph{sans classifieur} (FDR/MI/DBI) sur GLCM+LBP+DWT+HOG
+    avec un benchmark multi-modèles (\NModels) et validation statistique complète sur le même split.
+  \end{alertblock}
+\end{frame}
+
+\note{
+La littérature utilise souvent des paramètres par défaut ou optimise features et classifieur
+simultanément. Notre protocole sépare explicitement Phase 1 (descripteurs) et Phase 2 (modèles).
+}

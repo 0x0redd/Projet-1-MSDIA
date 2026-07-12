@@ -1,0 +1,28 @@
+% ML-only focus — aligned with paper_guideline.md
+\section{Introduction}
+\label{sec:introduction}
+
+Accurate discrimination of glioma, meningioma, and pituitary tumours on MRI supports treatment planning and reduces inter-observer variability in resource-limited settings~\cite{ref_bioengineering11030266,ref_diagnostics15212692}.
+While deep convolutional networks dominate recent benchmarks, they require GPU resources, large labelled corpora, and offer limited interpretability---constraints that remain relevant for single-centre studies and clinical prototyping~\cite{ref_access20253579727,ref_011573405636519125060212}.
+Handcrafted radiomics and texture descriptors (GLCM, LBP, DWT, HOG) remain competitive on brain MRI when parameters are tuned, yet most papers rely on library defaults or grid search tied to one classifier, conflating feature quality with classifier choice~\cite{ref_ijigsp20150303,ref_fonc20231248452}.
+
+We address a specific gap: \emph{no published work combines classifier-free separability scoring for joint GLCM/LBP/DWT/HOG optimisation with a comprehensive multi-classifier benchmark and full statistical validation on the same stratified split}.
+Our pipeline (Fig.~\ref{fig:pipeline}) separates parameter selection (Phase~1) from classifier comparison (Phase~2), avoiding the feedback loop that inflates cross-validation scores when features and models are co-optimised.
+
+Contributions are:
+\begin{enumerate}
+    \item A separability-first protocol (FDR + MI + DBI) over 213 descriptor configurations, yielding published optimal settings (Tables~\ref{tab:descriptor_grids}, \ref{tab:phase1}).
+    \item An eight-model Phase~2 benchmark (SVM, KNN, RF, XGBoost, LightGBM, LR, MLP, ExtraTrees) on eight feature sets with macro-F1 as the primary metric ($\sim$36{,}000 hyperparameter candidates; Table~\ref{tab:phase2_models}).
+    \item Feature-group importance analysis (RF/XGBoost on Full(opt)) linking unsupervised Phase~1 scores to supervised rankings (Section~\ref{sec:interpretability}).
+    \item Statistical validation: Cohen's $\kappa$, bootstrap 95\% CIs, McNemar, Wilcoxon, and Friedman--Nemenyi tests (Section~\ref{sec:statistics}).
+    \item A soft voting ensemble (SVM + XGBoost + LightGBM on Full(opt)) as a no-search fusion baseline.
+\end{enumerate}
+
+The remainder of the paper reviews related work (Section~\ref{sec:related}), describes the dataset and methods (Section~\ref{sec:methods}), reports Phase~1 and Phase~2 results (Sections~\ref{sec:phase1_results}--\ref{sec:results_ml}), analyses feature importance and significance, and discusses limitations.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{phase1_summary}
+\caption{Phase~1 overview: separability-guided selection of GLCM, LBP, DWT, and HOG parameters before any classifier training.}
+\label{fig:pipeline}
+\end{figure}

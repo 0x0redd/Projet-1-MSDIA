@@ -1,0 +1,37 @@
+% Slide 2 — Problem Statement
+\begin{frame}{Problem Statement}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.52\textwidth}
+    \begin{block}{Motivation \& goal}
+      Brain tumor type strongly affects treatment decisions, but manual MRI interpretation
+      is time-consuming and subject to variability. We target a reproducible,
+      CPU-friendly pipeline suitable for decision support.\vspace{0.3em}
+
+      \textbf{Research question:} Can optimized handcrafted features + classical ML reach strong
+      performance on a 3-class brain-tumor MRI task while remaining interpretable?
+    \end{block}
+
+    \column{0.46\textwidth}
+    \begin{block}{What we do (this talk)}
+      \scriptsize
+      \begin{tabular}{@{}p{0.30\linewidth}p{0.66\linewidth}@{}}
+        \toprule
+        \textbf{Step} & \textbf{Outcome} \\
+        \midrule
+        Feature extraction & Statistics, LBP, DWT, HOG descriptors \\
+        Feature optimization & Best params via separability metrics (no training) \\
+        Benchmarking & Tuned models across feature sets (\NModels{} $\times$ \NFeatureSets{}) \\
+        Validation & CV, bootstrap CI, McNemar / Friedman tests \\
+        \bottomrule
+      \end{tabular}
+    \end{block}
+
+    \vspace{-0.2em}
+    {\scriptsize \textit{Scope:} no MRI theory deep dive; no algorithm derivations; focus on methodology and results.}
+  \end{columns}
+\end{frame}
+
+\note{
+Tumor type drives treatment. Manual reading is costly. We focus on an auditable,
+CPU-friendly ML pipeline rather than deep learning.
+}

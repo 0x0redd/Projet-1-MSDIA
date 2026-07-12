@@ -1,0 +1,23 @@
+% Slide 18 — Global Ranking
+\begin{frame}[shrink=5]{Global Ranking}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.42\textwidth}
+    \begin{block}{Top 5 (held-out test)}
+      \input{tables/leaderboard_top5}
+    \end{block}
+
+    \begin{block}{Key insight}
+      \small \BestPipeline{} ranks first (macro-F1 \BestFOne).\vspace{0.2em}
+
+      HOG+SVM is a strong single-family baseline, but fusion adds a consistent gain.
+    \end{block}
+    \column{0.56\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{p2_leaderboard.png}
+  \end{columns}
+\end{frame}
+
+\note{
+Leaderboard ordered by F1-macro on held-out test.
+Top 3 are all SVM or KNN on high-dimensional feature sets.
+}

@@ -1,0 +1,121 @@
+\section{Phase 1 : Optimisation des caractéristiques}
+\label{sec:phase1}
+
+\subsection{Stratégie}
+
+Le LBP, la DWT et le HOG exposent chacun des hyperparamètres ajustables. Entraîner
+un classifieur complet pour chaque combinaison nécessiterait des milliers de modèles.
+À la place, nous classons les configurations de paramètres à l'aide de trois
+\emph{métriques de séparabilité} calculées directement sur les vecteurs de caractéristiques,
+sans entraînement de classifieur :
+
+\begin{itemize}
+  \item \textbf{Ratio de Fisher (FDR) :} rapport de la variance inter-classe sur la variance intra-classe.
+  \item \textbf{Information mutuelle (MI) :} dépendance statistique entre caractéristiques et étiquettes de classe.
+  \item \textbf{Indice de Davies--Bouldin (DBI) :} chevauchement des clusters dans l'espace des caractéristiques
+        (plus bas est meilleur ; nous l'inversons avant agrégation).
+\end{itemize}
+
+Un score composite est obtenu par normalisation min--max de chaque métrique sur la grille,
+puis moyennage :
+\[
+  \text{Score} = \frac{1}{3}\Big(\widehat{\text{FDR}} + \widehat{\text{MI}} + (1 - \widehat{\text{DBI}})\Big)
+\]
+
+La configuration atteignant le score composite le plus élevé par famille de descripteur
+est figée pour toutes les expériences de Phase~2. L'espace de recherche total couvre
+\NPhaseOneConfigs{} configurations.
+
+\subsection{Optimisation du LBP}
+
+La grille de recherche couvrait les voisins $P \in \{4,8,12,16\}$, le rayon $R \in \{1,2,3\}$
+et trois méthodes d'encodage (\texttt{uniform}, \texttt{nri\_uniform}, \texttt{ror}).
+La Figure~\ref{fig:lbp_search} présente le paysage de séparabilité.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.72\linewidth]{lbp_param_search.png}
+  \caption{Recherche de paramètres LBP : score de séparabilité selon la configuration.
+           La meilleure configuration (P=12, R=1, uniform) atteint un score de \lbpScore.}
+  \label{fig:lbp_search}
+\end{figure}
+
+Parmi les méthodes d'encodage, \texttt{uniform} surpasse systématiquement les alternatives
+pour tous les couples $(P,R)$ (Figure~\ref{fig:lbp_method}). L'histogramme compact
+des motifs à transitions limitées réduit le bruit et améliore la généralisation
+entre patients.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.72\linewidth]{lbp_by_method.png}
+  \caption{Comparaison des méthodes d'encodage LBP. L'encodage \texttt{uniform} obtient
+           la meilleure séparabilité pour la plupart des combinaisons de paramètres.}
+  \label{fig:lbp_method}
+\end{figure}
+
+\subsection{Optimisation de la DWT}
+
+Sept familles d'ondelettes (haar, db1, db2, db4, sym2, coif1, bior1.3) aux niveaux
+$\{1,2,3\}$ ont été évaluées (21 configurations). La Figure~\ref{fig:dwt_search}
+présente les résultats.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.72\linewidth]{dwt_param_search.png}
+  \caption{Recherche de paramètres DWT selon les familles d'ondelettes et les niveaux
+           de décomposition. \texttt{db2} au niveau~1 atteint la meilleure séparabilité (\dwtScore).}
+  \label{fig:dwt_search}
+\end{figure}
+
+Une comparaison directe des familles d'ondelettes (Figure~\ref{fig:dwt_wavelets}) confirme
+que \texttt{db2} offre le meilleur compromis : elle capture les motifs tissulaires
+tumoraux en moyenne fréquence sans sur-fragmenter le signal comme le font les familles
+plus complexes.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.72\linewidth]{dwt_wavelet_comparison.png}
+  \caption{Comparaison des familles d'ondelettes au niveau de décomposition optimal.
+           \texttt{db2} surpasse les familles plus simples (haar) et plus complexes (bior1.3).}
+  \label{fig:dwt_wavelets}
+\end{figure}
+
+\subsection{Optimisation du HOG}
+
+Le HOG a été exploré sur 12 configurations variant le nombre d'orientations (6/9),
+la taille des cellules (8/16 pixels) et la taille des blocs (2/3 cellules). Une
+configuration avec 6 orientations, cellules $(16\times16)$, blocs $(3\times3)$ et
+normalisation L2-Hys a atteint la séparabilité la plus élevée (\hogScore).
+
+\subsection{Synthèse de la Phase 1}
+
+Le Tableau~\ref{tab:phase1_summary} rapporte les paramètres retenus et leurs scores
+de séparabilité. La Figure~\ref{fig:phase1_summary} fournit une synthèse visuelle.
+
+\begin{table}[H]
+  \centering
+  \caption{Paramètres retenus en Phase~1 et scores de séparabilité.}
+  \label{tab:phase1_summary}
+  \begin{tabular}{@{}llcl@{}}
+    \toprule
+    \textbf{Descripteur} & \textbf{Meilleurs paramètres} & \textbf{Score} & \textbf{Branche} \\
+    \midrule
+    Statistiques & \statsParams & --- & A \\
+    LBP & \lbpParams & \lbpScore & B \\
+    DWT & \dwtParams & \dwtScore & C \\
+    HOG & \hogParams & \hogScore & D \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.80\linewidth]{phase1_summary.png}
+  \caption{Synthèse de l'optimisation Phase~1 pour les quatre familles de descripteurs.}
+  \label{fig:phase1_summary}
+\end{figure}
+
+Les descripteurs de texture (LBP) et de gradient (HOG) atteignent des scores de
+séparabilité quasi parfaits, ce qui en fait les branches individuelles les plus
+fortes. Les statistiques offrent une base légère ; la DWT apporte une information
+fréquentielle complémentaire.

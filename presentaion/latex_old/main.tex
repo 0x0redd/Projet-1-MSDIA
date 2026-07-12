@@ -1,0 +1,56 @@
+%=======================================================================
+%  Présentation académique — Classification MRI (ML classique, ~25 min)
+%  Compile:  .\build.ps1
+%=======================================================================
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\input{preamble}
+\input{data/metrics}
+
+\title{Optimisation de descripteurs artisanaux et benchmark de classifieurs\\pour la classification de tumeurs cérébrales en IRM}
+\subtitle{Projet MSDIA --- Machine Learning classique}
+\author{Votre Nom}
+\institute{Institution / Encadrant}
+\date{\today}
+
+\begin{document}
+
+% --- Partie I : Contexte ---
+\partframe{I}{Contexte scientifique}
+\input{sections/intro/00_title}
+\input{sections/intro/02_outline}
+\input{sections/intro/03_problem}
+\input{sections/intro/04_related_work}
+\input{sections/intro/05_contributions}
+
+% --- Partie II : Données et descripteurs ---
+\partframe{II}{Données et descripteurs}
+\input{sections/features/02_dataset}
+\input{sections/features/05_pipeline_overview}
+\input{sections/features/03_glcm_lbp}
+\input{sections/features/04_dwt_hog}
+\input{sections/methods/05_param_selection}
+
+% --- Partie III : Méthodologie ---
+\partframe{III}{Méthodologie expérimentale}
+\input{sections/methods/06_best_params_table}
+\input{sections/methods/06_best_params_plots}
+\input{sections/methods/07_branches_cleaning}
+\input{sections/methods/09_models_protocol}
+
+% --- Partie IV : Résultats ---
+\partframe{IV}{Résultats}
+\input{sections/results/10_global_performance}
+\input{sections/results/11_leaderboard}
+\input{sections/results/12_per_branch}
+\input{sections/results/13_interpretability}
+\input{sections/results/14_confusion}
+
+% --- Partie V : Validation et conclusion ---
+\partframe{V}{Validation et conclusion}
+\input{sections/results/14_statistics}
+\input{sections/results/15_limitations}
+\input{sections/results/16_conclusion}
+\input{sections/results/17_references}
+
+\end{document}

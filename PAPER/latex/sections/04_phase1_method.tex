@@ -1,0 +1,274 @@
+\section{Phase 1: Separability-Guided Feature Configuration}
+\label{sec:phase1}
+\label{sec:phase1_method}
+
+\subsection{Motivation}
+\label{sec:phase1_motivation}
+
+The performance of handcrafted feature-based classification systems depends
+heavily on the parameter configuration of the underlying feature extractors.
+Parameters such as quantization levels in the GLCM, neighborhood settings in
+LBP, decomposition levels in the DWT, and cell structures in HOG directly
+influence the discriminative quality of the extracted representations.
+
+Most existing studies either employ default parameter values or optimize
+descriptors using classifier-dependent criteria such as classification
+accuracy. Although effective, classifier-dependent optimization introduces a
+coupling between feature extraction and classifier behavior, making it difficult
+to determine whether performance improvements arise from the quality of the
+feature representation or from the characteristics of a particular learning
+algorithm. To overcome this limitation, this work adopts a
+classifier-independent optimization strategy based on feature separability:
+candidate configurations are assessed according to their ability to separate
+tumor classes in the feature space before any classifier training is performed.
+The objective of Phase~1 is therefore to identify descriptor configurations that
+maximize class discrimination while remaining independent of any specific
+machine learning model.
+
+\subsection{Descriptor Search Space}
+\label{sec:phase1_search}
+
+Four handcrafted feature families were investigated. For each, a grid of
+candidate parameter configurations was generated from the training images and
+evaluated, yielding $144$ GLCM, $36$ LBP, $21$ DWT, and $12$ HOG configurations
+($213$ in total).
+
+\subsubsection{GLCM Search Space}
+The Gray-Level Co-occurrence Matrix describes second-order texture statistics by
+modeling spatial relationships between pixel intensities. The explored
+parameters were the number of gray levels, the set of pixel distances, the set
+of angular directions, and matrix symmetrization. For each configuration, six
+texture properties---contrast, dissimilarity, homogeneity, energy, correlation,
+and angular second moment (ASM)---were extracted and averaged over all
+distance--angle pairs, producing a six-dimensional descriptor.
+
+\subsubsection{LBP Search Space}
+Local Binary Patterns characterize local texture structures by comparing
+neighboring pixels with a central pixel. The explored parameters were the number
+of sampling points $P$, the neighborhood radius $R$, and the encoding method
+(\texttt{uniform}, \texttt{nri\_uniform}, and \texttt{ror}). The resulting
+pattern histograms were used as texture descriptors for separability evaluation.
+
+\subsubsection{DWT Search Space}
+The Discrete Wavelet Transform provides a multi-resolution representation of
+image content by decomposing an image into frequency sub-bands. The search space
+comprised seven wavelet families and three decomposition levels. Four
+statistical measures were extracted from each sub-band (approximation and
+detail coefficients), yielding $4(3L+1)$ features for a decomposition of level
+$L$.
+
+\subsubsection{HOG Search Space}
+The Histogram of Oriented Gradients captures local shape and structural
+information through gradient orientation distributions. The explored parameters
+were the number of orientation bins, the cell size (pixels per cell), and the
+block size (cells per block); block normalization was fixed to L2-Hys. Each
+combination generated a different gradient-based representation
+(Figure~\ref{fig:hog_schema}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{hog_schema}
+\caption{Illustration of HOG descriptor computation on a preprocessed MRI slice.}
+\label{fig:hog_schema}
+\end{figure}
+
+\subsection{Separability Metrics}
+\label{sec:separability}
+
+To assess descriptor quality independently of classifier performance, three
+complementary separability metrics were employed. Prior to evaluation, each
+candidate feature matrix was standardized, and all metrics were computed on the
+training set only.
+
+\subsubsection{Fisher Discriminant Ratio (FDR)}
+The Fisher Discriminant Ratio relates inter-class separation to intra-class
+variability. For a single feature it is defined as
+\begin{equation}
+\mathrm{FDR} =
+\frac{\sum_{c=1}^{C} n_c (\mu_c - \mu)^2}
+     {\sum_{c=1}^{C} n_c \sigma_c^2},
+\end{equation}
+where $C$ is the number of classes, $n_c$, $\mu_c$, and $\sigma_c^2$ are the
+size, mean, and variance of class $c$, and $\mu$ is the global mean. The score
+is averaged across all features; higher values indicate better class
+discrimination.
+
+\subsubsection{Mutual Information (MI)}
+Mutual Information measures the statistical dependency between a feature $X$ and
+the class label $Y$,
+\begin{equation}
+\mathrm{MI}(X,Y) = \sum_{x \in X}\sum_{y \in Y}
+p(x,y)\,\log \frac{p(x,y)}{p(x)\,p(y)}.
+\end{equation}
+In practice it is estimated with a nearest-neighbor estimator
+($k=5$) and averaged across features; higher values indicate more
+class-relevant information.
+
+\subsubsection{Davies--Bouldin Index (DBI)}
+The Davies--Bouldin Index~\cite{davies1979} evaluates cluster compactness and
+separation,
+\begin{equation}
+\mathrm{DBI} = \frac{1}{C}\sum_{i=1}^{C}
+\max_{j \neq i}\left(\frac{S_i + S_j}{M_{ij}}\right),
+\end{equation}
+where $S_i$ and $S_j$ denote intra-cluster dispersion and $M_{ij}$ the distance
+between the centroids of classes $i$ and $j$. To keep the computation efficient
+in high dimensions, the DBI is evaluated on a PCA-reduced projection (at most
+$20$ components) of the standardized features. Unlike FDR and MI, lower DBI
+values indicate better separability.
+
+\subsection{Composite Separability Score}
+\label{sec:phase1_composite}
+
+Because each metric captures a different aspect of class discrimination, a
+composite score was constructed as a unified ranking criterion. Within each
+descriptor family, metric values were first normalized to $[0,1]$ across the
+candidate configurations. For FDR and MI,
+\begin{equation}
+M_{\mathrm{norm}} = \frac{M - M_{\min}}{M_{\max} - M_{\min}},
+\end{equation}
+and for the DBI, where lower values are preferred,
+\begin{equation}
+\mathrm{DBI}_{\mathrm{norm}} = 1 - \frac{\mathrm{DBI} - \mathrm{DBI}_{\min}}
+{\mathrm{DBI}_{\max} - \mathrm{DBI}_{\min}}.
+\end{equation}
+The composite score is the equally weighted average
+\begin{equation}
+\begin{split}
+\mathrm{Score} = w_1\,\mathrm{FDR}_{\mathrm{norm}}
++ w_2\,\mathrm{MI}_{\mathrm{norm}}
++ w_3\,\mathrm{DBI}_{\mathrm{norm}}, \\
+w_1 = w_2 = w_3 = \tfrac{1}{3}.
+\end{split}
+\end{equation}
+Because normalization is performed \emph{within} each descriptor family, the
+composite score ranks configurations of the same descriptor against one another;
+it should not be interpreted as an absolute, cross-descriptor measure of feature
+quality.
+
+\subsection{Optimization Procedure}
+\label{sec:phase1_procedure}
+
+The optimization procedure was performed independently for each descriptor
+family. For every candidate configuration, features were extracted from the
+training images; the FDR, MI, and DBI were computed; the metric values were
+normalized and combined into the composite score; and the configurations were
+ranked. The highest-ranked configuration for each family was retained for the
+subsequent experiments. The procedure can be summarized as: configuration
+generation $\rightarrow$ feature extraction $\rightarrow$ separability
+evaluation $\rightarrow$ composite scoring $\rightarrow$ ranking $\rightarrow$
+optimal configuration selection.
+
+Figure~\ref{fig:phase1_search} visualizes the composite separability score across
+the explored parameter grids for all four descriptor families.
+
+\begin{figure*}[t]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+\includegraphics[width=\linewidth]{glcm_param_search}
+\caption{GLCM}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+\includegraphics[width=\linewidth]{lbp_param_search}
+\caption{LBP}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.48\textwidth}
+\includegraphics[width=\linewidth]{dwt_param_search}
+\caption{DWT}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+\includegraphics[width=\linewidth]{hog_param_search}
+\caption{HOG}
+\end{subfigure}
+\caption{Phase~1 parameter search: composite separability score across candidate
+configurations for each descriptor family.}
+\label{fig:phase1_search}
+\end{figure*}
+
+\subsection{Optimal Descriptor Configurations}
+\label{sec:phase1_optimal}
+
+Table~\ref{tab:phase1} reports the selected configuration for each descriptor
+family, together with its dimensionality and composite score. The best GLCM
+configuration combined four pixel distances at a single orientation with $128$
+gray levels and an asymmetric co-occurrence matrix. The optimal LBP descriptor
+used twelve uniform sampling points at radius one. For the DWT, the
+\texttt{db2} wavelet at a single decomposition level offered the best
+separability score. The optimal HOG configuration used six orientation bins with
+$16\times16$-pixel cells and $3\times3$-cell blocks.
+
+\begin{table}[t]
+\centering
+\caption{Optimal descriptor configurations selected in Phase~1. Composite scores
+are normalized within each descriptor family and are therefore not directly
+comparable across families.}
+\label{tab:phase1}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+\textbf{Descriptor} & \textbf{Optimal parameters} & \textbf{Dim.} & \textbf{Score} \\
+\midrule
+GLCM & dist.\ $\{1,2,4,8\}$, $1$ angle ($0^{\circ}$), & $6$ & $0.7468$ \\
+     & $128$ levels, asymmetric & & \\
+LBP  & $P=12$, $R=1$, uniform & $14$ & $0.9906$ \\
+DWT  & \texttt{db2}, level $1$ & $16$ & $0.9837$ \\
+HOG  & $6$ orient., $16\times16$ cell, & $1176$ & $0.9898$ \\
+     & $3\times3$ block, L2-Hys & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:phase1_best} plots the separability metrics for the selected
+optimal configuration within each family.
+
+\begin{figure*}[t]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+\includegraphics[width=\linewidth]{glcm_best_params}
+\caption{GLCM}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+\includegraphics[width=\linewidth]{lbp_best_params}
+\caption{LBP}
+\end{subfigure}\\[0.5em]
+\begin{subfigure}[b]{0.48\textwidth}
+\includegraphics[width=\linewidth]{dwt_best_params}
+\caption{DWT}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+\includegraphics[width=\linewidth]{hog_param_search}
+\caption{HOG (search grid)}
+\end{subfigure}
+\caption{Separability profiles for the optimal GLCM, LBP, and DWT configurations
+and the HOG parameter grid.}
+\label{fig:phase1_best}
+\end{figure*}
+
+\subsection{Discussion of Phase 1 Results}
+\label{sec:phase1_discussion}
+
+The optimization results demonstrate that descriptor parameterization has a
+substantial impact on feature discriminability. Marked differences were observed
+between candidate configurations within each descriptor family, confirming that
+default parameter settings do not necessarily produce optimal representations
+for brain tumor MRI classification.
+
+The proposed separability-guided framework offers several advantages. First, it
+enables an objective evaluation of descriptor quality without relying on
+classifier performance. Second, it reduces the risk of overfitting feature
+configurations to a specific learning algorithm. Third, it provides a systematic
+methodology for selecting feature extractors before classifier benchmarking is
+performed. It should be emphasized that the composite scores are a
+classifier-independent \emph{selection} criterion computed on the training set,
+rather than an estimate of classification accuracy; the predictive value of each
+representation is assessed separately in Phase~2.
+
+The optimized descriptors obtained in this phase constitute the foundation for
+the classifier benchmarking experiments presented in the next section. By
+ensuring that all classifiers operate on carefully selected feature
+representations, the subsequent comparison focuses on differences attributable
+to the classifiers themselves rather than to variations in feature quality.

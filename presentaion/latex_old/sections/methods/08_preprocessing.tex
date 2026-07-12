@@ -1,0 +1,31 @@
+% SLIDE 9 — Nettoyage du pipeline
+\begin{frame}{Nettoyage du pipeline}
+  \timing{1:00}
+  \textbf{Problème :} les vecteurs fusionnés sont hétérogènes (échelles, redondance, NaN).
+  \vspace{0.5em}
+
+  \begin{enumerate}
+    \item \textbf{Standardisation} --- mise à la même échelle (critique pour SVM, KNN, MLP, LR)
+    \item \textbf{Suppression NaN / constantes / faible variance} --- colonnes sans signal
+    \item \textbf{Dé-duplication / corrélation} --- élagage des features redondantes après fusion
+  \end{enumerate}
+
+  \vspace{0.6em}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \begin{block}{Avant}
+      Matrice brute : dimensions hétérogènes\\
+      (Stats 6 + GLCM 6 + LBP 10 + DWT 16 + HOG \hogDim)
+    \end{block}
+    \column{0.48\textwidth}
+    \begin{block}{Après}
+      Matrice propre, standardisée,\\
+      prête pour \NModels{} classifieurs
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\note{
+La fusion crée redondance et décalage d'échelle.
+Les modèles basés sur distance et gradient y sont très sensibles --- le nettoyage n'est pas optionnel.
+}

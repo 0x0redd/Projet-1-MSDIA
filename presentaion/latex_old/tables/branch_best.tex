@@ -1,0 +1,19 @@
+\begin{table}
+\centering
+\footnotesize
+\begin{tabular}{@{}l l c c@{}}
+\toprule
+\textbf{Branche} & \textbf{Modèle} & \textbf{F1-macro} & \textbf{Accuracy} \\
+\midrule
+A — Stats       & \ModelAStats   & \FOneAStats   & \AccAStats \\
+B — Tex(opt)    & \ModelBTex    & \FOneBTex    & \AccBTex \\
+C — DWT(opt)    & \ModelCDwt    & \FOneCDwt    & \AccCDwt \\
+D — HOG         & \ModelDHog    & \FOneDHog    & \AccDHog \\
+A+B             & \ModelApB     & \FOneApB     & \AccApB \\
+B+C(opt)        & \ModelBpC     & \FOneBpC     & \AccBpC \\
+A+B+C(opt)      & \ModelApBpC   & \FOneApBpC   & \AccApBpC \\
+\textbf{Full(opt)} & \textbf{\ModelFull} & \textbf{\FOneFull} & \textbf{\AccFull} \\
+\bottomrule
+\end{tabular}
+\caption{Meilleure combinaison modèle/branche sur le split test (hold-out).}
+\end{table}

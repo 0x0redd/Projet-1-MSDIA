@@ -1,0 +1,25 @@
+% Slide 19 — Feature Importance
+\begin{frame}[shrink=2]{Feature Importance Analysis}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.68\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.66\textheight,keepaspectratio]{rf_branch_importance.png}
+
+    \column{0.30\textwidth}
+    \begin{block}{What this shows}
+      \small We group Full(opt) features by descriptor family and estimate their relative influence
+      using a Random Forest surrogate model.
+    \end{block}
+
+    \begin{block}{Takeaway}
+      \small HOG and LBP dominate, while Stats and DWT provide smaller complementary gains.\vspace{0.2em}
+
+      This matches the observed improvement from HOG $\rightarrow$ Full(opt).
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\note{
+Trained RF on Full(opt) features grouped by descriptor family.
+HOG dominates due to high-dimensional edge information; LBP adds texture signal.
+}

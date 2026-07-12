@@ -1,0 +1,16 @@
+\section{Résultats}
+
+% SLIDE 15 — Performance par branche
+\begin{frame}{Performance par branche (split test)}
+  \timing{2:00}
+  \input{tables/branch_best}
+  \vspace{0.3em}
+  \small
+  \textbf{Observation :} D — HOG seul (\FOneDHog) approche Full(opt) (\FOneFull) ;
+  C — DWT(opt) reste le bloc le plus faible ($\FOneCDwt$).
+\end{frame}
+
+\note{
+HOG porte l'essentiel de la performance. La fusion complète n'ajoute que $\Delta$F1 $\approx$ 0.017.
+DWT seul confirme que la co-occurrence seule est insuffisante sur ces coupes 128x128.
+}

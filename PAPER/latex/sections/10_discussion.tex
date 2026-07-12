@@ -1,0 +1,30 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Why the Proposed Framework Works}
+\label{sec:disc_framework}
+Phase~1 decouples descriptor tuning from classifier choice, avoiding co-optimisation bias.
+The two-phase design makes feature quality measurable before committing to expensive hyperparameter sweeps across eight model families.
+\placeholder{Expand framework rationale.}
+
+\subsection{Impact of Separability-Guided Optimization}
+\label{sec:disc_separability}
+High composite scores for LBP and HOG align with strong Phase~2 performance when those blocks dominate the feature vector.
+Agreement between Phase~1 rankings and Phase~2 importance analysis (Section~\ref{sec:interp_link}) validates the separability-first protocol.
+\placeholder{Expand impact analysis.}
+
+\subsection{Comparison with Literature}
+\label{sec:disc_literature}
+KNN on Full(opt) (F1 $=0.946$) and SVM on Full(opt) (F1 $=0.912$) demonstrate that separability-tuned radiomics on $\sim3{,}000$ imbalanced slices can match many published deep-learning benchmarks on the same public dataset~\cite{kumar2024,ottoni2025,basthikodi2024}.
+\placeholder{Add comparison table against recent handcrafted and hybrid MRI studies.}
+
+\subsection{Practical Implications}
+\label{sec:disc_practical}
+The proposed pipeline offers:
+\begin{itemize}
+    \item low computational requirements (no GPU training);
+    \item explainable feature engineering via named descriptor families;
+    \item suitability for limited-data and single-centre environments;
+    \item reproducible benchmarking with statistical significance testing.
+\end{itemize}
+\textbf{Practical recommendation:} begin with separability-guided texture extraction and a kernel SVM or KNN on HOG or Full(opt) features when labelled data are limited.

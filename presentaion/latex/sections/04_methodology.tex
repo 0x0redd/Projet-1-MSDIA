@@ -1,0 +1,48 @@
+% Slide 4 — Methodology Overview
+\begin{frame}{Methodology Overview}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.55\textwidth}
+    \centering
+    \begin{tikzpicture}[
+      node distance=0.55cm and 0.4cm,
+      box/.style={rectangle, rounded corners=2pt, draw=accent, fill=lightbg,
+                  minimum height=0.7cm, minimum width=2.1cm, align=center, font=\small},
+      arr/.style={-{Stealth[length=2mm]}, thick, accent}
+    ]
+      \node[box] (data) {Dataset};
+      \node[box, right=of data] (prep) {Preprocessing};
+      \node[box, right=of prep] (feat) {Feature\\Extraction};
+      \node[box, right=of feat] (opt) {Feature\\Optimization};
+      \node[box, right=of opt] (cls) {Classification};
+      \node[box, right=of cls] (eval) {Evaluation};
+      \draw[arr] (data) -- (prep);
+      \draw[arr] (prep) -- (feat);
+      \draw[arr] (feat) -- (opt);
+      \draw[arr] (opt) -- (cls);
+      \draw[arr] (cls) -- (eval);
+    \end{tikzpicture}
+
+    \column{0.43\textwidth}
+    \begin{block}{Phase 1: Feature engineering}
+      \small We search \NPhaseOneConfigs{} descriptor configurations and select the best parameters using
+      separability metrics (FDR, MI, DBI) \emph{without} training classifiers.
+    \end{block}
+
+    \begin{block}{Phase 2: ML benchmark}
+      \small Freeze the optimized descriptors, then tune and compare \NModels{} classifiers across
+      \NFeatureSets{} feature sets. Report held-out test performance + statistical validation.
+    \end{block}
+  \end{columns}
+
+  \vspace{0.3em}
+  \centering
+  \includegraphics[width=0.92\linewidth,height=0.40\textheight,keepaspectratio]{p2_overall_dashboard.png}
+  \vspace{0.1em}
+
+  {\scriptsize Dashboard summarizing Phase 2 performance and training time.}
+\end{frame}
+
+\note{
+Two-phase design: Phase 1 selects optimal descriptor parameters via separability metrics;
+Phase 2 benchmarks eight classifiers across eight feature-set combinations.
+}

@@ -1,0 +1,55 @@
+% Slide 22 — Statistical Validation
+\begin{frame}[shrink=2]{Statistical Validation}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.33\textwidth}
+    \begin{block}{Cross-validation (5-fold)}
+      \small
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        F1-macro & \BestFOneCVMean{} $\pm$ \BestFOneCVStd{} \\
+        Accuracy & \BestAccCVMean{} $\pm$ \BestAccCVStd{} \\
+        \bottomrule
+      \end{tabular}
+
+      \vspace{0.2em}
+      {\scriptsize Stable performance across folds supports generalization.}
+    \end{block}
+
+    \column{0.33\textwidth}
+    \begin{block}{Bootstrap CI (95\%, test)}
+      \small
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        F1-macro & [\BestFOneCILow,\; \BestFOneCIHigh] \\
+        Accuracy & [\BestAccCILow,\; \BestAccCIHigh] \\
+        \bottomrule
+      \end{tabular}
+
+      \vspace{0.2em}
+      {\scriptsize Uncertainty bounds on the held-out test estimate.}
+    \end{block}
+
+    \column{0.33\textwidth}
+    \begin{block}{Significance tests}
+      \small
+      \begin{tabular}{@{}p{0.55\linewidth}p{0.35\linewidth}@{}}
+        \toprule
+        \textbf{Test} & \textbf{Result} \\
+        \midrule
+        McNemar (SVM vs RF) & $p{=}$\McNemarRF \\
+        McNemar (SVM vs XGB) & $p{=}$\McNemarXGB \\
+        McNemar (SVM vs KNN) & $p{=}$\McNemarKNN \\
+        Friedman (within Full) & $p{=}$\FriedmanFullP \\
+        \bottomrule
+      \end{tabular}
+
+      \vspace{0.2em}
+      {\scriptsize Confirms SVM improvements are meaningful vs several baselines.}
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\note{
+Multiple validation layers confirm improvements are meaningful, not random.
+SVM advantage over tree ensembles is statistically supported.
+}

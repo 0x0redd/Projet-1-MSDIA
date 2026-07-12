@@ -1,0 +1,48 @@
+% Slide 24 — Discussion
+\begin{frame}[shrink=2]{Discussion}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.58\textwidth}
+    \begin{block}{Why optimization + fusion help}
+      \small Phase 1 ranks descriptor parameters using separability metrics, reducing
+      trial-and-error in Phase 2.\vspace{0.2em}
+
+      Fusion combines complementary cues: intensity (A), texture (B), frequency (C), and edges (D).
+    \end{block}
+
+    \begin{block}{Why SVM performs best here}
+      \small The polynomial kernel captures non-linear interactions in the 526-D Full(opt) space.\vspace{0.2em}
+
+      High-dimensional HOG features often favor margin-based learning over bagging-style ensembles.
+    \end{block}
+
+    \begin{block}{Practical implications}
+      \small CPU-only, reproducible, and descriptor-based interpretability.\vspace{0.2em}
+
+      The goal is decision support; clinical deployment requires external validation and workflow integration.
+    \end{block}
+
+    \column{0.40\textwidth}
+    \centering
+    \begin{tikzpicture}[x=1cm,y=1cm]
+      \draw[->,gray] (0,0) -- (4.3,0) node[below] {\scriptsize interpretability};
+      \draw[->,gray] (0,0) -- (0,3.8) node[left] {\scriptsize performance};
+
+      \draw[draw=accent,rounded corners=2pt] (0.3,0.3) rectangle (4.0,3.4);
+      \node[anchor=west] at (0.4,3.25) {\scriptsize \textbf{High}};
+      \node[anchor=west] at (0.4,0.45) {\scriptsize \textbf{Low}};
+
+      \node[draw=accent,fill=accent!18,rounded corners=2pt,align=center,font=\scriptsize] at (1.25,2.7) {HOG+SVM\\(strong baseline)};
+      \node[draw=accent,fill=accent2!18,rounded corners=2pt,align=center,font=\scriptsize] at (2.95,3.0) {\textbf{Full(opt)+SVM}\\best};
+      \node[draw=accent,fill=lightbg,rounded corners=2pt,align=center,font=\scriptsize] at (2.8,1.3) {Boosted trees\\(competitive)};
+      \node[draw=accent,fill=lightbg,rounded corners=2pt,align=center,font=\scriptsize] at (1.2,1.1) {Stats-only\\baseline};
+    \end{tikzpicture}
+
+    \vspace{0.2em}
+    {\scriptsize Trade-off sketch (relative positioning).}
+  \end{columns}
+\end{frame}
+
+\note{
+Discuss trade-offs honestly. 92\% is strong for traditional ML but DL methods
+may exceed this with more data. Our pipeline is transparent and reproducible.
+}

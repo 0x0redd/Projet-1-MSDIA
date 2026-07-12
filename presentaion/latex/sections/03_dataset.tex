@@ -1,0 +1,35 @@
+% Slide 3 — Dataset
+\begin{frame}{Dataset}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.52\textwidth}
+    \begin{block}{Dataset snapshot}
+      \small
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        Classes & \NClasses{} (Glioma, Meningioma, Pituitary) \\
+        Total images & \NTotal{} (\NPerClass{} per class) \\
+        Split & \NTrain{} train / \NTest{} test (80/20, stratified) \\
+        Image size & \ImgSize{} grayscale \\
+        \bottomrule
+      \end{tabular}
+    \end{block}
+
+    \begin{block}{Evaluation choice}
+      \small We report macro-averaged metrics (especially macro-F1) so each tumor class
+      contributes equally to the final score. With balanced classes, improvements reflect
+      better separability rather than class reweighting.
+    \end{block}
+
+    \column{0.46\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{class_balance_train.png}
+    \vspace{0.2em}
+
+    {\scriptsize Class distribution (train split).}
+  \end{columns}
+\end{frame}
+
+\note{
+Balanced dataset with 400 training and 100 test samples per class.
+This allows fair comparison across tumor types.
+}

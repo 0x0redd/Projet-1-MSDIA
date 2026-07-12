@@ -1,0 +1,8 @@
+% ML-only paper — Phase 1 + Phase 2 (notebook: Projet7_brainTumorDetection.ipynb)
+Brain tumor classification from magnetic resonance imaging (MRI) supports triage of glioma, meningioma, and pituitary lesions.
+Most studies apply default parameters to handcrafted texture descriptors or couple exhaustive grid search to a single classifier, introducing optimisation bias and high compute cost.
+We present a two-phase framework on a balanced dataset of 1{,}500 axial MRI slices (500 per class): Phase~1 selects GLCM, LBP, DWT, and HOG hyperparameters using three classifier-free separability metrics (Fisher discriminant ratio, mutual information, Davies--Bouldin index) over 213 configurations; Phase~2 benchmarks eight classical models (SVM, KNN, random forest, XGBoost, LightGBM, logistic regression, MLP, ExtraTrees) with stratified 5-fold \texttt{GridSearchCV} on eight optimised feature compositions.
+On the held-out test split, the best configuration pairs KNN with the Full(opt) vector (accuracy $=0.953$, macro-F1 $=0.946$); SVM on Full(opt) reaches F1 $=0.912$, providing an interpretable clinical baseline.
+Random-forest group importance confirms that HOG dominates raw importance while GLCM and statistical descriptors carry higher information per dimension, agreeing with Phase~1 separability rankings.
+Full statistical validation (Cohen's $\kappa$, bootstrap confidence intervals, McNemar, Wilcoxon, Friedman--Nemenyi) is reported for the top models.
+These results show that separability-guided handcrafted features with rigorous classical benchmarking achieve strong MRI classification without deep learning or GPU training.

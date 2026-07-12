@@ -1,0 +1,105 @@
+\section{Résultats}
+\label{sec:results}
+
+\subsection{Familles de caractéristiques individuelles}
+
+La Figure~\ref{fig:individual} présente les résultats du benchmark pour chaque
+jeu mono-famille. Parmi les quatre, \textbf{D --- HOG + SVM} obtient la meilleure
+performance individuelle (\AccDHog{}, F1-macro \FOneDHog), suivi de B --- LBP (\AccBTex),
+A --- Stats (\AccAStats) et C --- DWT (\AccCDwt).
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[b]{0.49\linewidth}
+    \includegraphics[width=\linewidth]{p2_A_—_Stats.png}
+    \caption{A --- Statistiques (meilleur : \ModelAStats, \AccAStats)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\linewidth}
+    \includegraphics[width=\linewidth]{p2_B_—_Tex(opt).png}
+    \caption{B --- Texture LBP (meilleur : \ModelBTex, \AccBTex)}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\linewidth}
+    \includegraphics[width=\linewidth]{p2_C_—_DWT(opt).png}
+    \caption{C --- Fréquence DWT (meilleur : \ModelCDwt, \AccCDwt)}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\linewidth}
+    \includegraphics[width=\linewidth]{p2_D_—_HOG.png}
+    \caption{D --- HOG (meilleur : \ModelDHog, \AccDHog)}
+  \end{subfigure}
+  \caption{Résultats du benchmark Phase~2 pour les familles de caractéristiques individuelles.}
+  \label{fig:individual}
+\end{figure}
+
+\subsection{Jeux de caractéristiques fusionnés}
+
+La fusion progressive des caractéristiques améliore systématiquement les performances
+(Figure~\ref{fig:combined}). Le gain est le plus marqué lorsque le HOG est inclus
+dans le jeu complet.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[b]{0.49\linewidth}
+    \includegraphics[width=\linewidth]{p2_ApB.png}
+    \caption{A+B : Statistiques + LBP}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\linewidth}
+    \includegraphics[width=\linewidth]{p2_BpC(opt).png}
+    \caption{B+C : LBP + DWT}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\linewidth}
+    \includegraphics[width=\linewidth]{p2_ApBpC(opt).png}
+    \caption{A+B+C : sans HOG}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\linewidth}
+    \includegraphics[width=\linewidth]{p2_Full(opt).png}
+    \caption{Full(opt) : les quatre familles}
+  \end{subfigure}
+  \caption{Résultats du benchmark Phase~2 pour les jeux de caractéristiques combinés.}
+  \label{fig:combined}
+\end{figure}
+
+\subsection{Classement global}
+
+Le Tableau~\ref{tab:leaderboard} rapporte les cinq meilleures configurations.
+Le diagramme en barres complet est présenté à la Figure~\ref{fig:leaderboard}.
+
+\begin{table}[H]
+  \centering
+  \caption{Top 5 des configurations classées par F1-macro sur le test tenu à l'écart.}
+  \label{tab:leaderboard}
+  \begin{tabular}{@{}clcccc@{}}
+    \toprule
+    \textbf{Rang} & \textbf{Jeu de caract.} & \textbf{Classifieur} & \textbf{F1-macro} & \textbf{Précision} & \textbf{$\kappa$} \\
+    \midrule
+    1 & Full(opt)   & SVM       & \textbf{\BestFOne} & \textbf{\BestAcc} & \textbf{\BestKappa} \\
+    2 & D --- HOG   & SVM       & \RankTwoFOne  & \HogSvmAcc  & 0.855 \\
+    3 & Full(opt)   & KNN       & \RankThreeFOne & 90.0\%      & 0.850 \\
+    4 & D --- HOG   & KNN       & \RankFourFOne  & 89.7\%      & 0.845 \\
+    5 & Full(opt)   & LightGBM  & \RankFiveFOne  & 89.3\%      & 0.840 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\linewidth]{p2_leaderboard.png}
+  \caption{Diagramme en barres du classement de toutes les configurations évaluées,
+           triées par F1-macro. Full(opt) + SVM est le pipeline le mieux classé.}
+  \label{fig:leaderboard}
+\end{figure}
+
+Le tableau de bord global (Figure~\ref{fig:dashboard}) synthétise le F1-macro,
+le temps d'entraînement et la variabilité par jeu de caractéristiques pour tous
+les classifieurs.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{p2_overall_dashboard.png}
+  \caption{Tableau de bord Phase~2 : F1-macro et temps d'entraînement pour tous
+           les jeux de caractéristiques et classifieurs.}
+  \label{fig:dashboard}
+\end{figure}

@@ -1,0 +1,99 @@
+%=======================================================================
+\chapter{Analyse et discussion}
+
+\section{Analyse des performances}
+
+Le benchmark (Chapitre~6) place le \textbf{SVM} avec l'ensemble \textbf{Full(opt)} en tête
+(F1-Macro $= \bestFone{}$, Accuracy $= \bestAcc{}$; Tableau~\ref{tab:leaderboard-top10},
+Figure~\ref{fig:p2-leaderboard}).
+
+Cette domination s'explique par trois facteurs~: (i)~l'espace de grande dimension
+(\dimFull{} variables brutes, \cleanFull{} après nettoyage), où les SVM à marge maximale
+sont efficaces~; (ii)~la non-linéarité des relations, capturée par le noyau polynomial retenu
+(\texttt{kernel=poly}, $C=10$), contrairement aux modèles linéaires (LR~: F1 $= 0{,}870$ sur
+Full(opt))~; (iii)~la bonne séparabilité des classes dans l'espace optimisé
+(Figure~\ref{fig:tsne-full}).
+
+KNN ($0{,}900$) et LightGBM ($0{,}894$) restent compétitifs, mais McNemar (Chapitre~7) ne
+confirme pas de supériorité significative du SVM face à KNN ($p = 0{,}391$) ni LightGBM
+($p = 0{,}118$) au seuil de 5\,\%.
+
+% -----------------------------------------------------------------------
+\section{Contribution des branches de caractéristiques}
+
+Le Tableau~\ref{tab:branch-best-f1} résume la meilleure combinaison modèle $\times$ ensemble
+par branche sur le jeu de test.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Meilleur F1-Macro par branche de caractéristiques (ensemble de test).}
+  \label{tab:branch-best-f1}
+  \begin{tabular}{@{}llcc@{}}
+    \toprule
+    \thd{Branche} & \thd{Ensemble} & \thd{Meilleur modèle} & \thd{F1-Macro} \\
+    \midrule
+    A — Statistiques  & A — Stats     & SVM         & 0,787 \\
+    B — Texture       & B — Tex(opt)  & XGBoost     & 0,827 \\
+    C — Fréquentiel   & C — DWT(opt)  & Extra Trees & 0,760 \\
+    D — Structurel    & D — HOG       & SVM         & 0,903 \\
+    Fusion complète   & Full(opt)     & SVM         & 0,920 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Les statistiques (A) restent limitées seules ($0{,}787$) mais apportent un signal
+complémentaire. La texture (B, GLCM+LBP) atteint $0{,}827$ et confirme le rôle des motifs
+locaux. La DWT (C) est la branche la plus faible isolément ($0{,}760$), tout en capturant des
+variations multi-échelles. Le HOG (D) domine à lui seul ($0{,}903$), seulement
+$1{,}7$~point sous Full(opt), ce qui souligne l'apport des contours et structures
+anatomiques.
+
+L'importance par branche (Random Forest sur Full(opt), Figure~\ref{fig:rf-branch-importance})
+corrobore cette hiérarchie~: HOG $\approx 72$\,\%, puis Stats ($8{,}6$\,\%), LBP
+($8{,}2$\,\%), DWT ($5{,}8$\,\%) et GLCM ($5{,}0$\,\%).
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.88\textwidth]{rf_branch_importance}
+  \caption{Importance cumulée des branches de caractéristiques (Random Forest sur
+    Full(opt)).}
+  \label{fig:rf-branch-importance}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\section{Effet de la fusion}
+
+La fusion multi-descripteurs améliore systématiquement les branches faibles (A, C) et
+dépasse légèrement la meilleure branche isolée~: Full(opt) ($0{,}920$) surpasse D (HOG)
+($0{,}903$). Les familles statistiques, texturales, fréquentielles et structurelles
+capturent des aspects complémentaires de l'image~; leur combinaison réduit les ambiguïtés
+inter-classes (Figure~\ref{fig:tsne-full}) et se traduit par la domination de Full(opt) dans
+le classement global (Figure~\ref{fig:p2-dashboard}).
+
+% -----------------------------------------------------------------------
+\section{Comparaison avec la littérature}
+
+Les approches profondes (VGG, ResNet, ViT, etc.) rapportent souvent $>98$\,\% de précision,
+parfois $>99$\,\% en configuration hybride. Nos $92$\,\% de F1-Macro restent inférieurs, mais
+dans un cadre différent~: caractéristiques manuelles, huit classifieurs classiques, dataset
+modeste (\NTotal{} images) et protocole explicitement orienté interprétabilité.
+
+L'intérêt méthodologique réside dans l'optimisation systématique des descripteurs (Phase~1),
+le benchmark exhaustif (64 expériences), la validation statistique (Kappa, Bootstrap, McNemar,
+Friedman) et l'analyse d'importance par branche --- éléments souvent absents des travaux
+purement orientés score.
+
+% -----------------------------------------------------------------------
+\section{Limites et perspectives}
+
+\textbf{Dataset et protocole.} Le volume limité (\NTrain{} / \NTest{}) et l'usage de coupes
+2D sans segmentation tumorale peuvent restreindre la généralisation et laisser du bruit de
+fond dans les descripteurs.
+
+\textbf{Choix méthodologique.} L'absence de Deep Learning dans le pipeline principal limite le
+plafond de performance, au profit d'un coût computationnel réduit et d'une meilleure
+traçabilité des variables.
+
+\textbf{Pistes.} Segmentation automatique, volumes IRM 3D, fusion ML/DL, datasets
+multicentriques et explicabilité (XAI) constituent les prolongements naturels de ce travail
+(Chapitre~9).

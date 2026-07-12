@@ -1,0 +1,30 @@
+\section{Validation et conclusion}
+
+% SLIDE 20 — Validation statistique
+\begin{frame}{Validation statistique}
+  \timing{2:00}
+  \begin{columns}[T]
+    \column{0.52\textwidth}
+    \textbf{Bootstrap 95\% CI} (F1-macro) :
+    \begin{itemize}
+      \item Full(opt)+SVM : [\BestFOneCILow, \BestFOneCIHigh], $\kappa{=}$\BestKappa
+      \item D—HOG+SVM : [\HogFOneCILow, \HogFOneCIHigh], $\kappa{=}$\HogSvmKappa
+    \end{itemize}
+    \vspace{0.3em}
+    \textbf{Tests complémentaires :}
+    \begin{itemize}
+      \item Friedman (Full) : $p{=}$\FriedmanFullP{} — différences inter-modèles significatives
+      \item Full vs HOG : IC qui se chevauchent ($\Delta$F1 $=$ \FusionDeltaFOne)
+    \end{itemize}
+    \column{0.44\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{bootstrap_ci_best_fs}
+    \vspace{0.2em}
+    {\footnotesize IC bootstrap 95\% — meilleures branches.}
+  \end{columns}
+\end{frame}
+
+\note{
+Le résultat global est robuste. Le gain de fusion sur HOG seul n'est pas clairement significatif
+au seuil 95\% (intervalles chevauchants). Friedman confirme que le choix du classifieur compte sur Full(opt).
+}

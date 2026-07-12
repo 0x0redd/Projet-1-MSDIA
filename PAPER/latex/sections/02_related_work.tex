@@ -1,22 +1,154 @@
-% ML-only related work — citations from filtered ML reference set
 \section{Related Work}
 \label{sec:related}
 
-\subsection{Handcrafted texture features for MRI}
-Grey-level co-occurrence matrices (GLCM), local binary patterns (LBP), histogram of oriented gradients (HOG), and discrete wavelet transforms (DWT) encode complementary tumour micro-texture~\cite{ref_fonc20231248452,ref_hsr271195,ref_s44163024002144}.
-Yu \textit{et al.}~\cite{ref_fnins2021634926} showed that texture features with an SVM classifier differentiate tumour from healthy regions on MRI with high sensitivity.
-Comparative studies consistently rank texture and gradient descriptors among the strongest classical representations~\cite{ref_ijigsp20150303,ref_iasc2023032426}.
-Our Phase~1 differs by selecting parameters through \emph{classifier-free} separability metrics before any model is trained.
+\subsection{Brain Tumor MRI Classification}
+\label{sec:rw_brain_tumor}
 
-\subsection{Classical ML classifiers in brain tumour classification}
-Support vector machines with RBF kernels remain a dominant baseline on radiomic feature vectors~\cite{ref_s0033002007108w,ref_s41598024772437}.
-Ensemble tree methods provide native feature-importance scores for interpretability~\cite{ref_iasc2023032426,ref_jdaip202084020}.
-Prior benchmarks rarely compare more than three classifiers on identical handcrafted features and splits.
+Brain tumor classification from Magnetic Resonance Imaging (MRI) has become an
+active research area due to its potential to support early diagnosis and
+clinical decision-making. Traditional computer-aided diagnosis systems
+typically rely on handcrafted feature extraction followed by machine learning
+classifiers~\cite{asiri2023,uvaneshwari2023}, whereas recent approaches
+increasingly employ deep learning architectures capable of automatically
+learning discriminative representations from image
+data~\cite{ottoni2025,ghorbian2025}.
 
-\subsection{Parameter selection strategies}
-Default scikit-learn parameters are common; grid search coupled to a single classifier is expensive and risks overfitting the validation objective to one model family.
-Separability metrics offer a lightweight alternative used in feature selection but seldom applied systematically across texture families for brain MRI.
+Classical machine learning approaches generally consist of three main stages:
+image preprocessing, feature extraction, and classification. Handcrafted
+descriptors are used to capture relevant characteristics of tumor regions, and
+the extracted features are subsequently classified using algorithms such as
+Support Vector Machines (SVM), K-Nearest Neighbors (KNN), Random Forests (RF),
+or ensemble learning methods~\cite{kumar2024,boateng2020}. These approaches are
+particularly suitable when training data are limited and when interpretability
+is an important requirement.
 
-\subsection{Gap}
-No study combines classifier-free separability scoring for GLCM, LBP, DWT, and HOG with an eight-model benchmark and full statistical validation on the same dataset and preprocessing chain.
-We fill this gap with a reproducible two-phase notebook pipeline on a fixed stratified 80/20 split.
+Deep learning methods have recently achieved remarkable results in medical
+image analysis. Convolutional Neural Networks (CNNs), transfer learning models,
+attention mechanisms, and transformer-based architectures have demonstrated
+high classification accuracy across various brain tumor
+datasets~\cite{ghorbian2025,ottoni2025}. However, these models often require
+large amounts of annotated data, extensive computational resources, and
+specialized hardware. Furthermore, their black-box nature may limit their
+interpretability in clinical settings~\cite{ottoni2025,ghorbian2025}.
+
+Consequently, handcrafted feature-based methods remain highly relevant,
+particularly for small- and medium-scale datasets where model transparency,
+computational efficiency, and reproducibility are important considerations.
+
+\subsection{Handcrafted Feature-Based Approaches}
+\label{sec:rw_features}
+
+\subsubsection{Texture-Based Features}
+Texture descriptors are among the most widely used handcrafted features in
+brain tumor classification. Gray-Level Co-occurrence Matrix (GLCM)
+features~\cite{haralick1973} capture spatial relationships between pixel
+intensities and provide statistical measurements such as contrast, homogeneity,
+correlation, and energy. Numerous studies have shown that GLCM descriptors are
+effective for distinguishing different tumor types due to their ability to
+characterize tissue heterogeneity~\cite{pattanaik2022,dheepak2024}.
+
+Local Binary Patterns (LBP)~\cite{ojala2002} constitute another popular texture
+descriptor. By encoding local intensity variations into binary patterns, LBP
+provides a compact representation of micro-texture information and exhibits
+robustness to illumination changes. Several MRI classification studies have
+reported improved discrimination performance when combining LBP with other
+texture descriptors~\cite{dheepak2024,basthikodi2024}.
+
+\subsubsection{Frequency-Based Features}
+Frequency-domain representations are commonly employed to capture multi-scale
+image information. The Discrete Wavelet Transform (DWT)~\cite{mallat1989}
+decomposes an image into multiple frequency sub-bands, enabling simultaneous
+analysis of spatial and frequency characteristics. DWT features have been
+successfully applied in medical imaging due to their ability to capture fine
+structural details and texture variations associated with different tumor
+classes~\cite{shukla2025}.
+
+\subsubsection{Gradient-Based Features}
+Histogram of Oriented Gradients (HOG)~\cite{dalal2005} is a widely used
+descriptor that characterizes local shape and edge information through gradient
+orientation distributions. HOG features have demonstrated effectiveness in
+numerous computer vision applications and have been adopted in medical image
+classification tasks to capture structural and morphological properties of
+tumors~\cite{basthikodi2024,kumar2024}.
+
+\subsubsection{Feature Fusion Strategies}
+Recent studies have increasingly combined multiple handcrafted feature families
+to improve classification performance~\cite{pattanaik2022,dheepak2024,nawaz2022}.
+The rationale behind feature fusion is that different descriptors capture
+complementary information. Statistical features provide global intensity
+characteristics, texture descriptors capture local patterns, wavelet features
+encode frequency information, and gradient-based descriptors represent
+structural details. Feature fusion has frequently been reported to outperform
+single-descriptor approaches~\cite{pattanaik2022,nawaz2022}.
+
+\subsection{Feature Optimization in Medical Imaging}
+\label{sec:rw_optimization}
+The performance of handcrafted features is highly dependent on the selection of
+descriptor parameters~\cite{shukla2025}. For example, GLCM performance is
+influenced by quantization levels, distances, and angular directions; LBP
+depends on radius and neighborhood size; DWT performance varies according to
+wavelet family and decomposition level; and HOG effectiveness is affected by
+cell size, block size, and orientation binning.
+
+Most existing studies adopt default parameter settings or perform optimization
+using classification accuracy as the objective
+function~\cite{nawaz2022,tseng2023,basthikodi2024}. While effective,
+classifier-dependent optimization introduces a dependency between the feature
+extraction process and the selected learning algorithm~\cite{tseng2023,nawaz2022}.
+As a result, optimized parameters may not generalize across different
+classifiers.
+
+Alternative optimization strategies based on feature separability have received
+comparatively less attention. Separability metrics evaluate the discriminative
+quality of feature representations independently of any classifier and therefore
+offer a more objective assessment of descriptor configurations. Despite their
+theoretical advantages, such approaches remain underexplored in brain tumor MRI
+classification.
+
+\subsection{Machine Learning Classifiers for Brain Tumor Classification}
+\label{sec:rw_benchmarking}
+A variety of machine learning algorithms have been applied to brain tumor
+classification~\cite{kumar2024,boateng2020}.
+
+Support Vector Machines (SVMs)~\cite{cortes1995} are among the most frequently
+used classifiers due to their strong generalization capabilities and
+effectiveness in high-dimensional feature spaces. K-Nearest Neighbors (KNN)
+provides a simple yet effective non-parametric alternative. Ensemble methods
+such as Random Forests~\cite{breiman2001} and Extra Trees improve robustness
+through the aggregation of multiple decision trees.
+
+More recently, gradient boosting algorithms including XGBoost~\cite{chen2016}
+and LightGBM~\cite{ke2017} have demonstrated excellent predictive performance
+across numerous biomedical classification tasks~\cite{tseng2023,safy2026}.
+Logistic Regression remains a strong baseline model because of its
+interpretability, while Multi-Layer Perceptrons (MLPs) provide nonlinear
+modeling capabilities without requiring deep architectures.
+
+Although many studies report results for one or two classifiers, relatively few
+investigations perform large-scale benchmarking across a diverse set of machine
+learning models under identical experimental conditions~\cite{kumar2024,ottoni2025}.
+
+\subsection{Research Gap and Positioning}
+\label{sec:rw_positioning}
+The literature reveals three major limitations.
+
+First, handcrafted feature extractors are frequently used with default or
+empirically selected parameters, while systematic optimization of descriptor
+configurations remains limited~\cite{basthikodi2024,dheepak2024}.
+
+Second, when optimization is performed, it is typically classifier-dependent,
+making it difficult to distinguish improvements attributable to feature quality
+from those resulting from classifier behavior~\cite{nawaz2022,tseng2023}.
+
+Third, existing studies often evaluate only a small number of classifiers and
+rarely perform rigorous statistical significance testing to validate performance
+differences~\cite{pattanaik2022,pintodossantos2020}.
+
+To address these limitations, this work introduces a separability-guided feature
+configuration framework that optimizes handcrafted descriptors independently of
+classifier performance. The resulting optimized feature representations are then
+evaluated through a comprehensive benchmarking study involving eight machine
+learning classifiers and multiple feature combinations. Finally, statistical
+validation techniques are employed to assess the significance and reliability of
+the observed results, providing a more rigorous evaluation than commonly reported
+in the literature~\cite{pintodossantos2020,ottoni2025}.

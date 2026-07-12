@@ -1,0 +1,166 @@
+\section{Materials and Experimental Setup}
+\label{sec:materials}
+
+\subsection{Dataset}
+\label{sec:dataset}
+
+This study was conducted using a publicly available brain tumor Magnetic
+Resonance Imaging (MRI) dataset containing three tumor categories: Glioma,
+Meningioma, and Pituitary Tumor~\cite{cheng2017}. The dataset comprises
+$3{,}064$ T1-weighted contrast-enhanced MRI slices collected from clinical
+examinations and has been widely used as a benchmark in brain tumor
+classification research.
+
+% NOTE: notebook uses the FULL dataset (MAX_SAMPLES_PER_CLASS = None), i.e.
+% 3064 images, NOT a balanced 1500 subset. Confirm per-class counts before
+% submission if the notebook is re-run with subsampling.
+The class distribution is naturally imbalanced, comprising approximately
+$1{,}426$ glioma, $708$ meningioma, and $930$ pituitary images (imbalance ratio
+$\approx 2.0$). Rather than artificially resampling the data, the native
+distribution is preserved and class imbalance is addressed through stratified
+data partitioning, class-weighted training where supported by the classifier,
+and macro-averaged evaluation metrics that assign equal importance to every
+class. Figure~\ref{fig:samples} illustrates representative examples from the
+three classes.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{dataset}
+\caption{Representative MRI slices from the three tumor classes
+(glioma, meningioma, and pituitary tumor).}
+\label{fig:samples}
+\end{figure}
+
+The classification task is formulated as a three-class supervised learning
+problem, with class labels $0$, $1$, and $2$ corresponding to glioma,
+meningioma, and pituitary tumor, respectively.
+
+\subsection{Image Preprocessing}
+\label{sec:preprocessing}
+
+Medical images often exhibit variations in intensity distribution, image
+quality, and acquisition conditions. Therefore, a preprocessing pipeline was
+applied prior to feature extraction to enhance image consistency and improve
+descriptor robustness.
+
+\subsubsection{Grayscale Conversion}
+Since the MRI images contain limited color information and most handcrafted
+descriptors operate on intensity values, all images were represented in
+grayscale. This reduces computational complexity while preserving
+diagnostically relevant structural information.
+
+\subsubsection{Image Resizing}
+To ensure uniform feature extraction across the dataset, all images were resized
+to a fixed spatial resolution of $128 \times 128$ pixels using anti-aliased
+interpolation. Standardizing image dimensions prevents descriptor
+inconsistencies caused by varying image sizes and facilitates fair comparison
+between samples.
+
+\subsubsection{Contrast Enhancement}
+Contrast Limited Adaptive Histogram Equalization (CLAHE) was applied
+(clip limit $0.02$) to improve local contrast and enhance subtle tumor-related
+structures. Unlike conventional histogram equalization, CLAHE limits noise
+amplification while increasing the visibility of clinically relevant texture
+patterns.
+
+\subsubsection{Intensity Normalization}
+Pixel intensity values were normalized to the range $[0,1]$ to reduce variations
+introduced by different acquisition settings and imaging devices, improving the
+stability and reproducibility of the extracted feature representations.
+
+The preprocessing pipeline can therefore be summarized as: MRI image
+$\rightarrow$ grayscale $\rightarrow$ resizing $\rightarrow$ CLAHE enhancement
+$\rightarrow$ intensity normalization (Figure~\ref{fig:preprocessing}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{preprocessing_pipeline}
+\caption{Preprocessing pipeline applied to each MRI slice before feature
+extraction.}
+\label{fig:preprocessing}
+\end{figure}
+
+\subsection{Overall Experimental Framework}
+\label{sec:framework}
+
+The proposed framework consists of two sequential phases designed to separate
+feature optimization from classifier evaluation.
+
+\paragraph{Phase 1: Separability-Guided Feature Configuration}
+The first phase identifies the most discriminative parameter configurations for
+each handcrafted descriptor family. Candidate configurations are evaluated using
+classifier-independent separability metrics, allowing feature quality to be
+assessed without introducing bias from any particular learning algorithm. The
+descriptor families investigated are the Gray-Level Co-occurrence Matrix (GLCM),
+Local Binary Patterns (LBP), the Discrete Wavelet Transform (DWT), and the
+Histogram of Oriented Gradients (HOG). For each descriptor, a search space of
+parameter combinations is explored and ranked according to a composite
+separability score.
+
+\paragraph{Phase 2: Classifier Benchmarking}
+The optimized descriptors obtained in Phase~1 are used to construct multiple
+feature representations, which are then evaluated using a diverse set of machine
+learning classifiers under identical experimental conditions. This two-phase
+design ensures that feature optimization and classifier benchmarking remain
+independent, enabling a more objective assessment of both components.
+
+\subsection{Feature Representation and Cleaning}
+\label{sec:feat_design}
+
+From the optimized descriptors, eight feature representations were constructed:
+the individual families (A: first-order statistics; B: GLCM+LBP texture;
+C: DWT; D: HOG) and four fusions (A+B, B+C, A+B+C, and the complete set
+Full(opt)). Each representation is passed through a cleaning and standardization
+pipeline (variance filtering, correlation pruning, and training-set z-score
+normalization) before classification. The construction of these representations
+and the cleaning pipeline are detailed in Section~\ref{sec:features}.
+
+\subsection{Machine Learning Classifiers}
+\label{sec:classifiers_setup}
+
+Eight machine learning algorithms spanning linear, distance-based, tree-based,
+ensemble, boosting, and neural-network paradigms were evaluated: SVM, KNN,
+Random Forest, Extra Trees, XGBoost, LightGBM, Logistic Regression, and a
+Multi-Layer Perceptron. Each algorithm and its hyperparameter search space is
+described in Section~\ref{sec:phase2}.
+
+\subsection{Hyperparameter Optimization}
+\label{sec:hyperparams_setup}
+
+To ensure a fair comparison between classifiers, hyperparameter optimization was
+performed using grid search combined with stratified cross-validation. For each
+classifier, a predefined search space was explored, and the configuration
+achieving the highest macro-averaged $F_1$ score in cross-validation was
+selected. Macro-$F_1$ was adopted as the selection criterion so that model
+tuning is not dominated by the majority class. This procedure reduces the risk
+of underestimating classifier performance due to suboptimal parameter choices.
+
+\subsection{Evaluation Protocol}
+\label{sec:protocol}
+
+The dataset was divided into training and testing subsets using a stratified
+hold-out strategy ($80\%/20\%$) that preserves class proportions. Within the
+training set, model selection and hyperparameter tuning were performed using
+five-fold stratified cross-validation. Performance was reported using accuracy,
+together with macro-averaged precision, recall, and $F_1$ score. Macro-averaging
+ensures equal importance across all tumor classes, which is appropriate given
+the imbalanced class distribution.
+
+\subsection{Statistical Validation}
+\label{sec:stats_setup}
+
+Beyond conventional performance metrics, statistical validation was conducted to
+assess the significance and robustness of observed performance differences. The
+following analyses were employed: Cohen's kappa coefficient~\cite{cohen1960};
+bootstrap $95\%$ confidence intervals; McNemar's test~\cite{mcnemar1947} for
+pairwise comparison of classifiers on the same test set; the Wilcoxon
+signed-rank test; and the Friedman rank test with Nemenyi post-hoc
+analysis~\cite{demsar2006} for comparison across multiple
+classifiers and feature sets. These procedures provide a rigorous framework for
+determining whether performance improvements are statistically meaningful rather
+than the result of random variation.
+
+The methodology described in this section establishes a reproducible
+experimental framework for evaluating separability-guided handcrafted feature
+optimization and machine learning classifier benchmarking in brain tumor MRI
+classification.

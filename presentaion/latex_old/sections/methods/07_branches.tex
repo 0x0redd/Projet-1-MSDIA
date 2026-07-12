@@ -1,0 +1,38 @@
+% SLIDE 8 — Pipeline de branches
+\begin{frame}{Pipeline de branches (fusion)}
+  \timing{1:30}
+  \textbf{Branche} = un jeu de features alimentant les classifieurs.
+  \textbf{\NBranches{} branches} testées :
+  \vspace{0.4em}
+
+  \centering
+  \begin{tikzpicture}[
+    node distance=0.35cm and 0.25cm,
+    raw/.style={draw=accent2, fill=accent2!10, rounded corners, minimum width=1.6cm,
+                minimum height=0.55cm, font=\scriptsize, align=center},
+    br/.style={draw=accent, fill=accent!8, rounded corners, minimum width=1.5cm,
+               minimum height=0.5cm, font=\scriptsize, align=center},
+    arr/.style={-{Stealth[length=1.5mm]}, thick, greytx}
+  ]
+    \node[raw] (raw) {IRM\\prétraitée};
+    \node[br, below left=0.6cm and 2.8cm of raw] (a) {A — Stats};
+    \node[br, below left=0.6cm and 1.4cm of raw] (b) {B — Tex(opt)};
+    \node[br, below=0.6cm of raw] (c) {C — DWT(opt)};
+    \node[br, below right=0.6cm and 1.4cm of raw] (d) {D — HOG};
+    \node[br, below right=0.6cm and 2.8cm of raw] (f) {Full(opt)};
+    \node[raw, below=1.8cm of c, minimum width=3.2cm] (clf) {\NModels{} classifieurs};
+    \foreach \x in {a,b,c,d,f} {
+      \draw[arr] (raw) -- (\x);
+      \draw[arr] (\x) -- (clf);
+    }
+    \node[font=\tiny, greytx, below=0.1cm of a] {+A+B, B+C, A+B+C};
+  \end{tikzpicture}
+
+  \vspace{0.3em}
+  \small On ne devine pas la meilleure combinaison --- on construit les 8 branches et on laisse les résultats décider.
+\end{frame}
+
+\note{
+On ne devine pas quelle combinaison est la meilleure --- on construit les 8 branches
+et on laisse les résultats décider.
+}

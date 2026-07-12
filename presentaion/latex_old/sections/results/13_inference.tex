@@ -1,0 +1,24 @@
+% SLIDE 14 — Inférence
+\begin{frame}{Résumé \& test d'inférence}
+  \timing{1:30}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \textbf{Pipeline gagnant :} \BestPipeline
+    \begin{itemize}
+      \item Accuracy : \textbf{\BestAcc}
+      \item F1-macro : \textbf{\BestFOne}
+      \item Cohen's $\kappa$ : \textbf{\BestKappa}
+    \end{itemize}
+    \vspace{0.5em}
+    \textbf{Inférence end-to-end :}\\
+    IRM test $\rightarrow$ extraction $\rightarrow$ nettoyage $\rightarrow$ SVM $\rightarrow$ classe prédite
+    \column{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{p2_Full(opt)_confmat}
+  \end{columns}
+\end{frame}
+
+\note{
+Pour boucler la boucle : prendre une IRM de test que le modèle n'a jamais vue,
+exécuter le pipeline complet de bout en bout, et voici la prédiction avec sa confiance.
+}

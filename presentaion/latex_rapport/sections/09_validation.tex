@@ -1,0 +1,128 @@
+\section{Validation statistique}
+\label{sec:validation}
+
+\subsection{Validation croisée}
+
+Une validation croisée à 5 plis a été réalisée sur l'ensemble d'entraînement pour
+le meilleur pipeline (Full(opt) + SVM) :
+
+\begin{table}[H]
+  \centering
+  \caption{Résultats de la validation croisée à 5 plis pour Full(opt) + SVM.}
+  \label{tab:cv}
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    \textbf{Métrique} & \textbf{Moyenne} & \textbf{Écart-type} \\
+    \midrule
+    F1-macro & \BestFOneCVMean & \BestFOneCVStd \\
+    Précision & \BestAccCVMean  & \BestAccCVStd \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Le faible écart-type confirme une performance stable entre les plis, ce qui soutient
+la généralisation au-delà de la partition train/test spécifique.
+
+\subsection{Stabilité par graine aléatoire}
+
+Pour vérifier que les résultats ne dépendent pas uniquement de la graine 42, nous
+avons répété le pipeline complet (re-partitionnement des données, ré-ajustement
+des hyperparamètres) pour les graines 43 et 44. Le Tableau~\ref{tab:seeds} rapporte
+les résultats.
+
+\begin{table}[H]
+  \centering
+  \caption{Stabilité par graine : Full(opt) + SVM relancé sur trois partitions indépendantes.}
+  \label{tab:seeds}
+  \begin{tabular}{@{}ccc@{}}
+    \toprule
+    \textbf{Graine} & \textbf{Précision} & \textbf{F1-macro} \\
+    \midrule
+    42 & 0.9500 & 0.9498 \\
+    43 & 0.9100 & 0.9099 \\
+    44 & 0.9133 & 0.9130 \\
+    \midrule
+    \textbf{Moyenne $\pm$ IC 95\,\%} & --- & \textbf{\SeedFOneMean{} $\pm$ \SeedFOneCI} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Les performances varient d'environ $\pm 0{,}02$ selon la graine, indiquant une robustesse
+au partitionnement des données. Cette variation provient des frontières de classe
+différentes entre partitions.
+
+\subsection{Intervalles de confiance bootstrap}
+
+À partir de $N = 2000$ rééchantillonnages bootstrap de l'ensemble de test tenu à l'écart,
+nous avons estimé des intervalles de confiance à 95\,\% pour le meilleur pipeline
+(Tableau~\ref{tab:ci}).
+
+\begin{table}[H]
+  \centering
+  \caption{Intervalles de confiance bootstrap à 95\,\% pour Full(opt) + SVM (test tenu à l'écart).}
+  \label{tab:ci}
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    \textbf{Métrique} & \textbf{Estimation ponctuelle} & \textbf{IC 95\,\%} \\
+    \midrule
+    F1-macro & \BestFOne & [\BestFOneCILow, \BestFOneCIHigh] \\
+    Précision & \BestAcc  & [\BestAccCILow, \BestAccCIHigh] \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+La Figure~\ref{fig:bootstrap} montre la distribution bootstrap pour le meilleur
+jeu de caractéristiques.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.70\linewidth]{bootstrap_ci_best_fs.png}
+  \caption{Distribution bootstrap du F1-macro pour Full(opt) + SVM (2000 rééchantillonnages).
+           L'IC à 95\,\% est indiqué par des lignes verticales en pointillés.}
+  \label{fig:bootstrap}
+\end{figure}
+
+\subsection{Tests de significativité}
+
+\subsubsection{Test de McNemar (comparaison par paires sur Full(opt))}
+
+Le test de McNemar compare les schémas d'erreur de deux classifieurs sur le même
+ensemble de test. Le Tableau~\ref{tab:mcnemar} résume les comparaisons significatives
+avec le SVM.
+
+\begin{table}[H]
+  \centering
+  \caption{Test de McNemar : SVM contre d'autres classifieurs sur Full(opt). Significatif à $p < 0{,}05$.}
+  \label{tab:mcnemar}
+  \begin{tabular}{@{}llcc@{}}
+    \toprule
+    \textbf{Modèle A} & \textbf{Modèle B} & \textbf{$p$-valeur} & \textbf{Significatif ?} \\
+    \midrule
+    SVM & Random Forest  & \McNemarRF  & Oui \\
+    SVM & XGBoost        & \McNemarXGB & Oui \\
+    SVM & KNN            & \McNemarKNN & Non \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Le SVM est significativement meilleur que les ensembles d'arbres, mais pas
+significativement meilleur que le KNN --- en cohérence avec le classement où
+les deux figurent parmi les meilleures configurations.
+
+\subsubsection{Test de Friedman}
+
+Un test de Friedman sur tous les classifieurs au sein du jeu Full(opt) a donné
+une statistique $\chi^2$ correspondant à $p = \FriedmanFullP$, confirmant que
+le choix du classifieur a un effet statistiquement significatif sur les performances
+pour ce jeu de caractéristiques.
+
+La Figure~\ref{fig:statistical_summary} fournit une synthèse visuelle des résultats
+de validation.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.80\linewidth]{statistical_validation_summary.png}
+  \caption{Synthèse de la validation statistique : IC bootstrap, résultats des plis
+           de validation croisée et tests de significativité pour la meilleure configuration.}
+  \label{fig:statistical_summary}
+\end{figure}

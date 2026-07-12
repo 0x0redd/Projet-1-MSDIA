@@ -1,49 +1,60 @@
-# IEEE LaTeX Paper (ML-only: Phase 1 + Phase 2)
+# Research Paper — LaTeX (IEEE Conference)
 
-**Title:** Handcrafted Feature Optimisation and Classifier Benchmarking for Brain Tumor MRI Classification
+Two-phase methodology paper: **separability-guided feature configuration** (Phase 1) followed by **statistically validated classifier benchmarking** (Phase 2).
+
+## Title
+
+*Separability-Guided Feature Configuration and Statistically-Validated Classifier Benchmarking for Brain Tumor MRI Classification*
 
 ## Build
 
-Requires [MiKTeX](https://miktex.org/) or TeX Live (`pdflatex` + `bibtex` on PATH).
-
 ```powershell
-cd PAPER\latex
-.\build.ps1
+cd PAPER/latex
+.\build.ps1          # compile main.pdf
+.\build.ps1 -Setup   # first-time MiKTeX package install
 ```
 
-### Sync figures and tables from notebook
+## Regenerating result tables and figures
 
 ```powershell
-cd "LLM agent"
-python scripts/prepare_data.py
-python scripts/sync_paper_figures.py
-python scripts/tables_to_latex.py
-cd ..\PAPER\latex
-.\build.ps1
+python PAPER/latex/scripts/gen_results_tables.py
+python PAPER/latex/scripts/paper_phase2_viz.py
+python PAPER/latex/scripts/export_to_markdown.py
 ```
 
-### Word export (.docx)
+`export_to_markdown.py` writes `main.md` from all sections included in `main.tex`.
 
-```powershell
-cd PAPER\latex
-.\export_word.ps1
-```
+## File layout
 
-## Figure sources (ML paper)
+| File | Section |
+|------|---------|
+| `main.tex` | Preamble, title, keywords, input chain |
+| `sections/00_abstract.tex` | Abstract |
+| `sections/01_introduction.tex` | Section 1 Introduction (1.1-1.5) — **done** |
+| `sections/02_related_work.tex` | Section 2 Related Work (2.1-2.5) — **done** |
+| `sections/03_materials_setup.tex` | Section 3 Materials and Experimental Setup — **done** |
+| `sections/04_phase1_method.tex` | Section 4 Phase 1 methodology (core novelty) — **done** |
+| `sections/05_feature_representation.tex` | Section 5 Feature representation and cleaning — **done** |
+| `sections/06_phase2_method.tex` | Section 6 Phase 2 classifier benchmarking — **done** |
+| `sections/07_results.tex` | Section 7 Results and Discussion — **done** (populated from benchmark) |
+| `sections/08_interpretability.tex` | Section 8 Feature importance — **done** |
+| `sections/09_statistics.tex` | Section 9 Statistical validation (RQ4) — **done** |
+| `sections/11_limitations.tex` | Section 11 Limitations — **done** |
+| `sections/12_conclusion.tex` | Section 12 Conclusion and Future Work (10.1–10.2) — **done** |
+| `tables/leaderboard_top10.tex` | Top-10 CV leaderboard (auto-generated) |
+| `tables/stats_top5.tex` | Top-5 with $\kappa$ and bootstrap CI |
+| `figures/` | Plots copied from `Rapport/figures/` (31 PNG files) |
+| `references.bib` | Bibliography |
 
-| Figure | Source |
-|--------|--------|
-| Class balance, Phase 1 grids | `output/*.png` |
-| t-SNE, Phase 2 leaderboard/dashboard | `output/p2_*.png` |
-| RF branch importance | `output/rf_branch_importance.png` |
-| Agent charts (optional) | `LLM agent/output/figures/*.pdf` |
+## Adding your section text
 
-Figures are copied to `PAPER/latex/figures/` by `sync_paper_figures.py`.
+1. Open the matching file under `sections/`.
+2. Replace lines containing `\placeholder{...}` with your prose.
+3. Keep existing `\cite{...}`, `\ref{...}`, `\input{tables/...}`, and figure environments.
+4. Rebuild with `.\build.ps1`.
 
-## References
+Previous draft content from `latex-old/` has been migrated where it fit the new structure.
 
-Filtered ML papers: `PAPER/filtered - ML/` (19 PDFs, indexed via `prepare_data.py`).
+## Narrative flow
 
-## Pre-submission experiments
-
-See [EXPERIMENTS_TODO.md](EXPERIMENTS_TODO.md) for remaining Phase 2 model runs and statistical tests.
+Problem -> Gap -> Phase 1 (method) -> Features -> Phase 2 (method) -> Results -> Interpretability -> Statistics -> Discussion -> Limitations -> Conclusion

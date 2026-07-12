@@ -1,0 +1,49 @@
+% Slide 23 — Best Model (key result)
+\begin{frame}[shrink=2]{Best Model}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.42\textwidth}
+    \begin{block}{Final pipeline}
+      \centering
+      {\Large \BestPipeline}
+      \vspace{0.4em}
+
+      \begin{tikzpicture}[
+        node distance=0.45cm,
+        box/.style={rectangle, rounded corners=2pt, draw=accent, fill=lightbg,
+                    minimum height=0.7cm, minimum width=0.92\linewidth, align=center, font=\small},
+        arr/.style={-{Stealth[length=2mm]}, thick, accent}
+      ]
+        \node[box] (fs) {Full(opt) features\\(526 cleaned)};
+        \node[box, below=of fs] (svm) {SVM (poly kernel)};
+        \node[box, below=of svm] (pred) {3-class prediction};
+        \draw[arr] (fs) -- (svm);
+        \draw[arr] (svm) -- (pred);
+      \end{tikzpicture}
+    \end{block}
+
+    \begin{block}{Uncertainty}
+      \small 95\% bootstrap CI (macro-F1): [\BestFOneCILow,\; \BestFOneCIHigh]
+    \end{block}
+
+    \column{0.56\textwidth}
+    \begin{block}{Performance (held-out test)}
+      \small
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{Metric} & \textbf{Value} \\
+        \midrule
+        Accuracy & \keyresult{\BestAcc} \\
+        Precision (macro) & \BestPrecision \\
+        Recall (macro) & \BestRecall \\
+        F1-macro & \keyresult{\BestFOne} \\
+        Cohen's $\kappa$ & \BestKappa \\
+        \bottomrule
+      \end{tabular}
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\note{
+This is the key result slide. Full(opt)+SVM achieves 92\% accuracy with strong
+per-class balance. Emphasize this is traditional ML on a modest dataset.
+}

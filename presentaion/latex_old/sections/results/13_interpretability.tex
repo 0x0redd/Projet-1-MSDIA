@@ -1,0 +1,27 @@
+% SLIDE 18 — Interprétabilité
+\begin{frame}{Analyse d'importance des branches}
+  \timing{2:00}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \textbf{RF sur Full(opt)} : importance cumulée par groupe de features.
+    \vspace{0.4em}
+
+    \begin{itemize}
+      \item HOG domine en importance brute (dimensionnalité)
+      \item GLCM/Stats : fort signal par dimension
+      \item Fusion : $\Delta$F1 $=$ \FusionDeltaFOne{} vs.\ HOG seul
+    \end{itemize}
+    \vspace{0.3em}
+    \small $\Rightarrow$ stratégie \emph{sélective} plutôt qu'agrégation aveugle.
+    \column{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{rf_branch_importance}
+    \vspace{0.2em}
+    {\footnotesize Importance par branche (Random Forest, Full(opt)).}
+  \end{columns}
+\end{frame}
+
+\note{
+L'importance RF confirme que HOG porte la prédiction. L'ajout de toutes les branches
+augmente la dimensionnalité plus vite que le gain --- cohérent avec le faible delta F1.
+}

@@ -1,0 +1,292 @@
+%=======================================================================
+\chapter{Benchmark des modèles de Machine Learning}
+
+\section{Modèles évalués}
+
+L'objectif principal de cette phase est d'identifier la combinaison la plus performante entre
+les ensembles de caractéristiques construits lors de la Phase~2 et différents algorithmes de
+Machine Learning. Afin d'obtenir une évaluation exhaustive, huit modèles de classification
+représentant différentes familles d'apprentissage supervisé ont été sélectionnés.
+
+\subsection{Support Vector Machine (SVM)}
+
+Le Support Vector Machine est un classificateur fondé sur la recherche d'un hyperplan optimal
+maximisant la marge entre les différentes classes. Grâce à l'utilisation de fonctions noyaux,
+il est capable de traiter efficacement des données non linéaires et de grande dimension.
+
+Le SVM est particulièrement adapté aux problèmes de classification médicale impliquant un
+nombre élevé de caractéristiques, ce qui en fait un candidat naturel pour les ensembles
+fusionnés étudiés dans ce projet.
+
+\subsection{K-Nearest Neighbors (KNN)}
+
+Le classificateur KNN repose sur un mécanisme de vote majoritaire parmi les $k$ voisins les plus
+proches d'un échantillon.
+
+Sa simplicité et son absence d'hypothèses fortes sur la distribution des données en font une
+référence classique pour les tâches de classification multiclasses.
+
+\subsection{Random Forest (RF)}
+
+Random Forest est une méthode d'apprentissage par ensemble basée sur la construction de
+plusieurs arbres de décision indépendants.
+
+La prédiction finale est obtenue par vote majoritaire des arbres individuels. Cette approche
+offre généralement une bonne robustesse face au bruit et aux variables redondantes.
+
+\subsection{Extra Trees (ET)}
+
+L'algorithme Extra Trees constitue une variante plus aléatoire de Random Forest.
+
+L'introduction d'une randomisation supplémentaire lors de la construction des arbres permet
+souvent de réduire la variance du modèle tout en conservant une bonne capacité de
+généralisation.
+
+\subsection{Logistic Regression (LR)}
+
+La Régression Logistique est un modèle linéaire probabiliste largement utilisé comme
+référence dans les études comparatives.
+
+Bien qu'elle soit plus simple que les autres modèles évalués, elle permet d'analyser la
+séparabilité intrinsèque des ensembles de caractéristiques.
+
+\subsection{Multi-Layer Perceptron (MLP)}
+
+Le Multi-Layer Perceptron est un réseau de neurones artificiel composé de plusieurs couches
+entièrement connectées.
+
+Grâce à ses fonctions d'activation non linéaires, il est capable de modéliser des frontières
+de décision complexes et d'apprendre des relations non linéaires entre les caractéristiques.
+
+\subsection{XGBoost}
+
+XGBoost (\emph{Extreme Gradient Boosting}) est une méthode de boosting basée sur l'agrégation
+séquentielle d'arbres de décision.
+
+Son efficacité, sa robustesse et sa capacité à gérer des données de grande dimension en font
+l'un des algorithmes les plus performants dans de nombreux problèmes de classification.
+
+\subsection{LightGBM}
+
+LightGBM est une implémentation optimisée du Gradient Boosting développée pour offrir des
+temps d'entraînement réduits et une meilleure gestion des grands ensembles de données.
+
+Sa structure efficace lui permet de construire rapidement des modèles performants tout en
+limitant la consommation mémoire.
+
+% -----------------------------------------------------------------------
+\section{Stratégie d'évaluation}
+
+Afin d'assurer une comparaison équitable entre les différents modèles, une procédure
+d'évaluation rigoureuse a été mise en place.
+
+\subsection{Optimisation des hyperparamètres par GridSearchCV}
+
+Chaque algorithme possède plusieurs hyperparamètres susceptibles d'influencer fortement ses
+performances.
+
+Afin d'identifier automatiquement les meilleures configurations, une recherche par grille
+(\emph{Grid Search}) a été réalisée à l'aide de la méthode \textbf{GridSearchCV} de
+Scikit-Learn.
+
+Cette procédure consiste à~:
+\begin{enumerate}[leftmargin=1.4em,itemsep=2pt]
+  \item générer toutes les combinaisons possibles d'hyperparamètres~;
+  \item entraîner le modèle pour chaque combinaison~;
+  \item évaluer les performances via validation croisée~;
+  \item retenir la configuration obtenant le meilleur score moyen.
+\end{enumerate}
+
+Cette approche garantit que chaque modèle est évalué dans des conditions optimales.
+
+\subsection{Validation croisée stratifiée}
+
+Pour réduire l'impact des variations liées à la partition des données, une validation croisée
+stratifiée à \cvFolds{} plis (\emph{Stratified \cvFolds{}-Fold Cross Validation}) a été
+utilisée sur l'ensemble d'apprentissage (\NTrain{} images).
+
+Le principe consiste à~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item diviser le jeu d'apprentissage en cinq sous-ensembles~;
+  \item utiliser successivement quatre plis pour l'entraînement et un pli pour la validation~;
+  \item répéter l'opération cinq fois~;
+  \item calculer la moyenne des performances obtenues.
+\end{itemize}
+
+L'utilisation d'une stratégie stratifiée permet de conserver la proportion des classes dans
+chaque pli.
+
+\subsection{Métrique d'évaluation : F1-Macro}
+
+La métrique principale retenue dans ce projet est le \textbf{F1-Macro Score}, utilisée à la
+fois pour la sélection des hyperparamètres (score de validation croisée) et pour le
+classement final sur l'ensemble de test (\NTest{} images).
+
+Cette mesure combine la précision (\emph{Precision}) et le rappel (\emph{Recall})~:
+\begin{equation}
+  F1 = 2 \times \frac{\mathrm{Precision} \times \mathrm{Recall}}
+                    {\mathrm{Precision} + \mathrm{Recall}}
+\end{equation}
+
+Dans sa version Macro, le score est calculé indépendamment pour chaque classe puis moyenné.
+
+Cette approche est particulièrement adaptée aux problèmes multiclasses car elle accorde le même
+poids à chaque catégorie de tumeur.
+
+Le F1-Macro constitue ainsi un indicateur robuste de la performance globale des modèles.
+
+% -----------------------------------------------------------------------
+\section{Résultats détaillés}
+
+Chaque combinaison «~Ensemble de caractéristiques $\times$ Modèle~» a été évaluée selon la
+procédure décrite précédemment.
+
+Au total, huit ensembles de caractéristiques ont été testés sur huit algorithmes de Machine
+Learning, soit \textbf{64 expériences} distinctes. Les résultats complets sont présentés dans
+l'Annexe~\ref{annex:benchmark-results}. Ils permettent d'analyser~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item l'influence du choix des caractéristiques~;
+  \item l'impact de la fusion des descripteurs~;
+  \item les différences de comportement entre les algorithmes~;
+  \item la stabilité des performances observées.
+\end{itemize}
+
+Les premières observations montrent que les ensembles fusionnés obtiennent généralement de
+meilleurs résultats que les ensembles individuels, confirmant l'intérêt de combiner
+plusieurs sources d'information visuelle.
+
+Par ailleurs, les modèles non linéaires tels que SVM, KNN, LightGBM et XGBoost bénéficient
+davantage de la richesse descriptive apportée par les ensembles de caractéristiques fusionnés.
+
+Les Figures~\ref{fig:p2-A} à \ref{fig:p2-Full} présentent les performances détaillées
+(F1-Macro, précision, rappel et matrices de confusion) pour chaque ensemble de
+caractéristiques.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{p2_A_stats}
+  \caption{Comparaison des modèles sur l'ensemble A (Statistiques).}
+  \label{fig:p2-A}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{p2_B_tex}
+  \caption{Comparaison des modèles sur l'ensemble B (Texture optimisée).}
+  \label{fig:p2-B}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{p2_C_dwt}
+  \caption{Comparaison des modèles sur l'ensemble C (DWT optimisé).}
+  \label{fig:p2-C}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{p2_D_hog}
+  \caption{Comparaison des modèles sur l'ensemble D (HOG).}
+  \label{fig:p2-D}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{p2_ApB}
+  \caption{Comparaison des modèles sur l'ensemble fusionné A+B.}
+  \label{fig:p2-ApB}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{p2_BpC}
+  \caption{Comparaison des modèles sur l'ensemble fusionné B+C.}
+  \label{fig:p2-BpC}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{p2_ApBpC}
+  \caption{Comparaison des modèles sur l'ensemble fusionné A+B+C.}
+  \label{fig:p2-ApBpC}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{p2_Full}
+  \caption{Comparaison des modèles sur l'ensemble Full (fusion complète).}
+  \label{fig:p2-Full}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\section{Leaderboard global}
+
+Afin d'identifier les meilleures configurations du projet, l'ensemble des résultats a été
+regroupé dans un classement global basé sur le F1-Macro obtenu sur l'ensemble de test.
+
+Le Tableau~\ref{tab:leaderboard-top10} présente les dix combinaisons les plus performantes
+(source~: \texttt{phase2\_benchmark\_results.csv}).
+
+\begin{table}[htbp]
+  \centering
+  \caption{Leaderboard global — Top 10 (F1-Macro sur l'ensemble de test).}
+  \label{tab:leaderboard-top10}
+  \begin{tabular}{@{}cllc@{}}
+    \toprule
+    \thd{Rang} & \thd{Modèle} & \thd{Ensemble} & \thd{F1-Macro} \\
+    \midrule
+    1  & SVM         & Full(opt) & 0,920 \\
+    2  & SVM         & D (HOG)   & 0,903 \\
+    3  & KNN         & Full(opt) & 0,900 \\
+    4  & KNN         & D (HOG)   & 0,897 \\
+    5  & LightGBM    & Full(opt) & 0,894 \\
+    6  & MLP         & Full(opt) & 0,884 \\
+    7  & XGBoost     & Full(opt) & 0,880 \\
+    8  & Extra Trees & Full(opt) & 0,877 \\
+    9  & MLP         & D (HOG)   & 0,877 \\
+    10 & LR          & Full(opt) & 0,870 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+La Figure~\ref{fig:p2-leaderboard} visualise ce classement ; la
+Figure~\ref{fig:p2-dashboard} offre une vue d'ensemble des performances sur l'ensemble des
+64 expériences.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{p2_leaderboard}
+  \caption{Leaderboard global des combinaisons modèle $\times$ ensemble de caractéristiques.}
+  \label{fig:p2-leaderboard}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{p2_overall_dashboard}
+  \caption{Tableau de bord global du benchmark Phase~2.}
+  \label{fig:p2-dashboard}
+\end{figure}
+
+L'analyse du leaderboard met en évidence plusieurs tendances importantes.
+
+Premièrement, les ensembles de caractéristiques fusionnés dominent largement les ensembles
+individuels, ce qui confirme l'existence d'une forte complémentarité entre les informations
+statistiques, texturales, fréquentielles et structurelles. L'ensemble \textbf{Full(opt)}
+apparaît dans sept des dix meilleures configurations.
+
+Deuxièmement, le modèle \textbf{SVM} obtient les meilleures performances globales
+(F1-Macro = \bestFone{} sur Full(opt)). Ce résultat confirme sa capacité à exploiter
+efficacement des espaces de caractéristiques de grande dimension tout en maintenant une
+excellente capacité de généralisation.
+
+Troisièmement, les modèles \textbf{KNN} et \textbf{LightGBM} occupent également les premières
+positions du classement, démontrant que les informations extraites possèdent une forte
+capacité discriminante indépendamment du paradigme d'apprentissage utilisé.
+
+Enfin, l'ensemble \textbf{D (HOG)} seul atteint des performances proches de Full(opt) avec
+SVM et KNN (rangs 2 et 4), soulignant l'apport majeur des descripteurs de contours dans ce
+problème de classification.
+
+Ces observations seront approfondies dans le chapitre suivant à travers une validation
+statistique complète visant à évaluer la robustesse et la significativité des différences
+observées entre les modèles.

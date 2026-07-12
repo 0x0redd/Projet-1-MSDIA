@@ -1,0 +1,244 @@
+%=======================================================================
+\chapter{Optimisation des descripteurs (Phase~1)}
+
+\section{Motivation}
+
+L'efficacité d'un système de classification dépend fortement de la qualité des
+caractéristiques utilisées pour représenter les données. Dans le cas des images IRM
+cérébrales, les performances finales ne sont pas uniquement influencées par le choix du
+classificateur, mais également par les paramètres utilisés lors de l'extraction des
+caractéristiques.
+
+Une approche classique consiste à évaluer directement chaque combinaison de paramètres à
+travers l'entraînement complet d'un modèle de Machine Learning, généralement via une
+procédure de type GridSearch associée à une validation croisée. Toutefois, cette stratégie
+présente plusieurs limitations.
+
+Premièrement, le nombre de combinaisons possibles devient rapidement très important lorsque
+plusieurs descripteurs sont considérés simultanément. Deuxièmement, chaque évaluation
+nécessite l'extraction complète des caractéristiques puis l'entraînement d'un ou plusieurs
+modèles, ce qui entraîne un coût computationnel élevé. Enfin, les résultats obtenus peuvent
+dépendre du classificateur utilisé, rendant difficile l'évaluation intrinsèque de la qualité
+des caractéristiques.
+
+Afin de réduire ce coût tout en conservant une évaluation pertinente, nous proposons une
+phase d'optimisation indépendante des classificateurs. L'idée consiste à mesurer
+directement la capacité discriminante des caractéristiques extraites à l'aide de métriques
+statistiques de séparabilité. Cette approche permet d'identifier rapidement les
+configurations les plus prometteuses avant d'effectuer le benchmark complet des modèles de
+Machine Learning.
+
+L'optimisation est réalisée séparément pour les descripteurs GLCM, LBP, DWT et HOG afin de
+sélectionner les paramètres offrant la meilleure capacité de discrimination entre les
+différentes classes de tumeurs cérébrales.
+
+% -----------------------------------------------------------------------
+\section{Métriques de séparabilité}
+
+Pour évaluer la qualité des caractéristiques extraites, trois métriques complémentaires ont
+été utilisées. Chacune mesure un aspect particulier de la séparation entre les classes dans
+l'espace des caractéristiques. Les calculs sont effectués sur l'ensemble d'apprentissage
+(\NTrain{} images) après extraction des descripteurs pour chaque configuration testée.
+
+\subsection{Fisher Discriminant Ratio (FDR)}
+
+Le Fisher Discriminant Ratio mesure la capacité d'une caractéristique à séparer différentes
+classes en comparant la variance inter-classes à la variance intra-classe.
+
+Une caractéristique est considérée comme discriminante lorsque les moyennes des différentes
+classes sont éloignées tout en conservant une faible dispersion interne.
+
+La formulation générale est donnée par~:
+\begin{equation}
+  \mathrm{FDR} = \frac{\sigma^2_{\mathrm{inter}}}{\sigma^2_{\mathrm{intra}}}
+\end{equation}
+où~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item $\sigma^2_{\mathrm{inter}}$ représente la variance entre les classes~;
+  \item $\sigma^2_{\mathrm{intra}}$ représente la variance à l'intérieur des classes.
+\end{itemize}
+
+Dans l'implémentation, le FDR est calculé pour chaque dimension du vecteur de
+caractéristiques puis moyenné sur l'ensemble des descripteurs. Des valeurs élevées
+indiquent une meilleure séparation entre les catégories de tumeurs.
+
+\subsection{Mutual Information (MI)}
+
+L'Information Mutuelle mesure la quantité d'information partagée entre une caractéristique et
+les étiquettes de classes.
+
+Contrairement au FDR, cette métrique ne suppose pas de relation linéaire entre les variables
+et permet d'identifier des dépendances plus complexes. L'information mutuelle moyenne est
+calculée entre chaque dimension et l'étiquette de classe à l'aide de
+\texttt{mutual\_info\_classif}.
+
+Une valeur élevée de Mutual Information indique qu'une caractéristique apporte une
+information importante pour distinguer les différentes catégories de tumeurs.
+
+\subsection{Davies--Bouldin Index (DBI)}
+
+Le Davies--Bouldin Index est une mesure classique de qualité du clustering.
+
+Il évalue simultanément~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item la compacité des classes~;
+  \item la séparation entre les groupes.
+\end{itemize}
+
+Contrairement aux deux métriques précédentes, un score faible indique une meilleure qualité
+de séparation. Pour des raisons de coût computationnel en haute dimension, le DBI est
+calculé après une réduction PCA à 20 composantes.
+
+Dans notre procédure d'évaluation, le DBI est inversé après normalisation afin d'être
+cohérent avec les autres métriques où une valeur élevée correspond à une meilleure
+configuration.
+
+% -----------------------------------------------------------------------
+\section{Construction du score composite}
+
+Chaque métrique fournit une vision partielle de la qualité des caractéristiques. Afin
+d'obtenir une évaluation plus robuste, les trois indicateurs sont combinés dans un score
+composite unique.
+
+Pour chaque grille de recherche (GLCM, LBP, DWT ou HOG), les valeurs de FDR, MI et DBI sont
+d'abord normalisées par \emph{Min--Max scaling} sur l'ensemble des configurations testées,
+afin de les rendre comparables sur l'intervalle $[0,1]$. Le DBI normalisé est ensuite
+inversé~:
+\begin{equation}
+  \mathrm{DBI}_{\mathrm{norm}} = 1 - \mathrm{MinMax}(\mathrm{DBI})
+\end{equation}
+
+Le score final est obtenu par combinaison pondérée à poids égaux~:
+\begin{equation}
+  \mathrm{Score}_{\mathrm{composite}}
+  = w_1 \cdot \mathrm{FDR}_{\mathrm{norm}}
+  + w_2 \cdot \mathrm{MI}_{\mathrm{norm}}
+  + w_3 \cdot \mathrm{DBI}_{\mathrm{norm}}
+\end{equation}
+avec $w_1 = w_2 = w_3 = \tfrac{1}{3}$ dans notre implémentation.
+
+Cette stratégie permet d'intégrer simultanément~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item la séparation statistique des classes~;
+  \item la pertinence informationnelle des caractéristiques~;
+  \item la compacité des groupes.
+\end{itemize}
+
+Les configurations obtenant les scores composites les plus élevés sont retenues pour la phase
+suivante du projet.
+
+% -----------------------------------------------------------------------
+\section{Recherche des meilleurs paramètres}
+
+\subsection{Optimisation du descripteur GLCM}
+
+Pour le descripteur GLCM, plusieurs configurations ont été explorées en faisant varier~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item les distances entre pixels~;
+  \item les orientations~;
+  \item le nombre de niveaux de gris~;
+  \item l'utilisation ou non de matrices symétriques.
+\end{itemize}
+
+Chaque configuration a été évaluée à l'aide du score composite précédemment défini.
+
+Les résultats montrent que la meilleure configuration est obtenue avec~: \glcmParams{}
+(score composite~: \glcmScore). Cette combinaison offre le meilleur compromis entre richesse
+descriptive et capacité discriminante.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{glcm_param_search}
+  \caption{Évolution du score composite pour les différentes configurations GLCM.}
+  \label{fig:glcm-param-search}
+\end{figure}
+
+\subsection{Optimisation du descripteur LBP}
+
+L'algorithme LBP a été optimisé en faisant varier~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item le nombre de voisins ($P$)~;
+  \item le rayon ($R$)~;
+  \item la méthode de codage (\emph{uniform}, \emph{nri\_uniform}, \emph{ror}).
+\end{itemize}
+
+Après évaluation de l'ensemble des combinaisons testées, la meilleure configuration retenue
+est~: \lbpParams{} (score composite~: \lbpScore). Cette configuration permet de capturer
+efficacement les textures locales tout en limitant la sensibilité au bruit.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{lbp_param_search}
+  \caption{Comparaison des scores composites obtenus pour les différentes configurations
+    LBP.}
+  \label{fig:lbp-param-search}
+\end{figure}
+
+\subsection{Optimisation du descripteur DWT}
+
+Pour la Transformée en Ondelettes Discrètes, plusieurs familles d'ondelettes et niveaux de
+décomposition ont été comparés parmi~: \texttt{haar}, \texttt{db1}, \texttt{db2},
+\texttt{db4}, \texttt{sym2}, \texttt{coif1} et \texttt{bior1.3}.
+
+Les expérimentations montrent que la configuration optimale correspond à~: \dwtParams{}
+(score composite~: \dwtScore). Cette configuration fournit les caractéristiques
+fréquentielles les plus discriminantes pour les images IRM du dataset étudié.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{dwt_param_search}
+  \caption{Résultats de l'optimisation des paramètres DWT.}
+  \label{fig:dwt-param-search}
+\end{figure}
+
+\subsection{Optimisation du descripteur HOG}
+
+L'optimisation du descripteur HOG a porté sur~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item le nombre d'orientations~;
+  \item la taille des cellules (\emph{pixels per cell})~;
+  \item la taille des blocs (\emph{cells per block})~;
+  \item la méthode de normalisation (\emph{block norm}).
+\end{itemize}
+
+La meilleure configuration identifiée est~: \hogParams{} (score composite~: \hogScore).
+Cette configuration permet d'obtenir une représentation robuste des contours et des
+structures géométriques présentes dans les tumeurs cérébrales.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{hog_param_search}
+  \caption{Influence des paramètres HOG sur le score composite.}
+  \label{fig:hog-param-search}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\section{Synthèse de la Phase~1}
+
+La phase d'optimisation a permis d'identifier les configurations offrant la meilleure
+capacité de discrimination pour chaque famille de caractéristiques avant toute étape de
+classification.
+
+Le Tableau~\ref{tab:phase1-best} résume les paramètres optimaux retenus pour la suite du
+projet.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Configurations optimales des descripteurs (Phase~1).}
+  \label{tab:phase1-best}
+  \begin{tabular}{@{}llc@{}}
+    \toprule
+    \thd{Descripteur} & \thd{Paramètres optimaux} & \thd{Score} \\
+    \midrule
+    GLCM & \glcmParams{} & \glcmScore \\
+    LBP  & \lbpParams{}  & \lbpScore \\
+    DWT  & \dwtParams{}  & \dwtScore \\
+    HOG  & \hogParams{}  & \hogScore \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Cette première phase a permis de réduire l'espace de recherche tout en sélectionnant les
+configurations les plus prometteuses. Les paramètres optimaux obtenus serviront de base à la
+Phase~2, consacrée à la construction des ensembles de caractéristiques, à leur fusion et à
+l'évaluation comparative des différents algorithmes de Machine Learning.

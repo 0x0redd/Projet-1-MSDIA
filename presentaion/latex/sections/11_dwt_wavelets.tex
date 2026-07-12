@@ -1,0 +1,27 @@
+% Slide 11 — DWT Wavelet Comparison
+\begin{frame}[shrink=4]{DWT Wavelet Comparison}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.62\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{dwt_wavelet_comparison.png}
+
+    \column{0.36\textwidth}
+    \begin{block}{How to read this}
+      \small We compare wavelet families under the same evaluation protocol.\vspace{0.3em}
+
+      \textbf{Goal:} maximize separability while keeping representation compact.
+    \end{block}
+
+    \begin{block}{Winner}
+      \small \keyresult{\texttt{db2}} provides the strongest overall separability.\vspace{0.2em}
+
+      Interpretation: medium-frequency bands capture tumor tissue heterogeneity
+      better than very coarse (haar) or overly complex families.
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\note{
+Wavelet choice affects which frequency bands contribute to classification.
+db2 was selected as the optimal compromise.
+}

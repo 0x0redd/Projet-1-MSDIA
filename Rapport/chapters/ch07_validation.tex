@@ -1,0 +1,291 @@
+%=======================================================================
+\chapter{Validation statistique}
+
+\section{Coefficient de Cohen's Kappa}
+
+L'exactitude (\emph{Accuracy}) constitue une mesure couramment utilisée pour évaluer les
+performances d'un classificateur. Toutefois, cette métrique ne tient pas compte des accords
+pouvant être obtenus par hasard. Afin de fournir une évaluation plus robuste, le coefficient de
+Cohen's Kappa ($\kappa$) a été calculé pour les meilleures configurations du benchmark.
+
+Le coefficient Kappa mesure le niveau d'accord entre les prédictions du modèle et les
+étiquettes réelles après correction de l'accord aléatoire~:
+\begin{equation}
+  \kappa = \frac{P_o - P_e}{1 - P_e}
+\end{equation}
+où $P_o$ représente l'accord observé et $P_e$ l'accord attendu par hasard.
+
+Les valeurs de $\kappa$ sont généralement interprétées comme suit~:
+
+\begin{table}[htbp]
+  \centering
+  \caption{Interprétation du coefficient $\kappa$.}
+  \label{tab:kappa-interpretation}
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    \thd{Valeur de $\kappa$} & \thd{Interprétation} \\
+    \midrule
+    $< 0{,}20$        & Accord faible \\
+    $0{,}21$ -- $0{,}40$ & Accord acceptable \\
+    $0{,}41$ -- $0{,}60$ & Accord modéré \\
+    $0{,}61$ -- $0{,}80$ & Accord substantiel \\
+    $> 0{,}80$        & Accord presque parfait \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Les résultats obtenus montrent des valeurs de Kappa élevées pour les meilleures
+configurations. Le modèle \textbf{SVM avec l'ensemble Full(opt)} atteint
+$\kappa = \kappaVal{}$, tandis que~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item KNN + Full(opt)~: $\kappa = 0{,}85$~;
+  \item LightGBM + Full(opt)~: $\kappa = 0{,}84$.
+\end{itemize}
+
+Ces valeurs indiquent un niveau d'accord presque parfait entre les prédictions et les classes
+réelles, confirmant la qualité des modèles développés.
+
+% -----------------------------------------------------------------------
+\section{Intervalles de confiance Bootstrap}
+
+Afin d'évaluer la stabilité des performances observées sur le jeu de test, une procédure
+Bootstrap a été appliquée ($N = 2000$ rééchantillonnages avec remise).
+
+Cette méthode permet d'estimer un intervalle de confiance à 95\,\% à partir de la distribution
+des métriques recalculées sur chaque échantillon bootstrap.
+
+Pour le meilleur modèle (\textbf{SVM + Full(opt)}), les résultats obtenus sont~:
+
+\begin{table}[htbp]
+  \centering
+  \caption{Intervalles de confiance Bootstrap — SVM + Full(opt).}
+  \label{tab:bootstrap-svm}
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    \thd{Métrique} & \thd{Valeur test} & \thd{IC 95\,\% bas} & \thd{IC 95\,\% haut} \\
+    \midrule
+    Accuracy & 0,920 & 0,890 & 0,950 \\
+    F1-Macro & 0,9204 & 0,8895 & 0,9504 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Ces intervalles relativement étroits témoignent d'une faible variabilité des performances et
+confirment la robustesse du modèle.
+
+Le Tableau~\ref{tab:stats-top10} synthétise les dix meilleures configurations avec Accuracy,
+F1-Macro, $\kappa$ et bornes d'intervalles de confiance Bootstrap (source~:
+\texttt{statistical\_validation\_summary.csv}).
+
+\begin{table}[htbp]
+  \centering
+  \caption{Top 10 — Accuracy, F1-Macro, $\kappa$ et IC 95\,\% Bootstrap.}
+  \label{tab:stats-top10}
+  \small
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}llrrrrr@{}}
+    \toprule
+    \thd{Ensemble} & \thd{Modèle} & \thd{Acc.} & \thd{F1} & \thd{$\kappa$} &
+    \thd{F1 IC bas} & \thd{F1 IC haut} \\
+    \midrule
+    Full(opt) & SVM         & 0,920 & 0,920 & 0,880 & 0,890 & 0,950 \\
+    D (HOG)   & SVM         & 0,903 & 0,903 & 0,855 & 0,868 & 0,935 \\
+    Full(opt) & KNN         & 0,900 & 0,900 & 0,850 & 0,866 & 0,932 \\
+    D (HOG)   & KNN         & 0,897 & 0,897 & 0,845 & 0,863 & 0,928 \\
+    Full(opt) & LightGBM    & 0,893 & 0,894 & 0,840 & 0,859 & 0,927 \\
+    Full(opt) & MLP         & 0,883 & 0,884 & 0,825 & 0,846 & 0,919 \\
+    Full(opt) & XGBoost     & 0,880 & 0,880 & 0,820 & 0,843 & 0,915 \\
+    D (HOG)   & MLP         & 0,877 & 0,877 & 0,815 & 0,838 & 0,912 \\
+    Full(opt) & Extra Trees & 0,877 & 0,877 & 0,815 & 0,840 & 0,912 \\
+    Full(opt) & LR          & 0,870 & 0,870 & 0,805 & 0,831 & 0,905 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{bootstrap_ci_best_fs}
+  \caption{Intervalles de confiance Bootstrap (F1-Macro et Accuracy) pour les meilleurs
+    modèles sur Full(opt).}
+  \label{fig:bootstrap-ci}
+\end{figure}
+
+De manière générale, les meilleurs modèles présentent des intervalles de confiance fortement
+chevauchants mais centrés sur des valeurs élevées, ce qui renforce la fiabilité des résultats
+obtenus.
+
+% -----------------------------------------------------------------------
+\section{Analyse par validation croisée}
+
+La validation croisée stratifiée à cinq plis utilisée durant le benchmark permet d'étudier la
+stabilité des performances selon les différentes partitions des données d'apprentissage.
+
+\subsection{Moyenne des performances}
+
+Sur l'ensemble de \textbf{test} (300 images), le modèle SVM + Full(opt) atteint une accuracy
+de \textbf{92,0\,\%} et un F1-Macro de \textbf{92,04\,\%}. Les scores moyens obtenus sur les
+cinq plis de validation croisée (jeu d'apprentissage) sont légèrement inférieurs, ce qui est
+attendu~: F1-Macro moyen CV = 89,5\,\%, accuracy moyenne CV = 89,5\,\%.
+
+Ces résultats confirment que les performances observées sur le jeu de test ne sont pas dues à
+une partition particulière des données.
+
+\subsection{Écart-type des performances}
+
+L'écart-type des scores obtenus sur les différents plis constitue un indicateur de stabilité.
+Pour SVM + Full(opt)~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item Accuracy Std (CV) = 0,0099~;
+  \item F1 Std (CV) = 0,0100.
+\end{itemize}
+
+Ces valeurs particulièrement faibles indiquent que les performances restent constantes quelle
+que soit la partition utilisée. Les autres modèles du Top~5 sur Full(opt) présentent
+également des écarts-types inférieurs à 0,02.
+
+Le Tableau~\ref{tab:cv-stats} résume les moyennes et écarts-types CV pour les cinq meilleurs
+modèles sur Full(opt) (source~: \texttt{cv\_fold\_statistics.csv}).
+
+\begin{table}[htbp]
+  \centering
+  \caption{Validation croisée (5 plis) — moyenne $\pm$ écart-type sur Full(opt).}
+  \label{tab:cv-stats}
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    \thd{Modèle} & \thd{F1-Macro (moy. $\pm$ std)} & \thd{Accuracy (moy. $\pm$ std)} \\
+    \midrule
+    SVM         & $0{,}895 \pm 0{,}010$ & $0{,}895 \pm 0{,}010$ \\
+    LightGBM    & $0{,}878 \pm 0{,}009$ & $0{,}878 \pm 0{,}008$ \\
+    Extra Trees & $0{,}878 \pm 0{,}004$ & $0{,}879 \pm 0{,}004$ \\
+    KNN         & $0{,}870 \pm 0{,}020$ & $0{,}871 \pm 0{,}020$ \\
+    MLP         & $0{,}873 \pm 0{,}011$ & $0{,}873 \pm 0{,}011$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% -----------------------------------------------------------------------
+\section{Test de McNemar}
+
+Le test de McNemar est un test statistique non paramétrique utilisé pour comparer directement
+deux classificateurs sur les mêmes observations (ici, l'ensemble de test, configuration
+\textbf{Full(opt)}).
+
+L'hypothèse nulle $H_0$ postule que les deux modèles ont des performances équivalentes. Une
+valeur $p < 0{,}05$ conduit au rejet de $H_0$.
+
+Le Tableau~\ref{tab:mcnemar} présente les comparaisons clés entre les modèles du Top~5
+(source~: \texttt{mcnemar\_test\_results.csv}).
+
+\begin{table}[htbp]
+  \centering
+  \caption{Test de McNemar — paires sélectionnées (Full(opt), $n = 300$).}
+  \label{tab:mcnemar}
+  \begin{tabular}{@{}llrrl@{}}
+    \toprule
+    \thd{Modèle A} & \thd{Modèle B} & \thd{$n_{01}$} & \thd{$n_{10}$} & \thd{$p$-value} \\
+    \midrule
+    SVM & KNN      & 20 & 14 & 0,391 \\
+    SVM & LightGBM & 14 &  6 & 0,118 \\
+    SVM & MLP      & 15 &  4 & 0,022 \\
+    SVM & XGBoost  & 17 &  5 & 0,019 \\
+    SVM & Extra Trees & 18 & 5 & 0,012 \\
+    SVM & LR       & 19 &  4 & 0,004 \\
+    KNN & LightGBM & 20 & 18 & 0,871 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Les résultats montrent que SVM est significativement meilleur que LR, MLP, XGBoost et Extra
+Trees ($p < 0{,}05$), mais que la différence avec \textbf{KNN} ($p = 0{,}391$) et
+\textbf{LightGBM} ($p = 0{,}118$) n'est pas statistiquement significative au seuil de 5\,\%.
+
+% -----------------------------------------------------------------------
+\section{Test de Wilcoxon}
+
+Le test des rangs signés de Wilcoxon permet de comparer les performances de deux modèles à
+partir des scores F1-Macro obtenus sur les cinq plis de validation croisée.
+
+L'hypothèse nulle est~: $H_0$~: la médiane des différences entre les deux modèles est nulle.
+
+Pour Full(opt), les comparaisons entre SVM et les autres modèles du Top~5 donnent des
+$p$-values $\geq 0{,}0625$ (seuil non atteint à 5\,\%), indiquant qu'au regard des scores CV,
+les écarts observés ne sont pas statistiquement significatifs — cohérent avec le test de
+McNemar pour SVM vs KNN/LightGBM.
+
+% -----------------------------------------------------------------------
+\section{Tests de Friedman et Nemenyi}
+
+Lorsque plusieurs modèles doivent être comparés simultanément, une analyse globale a été
+réalisée à l'aide du test de Friedman sur les huit ensembles de caractéristiques (A, B, C, D,
+A+B, B+C, A+B+C, Full).
+
+Pour \textbf{tous} les ensembles testés, le test de Friedman rejette $H_0$ au seuil de 5\,\%
+($p < 0{,}01$), confirmant que les huit algorithmes ne sont pas équivalents. Les statistiques
+les plus élevées sont observées pour B — Tex(opt) ($\chi^2 = 32{,}2$, $p < 10^{-4}$) et
+A+B+C(opt) ($\chi^2 = 29{,}7$, $p = 1{,}06 \times 10^{-4}$).
+
+En cas de rejet, un test post-hoc de Nemenyi a été appliqué pour identifier les paires de
+modèles significativement différentes au sein de chaque ensemble de caractéristiques.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.88\textwidth]{friedman_pvalues}
+  \caption{Valeurs $p$ du test de Friedman par ensemble de caractéristiques (comparaison
+    simultanée des 8 modèles).}
+  \label{fig:friedman}
+\end{figure}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Résultats du test de Friedman par ensemble de caractéristiques.}
+  \label{tab:friedman}
+  \small
+  \begin{tabular}{@{}lrrl@{}}
+    \toprule
+    \thd{Ensemble} & \thd{Statistique} & \thd{$p$-value} & \thd{Significatif} \\
+    \midrule
+    B — Tex(opt)  & 32,20 & $3{,}7 \times 10^{-5}$ & Oui \\
+    A+B+C(opt)    & 29,73 & $1{,}1 \times 10^{-4}$ & Oui \\
+    A+B           & 28,20 & $2{,}0 \times 10^{-4}$ & Oui \\
+    B+C(opt)      & 25,60 & $5{,}9 \times 10^{-4}$ & Oui \\
+    A — Stats     & 24,60 & $8{,}9 \times 10^{-4}$ & Oui \\
+    C — DWT(opt)  & 24,27 & $1{,}0 \times 10^{-3}$ & Oui \\
+    Full(opt)     & 23,60 & $1{,}3 \times 10^{-3}$ & Oui \\
+    D — HOG       & 22,33 & $2{,}2 \times 10^{-3}$ & Oui \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% -----------------------------------------------------------------------
+\section{Synthèse statistique}
+
+Les analyses statistiques réalisées dans ce projet permettent de compléter l'évaluation
+classique basée sur les métriques de performance.
+
+Les principaux enseignements sont les suivants~:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item les meilleurs modèles présentent des coefficients de Cohen's Kappa supérieurs à
+        0,80, indiquant un accord presque parfait avec les annotations réelles~;
+  \item les intervalles de confiance Bootstrap demeurent relativement étroits, témoignant
+        d'une bonne stabilité des performances sur le jeu de test~;
+  \item les faibles écarts-types observés lors de la validation croisée ($\leq 0{,}02$ pour
+        le Top~5 sur Full) montrent une excellente capacité de généralisation~;
+  \item le test de McNemar confirme la supériorité de SVM sur plusieurs modèles, mais pas
+        sur KNN et LightGBM au seuil de 5\,\%~;
+  \item le test de Friedman rejette l'équivalence des huit algorithmes sur chaque ensemble
+        de caractéristiques~;
+  \item les ensembles fusionnés obtiennent systématiquement des performances supérieures aux
+        ensembles individuels.
+\end{itemize}
+
+Parmi l'ensemble des configurations étudiées, \textbf{SVM associé à Full(opt)} apparaît comme
+la solution la plus performante et la plus robuste.
+
+Avec une accuracy de \textbf{92,0\,\%}, un F1-Macro de \textbf{92,04\,\%}, un coefficient
+$\kappa = 0{,}88$, des intervalles Bootstrap étroits et des écarts-types CV inférieurs à 0,01,
+cette configuration constitue le meilleur compromis entre performance, stabilité et capacité de
+généralisation.
+
+Ces résultats valident l'efficacité de la stratégie proposée reposant sur l'optimisation des
+descripteurs, la fusion multi-caractéristiques et l'évaluation comparative de plusieurs
+algorithmes de Machine Learning.

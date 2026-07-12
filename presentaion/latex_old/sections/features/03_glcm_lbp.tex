@@ -1,0 +1,22 @@
+% SLIDE 8 — GLCM & LBP
+\begin{frame}{Descripteurs de texture : GLCM et LBP}
+  \timing{1:30}
+  \begin{columns}[T]
+    \column{0.52\textwidth}
+    \textbf{GLCM}~\cite{ref_fonc20231248452} : co-occurrence des niveaux de gris\\
+    $\rightarrow$ \textbf{\glcmDim{} features} Haralick (contraste, énergie\ldots)
+    \vspace{0.5em}
+
+    \textbf{LBP}~\cite{ref_fnins2021634926} : motif binaire du voisinage\\
+    $\rightarrow$ \textbf{\lbpDim{} dimensions} (histogramme uniforme)
+    \column{0.44\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{descriptor_demo}
+    \vspace{0.2em}
+    {\footnotesize Illustration des quatre familles sur une coupe prétraitée.}
+  \end{columns}
+\end{frame}
+
+\note{
+GLCM capture la texture globale ; LBP encode la micro-texture locale, robuste aux variations d'intensité.
+}

@@ -1,0 +1,32 @@
+% Slide 8 — LBP Optimization Results
+\begin{frame}[shrink=4]{LBP Optimization Results}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.62\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{lbp_param_search.png}
+
+    \column{0.36\textwidth}
+    \begin{block}{Selected configuration}
+      \small
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        Neighbors ($P$) & 12 \\
+        Radius ($R$) & 1 \\
+        Encoding & \texttt{uniform} \\
+        \midrule
+        Separability & \lbpScore \\
+        \bottomrule
+      \end{tabular}
+    \end{block}
+
+    \begin{block}{Takeaway}
+      \small A small radius captures fine-grained micro-texture around tumor boundaries.
+      Uniform encoding generalizes better by compressing patterns into a compact histogram.
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\note{
+Grid searched P in {4,8,12,16}, R in {1,2,3}, and three encoding methods.
+Uniform LBP at P=12, R=1 is the clear winner.
+}

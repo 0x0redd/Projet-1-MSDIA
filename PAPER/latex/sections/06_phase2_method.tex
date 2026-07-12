@@ -1,0 +1,140 @@
+\section{Phase 2: Classifier Benchmarking}
+\label{sec:phase2}
+\label{sec:phase2_method}
+
+\subsection{Objectives}
+\label{sec:phase2_objectives}
+
+Following the separability-guided optimization of Phase~1, the second phase
+evaluates the predictive performance of multiple machine learning algorithms on
+the optimized feature representations. The goal is not merely to identify the
+single best classifier, but to understand how different learning paradigms
+interact with the various handcrafted feature sets. To this end, eight
+representative algorithms---spanning linear, distance-based, tree-based,
+ensemble, boosting, and neural-network approaches---are benchmarked under
+identical experimental conditions, providing a broader and fairer comparison
+than the one- or two-classifier evaluations common in prior work.
+
+\subsection{Benchmarking Methodology}
+\label{sec:phase2_methodology}
+
+The benchmarking framework was designed for reproducibility, fairness, and
+statistical rigor. For each feature representation of
+Section~\ref{sec:features}, the following steps were applied: feature cleaning
+and standardization; hyperparameter optimization by grid search; model fitting
+with stratified cross-validation; recording of performance metrics; and
+statistical validation. This procedure was repeated for every
+classifier--feature-set combination, giving the pipeline optimized features
+$\rightarrow$ cleaning $\rightarrow$ standardization $\rightarrow$ hyperparameter
+search $\rightarrow$ cross-validation $\rightarrow$ testing $\rightarrow$
+statistical validation.
+
+\subsection{Evaluated Classifiers}
+\label{sec:phase2_classifiers}
+
+Eight algorithms were selected to ensure diversity in learning strategy.
+\emph{Support Vector Machine} (SVM)~\cite{cortes1995} seeks a maximum-margin
+separating hyperplane and is effective in high-dimensional spaces, with
+nonlinear modeling through kernel functions. \emph{K-Nearest Neighbors} (KNN)
+is a non-parametric method that assigns each sample the majority label among its
+$k$ nearest neighbors, providing a useful baseline for feature-space
+separability. \emph{Random Forest} (RF)~\cite{breiman2001} aggregates decision
+trees trained on bootstrap samples and random feature subsets, offering
+robustness, resistance to overfitting, and built-in feature-importance
+estimation. \emph{XGBoost}~\cite{chen2016} builds gradient-boosted trees in which
+each tree corrects its predecessors' errors, combining high accuracy with
+regularization. \emph{LightGBM}~\cite{ke2017} is an efficient gradient-boosting
+framework using histogram-based, leaf-wise tree growth for fast, memory-efficient
+training. \emph{Logistic Regression} (LR) is an interpretable linear
+probabilistic baseline. The \emph{Multi-Layer Perceptron} (MLP) is a feed-forward
+network that operates directly on handcrafted feature vectors, bridging classical
+and neural approaches. Finally, \emph{Extra Trees} (ET) resembles RF but
+introduces additional randomness in node splitting, increasing tree diversity and
+reducing variance.
+
+\subsection{Hyperparameter Optimization}
+\label{sec:phase2_hyperparams}
+
+Classifier performance depends strongly on parameter selection, so hyperparameter
+optimization was performed independently for each classifier using grid search
+with stratified cross-validation, selecting the configuration with the highest
+macro-$F_1$. Where supported, the class weighting was also tuned
+(\texttt{balanced} vs.\ uniform) to counter the class imbalance.
+Table~\ref{tab:hparams} summarizes the search spaces.
+
+\begin{table}[t]
+\centering
+\caption{Hyperparameter search spaces explored by grid search.}
+\label{tab:hparams}
+\renewcommand{\arraystretch}{1.25}
+\footnotesize
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Classifier} & \textbf{Search space} \\
+\midrule
+SVM      & kernel $\in\{$linear, rbf, poly, sigmoid$\}$; \\
+         & $C \in \{10^{-3},\dots,10^{3}\}$; $\gamma \in \{$scale, auto, $10^{-4}\text{--}10\}$ \\
+KNN      & $k \in \{1,2,3,5,\dots,51\}$; \\
+         & metric $\in\{$euclidean, manhattan, chebyshev, minkowski$\}$; \\
+         & weights $\in\{$uniform, distance$\}$ \\
+RF       & trees $\in\{50,\dots,1000\}$; depth $\in\{$None$,5,\dots,80\}$; \\
+         & min.\ split $\in\{2,5,10,20\}$ \\
+ET       & trees $\in\{100,300,500\}$; min.\ split $\in\{2,5,10\}$ \\
+XGBoost  & trees $\in\{100,\dots,800\}$; depth $\in\{3,\dots,8\}$; \\
+         & learning rate $\in\{0.01,\dots,0.2\}$; $\gamma \in\{0,0.1,0.3\}$ \\
+LightGBM & trees $\in\{100,\dots,800\}$; depth $\in\{-1,4,6,8\}$; \\
+         & learning rate $\in\{0.01,\dots,0.2\}$; leaves $\in\{15,31,63,127\}$ \\
+LR       & $C$ (inverse regularization strength) \\
+MLP      & layers $\in\{(256),(512),(256,128),(512,256),(512,256,128)\}$; \\
+         & activation $\in\{$relu, tanh$\}$; $\alpha \in \{10^{-4},10^{-3},10^{-2}\}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Cross-Validation Strategy}
+\label{sec:phase2_cv}
+
+To obtain robust, unbiased performance estimates, stratified five-fold
+cross-validation was used within the training partition, preserving class
+proportions in each fold. In each iteration, four folds are used for training and
+one for validation, and metrics are averaged across folds. This reduces the
+influence of any single data partition relative to a lone train--test split.
+
+\subsection{Evaluation Metrics}
+\label{sec:phase2_metrics}
+
+Performance was measured with accuracy and macro-averaged precision, recall, and
+$F_1$ score. For a class treated as positive,
+\begin{equation}
+\mathrm{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN},
+\end{equation}
+\begin{equation}
+\mathrm{Precision} = \frac{TP}{TP + FP}, \qquad
+\mathrm{Recall} = \frac{TP}{TP + FN},
+\end{equation}
+\begin{equation}
+F_1 = 2 \cdot \frac{\mathrm{Precision}\cdot \mathrm{Recall}}
+{\mathrm{Precision} + \mathrm{Recall}},
+\end{equation}
+where $TP$, $TN$, $FP$, and $FN$ denote true/false positives and negatives.
+Because the task has three classes, precision, recall, and $F_1$ are
+macro-averaged so that each tumor class contributes equally regardless of its
+prevalence.
+
+\subsection{Benchmark Design}
+\label{sec:phase2_design}
+
+The study evaluates the four individual feature families (A, B, C, D) and the
+four fusion sets (A+B, B+C, A+B+C, Full(opt)) across all eight classifiers,
+producing a full classifier--feature-set comparison matrix. This design directly
+supports the research questions on the most discriminative feature representation
+and the most effective classifier (RQ2 and RQ3), which are stated in full and
+answered in Section~\ref{sec:results}.
+
+\subsection{Summary}
+\label{sec:phase2_summary}
+
+Phase~2 establishes a reproducible benchmarking framework combining systematic
+hyperparameter optimization, stratified cross-validation, multiple evaluation
+metrics, and broad classifier diversity. The resulting experimental findings and
+comparative analyses are presented in the following section.

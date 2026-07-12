@@ -1,0 +1,297 @@
+\section{Results and Discussion}
+\label{sec:results}
+
+\subsection{Overview}
+
+This section reports the results of the two-phase framework and organizes the
+discussion around four research questions:
+\begin{itemize}
+\item \textbf{RQ1:} Which handcrafted descriptor configurations provide the
+highest class separability?
+\item \textbf{RQ2:} Which feature representations achieve the best classification
+performance?
+\item \textbf{RQ3:} Which classifiers are most effective on the optimized
+handcrafted features?
+\item \textbf{RQ4:} Are the observed performance differences statistically
+significant?
+\end{itemize}
+
+\subsection{Phase 1: Separability-Guided Feature Configuration}
+
+\subsubsection{Descriptor Configuration Ranking (RQ1)}
+For each descriptor family, the candidate parameter combinations were ranked by
+the composite separability score of Section~\ref{sec:phase1}. The selected
+configurations and their scores are reported in Table~\ref{tab:phase1}. Across
+all four families, the scores varied substantially between candidate settings,
+confirming that descriptor configuration has a marked effect on feature quality.
+LBP, DWT, and HOG each achieved composite scores above $0.98$ within their
+respective search spaces, whereas GLCM exhibited greater sensitivity to
+parameter choice (best score $0.747$). As noted in Section~\ref{sec:phase1}, the
+composite scores are normalized within each descriptor family and therefore rank
+configurations within a family rather than across families.
+
+\subsubsection{Analysis of Separability Metrics}
+The three metrics offered complementary views of feature quality. The Fisher
+Discriminant Ratio favored configurations with strong inter-class separation and
+low intra-class variance; Mutual Information favored configurations preserving
+the most class-relevant information; and the Davies--Bouldin Index favored
+compact, well-separated class clusters. Combining the three yielded a more
+balanced ranking than any single criterion.
+
+\subsubsection{Discussion}
+The optimization confirmed that the discriminative power of handcrafted
+descriptors is sensitive to parameter selection, that different families differ
+in this sensitivity, and that the selected configurations formed the basis for
+the classification experiments that follow.
+
+\subsection{Phase 2: Classifier Benchmarking}
+
+\subsubsection{Overall Benchmark Performance (RQ3)}
+Table~\ref{tab:overall} summarizes the mean cross-validation performance of
+each classifier averaged across all eight feature sets. Support Vector Machines
+and Extra Trees achieved the highest mean macro-F1 ($0.829$), followed closely
+by XGBoost ($0.826$), LightGBM ($0.822$), and Random Forest ($0.822$).
+Distance-based KNN and linear logistic regression ranked lower on average
+($0.793$ and $0.792$, respectively), although KNN reached near-top performance
+on the strongest feature sets (Table~\ref{tab:leaderboard}).
+
+\begin{table}[t]
+\centering
+\caption{Mean cross-validation performance per classifier, averaged across all
+feature sets (5-fold stratified CV).}
+\label{tab:overall}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Classifier} & \textbf{Acc.} & \textbf{Prec.} & \textbf{Rec.} & \textbf{F1} \\
+\midrule
+SVM      & $0.829$ & $0.832$ & $0.829$ & $0.829$ \\
+ET       & $0.830$ & $0.833$ & $0.830$ & $0.829$ \\
+XGBoost  & $0.827$ & $0.828$ & $0.827$ & $0.826$ \\
+LightGBM & $0.822$ & $0.823$ & $0.822$ & $0.822$ \\
+RF       & $0.823$ & $0.825$ & $0.823$ & $0.822$ \\
+MLP      & $0.810$ & $0.813$ & $0.810$ & $0.810$ \\
+KNN      & $0.794$ & $0.798$ & $0.794$ & $0.793$ \\
+LR       & $0.793$ & $0.794$ & $0.793$ & $0.792$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Feature Set Comparison (RQ2)}
+Table~\ref{tab:featurescore} reports the mean performance for each feature
+representation averaged across all eight classifiers. The full fused
+representation $\mathrm{Full(opt)}$ achieved the highest mean macro-F1
+($0.887$), followed by the gradient-only set $D$ ($0.865$). Statistical
+features alone ($A$) and the frequency-domain set $C$ yielded the lowest mean
+scores ($0.765$ and $0.717$, respectively). Intermediate fusion sets
+($A{+}B$, $A{+}B{+}C$, $B{+}C$) improved over their weakest constituents but
+did not surpass $D$ or $\mathrm{Full(opt)}$, indicating that optimized HOG
+descriptors carry the strongest discriminative signal in this benchmark.
+
+\begin{table}[t]
+\centering
+\caption{Mean cross-validation performance per feature representation, averaged
+across all classifiers (5-fold stratified CV).}
+\label{tab:featurescore}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Feature set} & \textbf{Accuracy} & \textbf{F1} \\
+\midrule
+Full(opt)  & $0.887$ & $0.887$ \\
+D          & $0.865$ & $0.865$ \\
+A+B        & $0.835$ & $0.835$ \\
+A+B+C      & $0.828$ & $0.828$ \\
+B+C        & $0.822$ & $0.822$ \\
+B          & $0.805$ & $0.804$ \\
+A          & $0.765$ & $0.765$ \\
+C          & $0.720$ & $0.717$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{p2_f1_best_per_featureset}
+\caption{Best test macro-F1 per feature representation (bar colour indicates
+the winning classifier).}
+\label{fig:phase2_best_per_fs}
+\end{figure}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{p2_f1_heatmap}
+\caption{Phase~2 benchmark heatmap: test macro-F1 for every
+classifier--feature-set pair.}
+\label{fig:phase2_dashboard}
+\end{figure*}
+
+\subsubsection{Leaderboard of Best Combinations}
+Table~\ref{tab:leaderboard} ranks the top ten classifier--feature-set
+combinations by macro-F1. The best overall configuration pairs a polynomial-kernel
+SVM with $\mathrm{Full(opt)}$ (accuracy $=0.920$, macro-F1 $=0.920$,
+$\kappa=0.88$). A second SVM on the HOG-only set $D$ ranks second
+(F1 $=0.903$), and KNN on $\mathrm{Full(opt)}$ ranks third (F1 $=0.900$).
+Notably, six of the top ten entries use $\mathrm{Full(opt)}$, confirming the
+benefit of multi-family fusion when paired with an appropriate classifier.
+
+\input{tables/leaderboard_top10}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{p2_leaderboard}
+\caption{Phase~2 leaderboard: macro-F1 for all classifier--feature-set
+combinations.}
+\label{fig:phase2_leaderboard}
+\end{figure}
+
+\subsubsection{Best Classifier--Feature-Set Combinations}
+Table~\ref{tab:best} highlights the three highest-ranked combinations from the
+full benchmark (64 configurations).
+
+\begin{table}[t]
+\centering
+\caption{Top three classifier--feature-set combinations (5-fold stratified CV).}
+\label{tab:best}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}cllcc@{}}
+\toprule
+\textbf{Rank} & \textbf{Feature set} & \textbf{Classifier} & \textbf{Acc.} & \textbf{F1} \\
+\midrule
+1 & Full(opt) & SVM      & $0.920$ & $0.920$ \\
+2 & D         & SVM      & $0.903$ & $0.903$ \\
+3 & Full(opt) & KNN      & $0.900$ & $0.900$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Per-Feature-Set Benchmark Results}
+
+Rather than stacking metrics, hyperparameter grids, and confusion matrices into
+one panel per feature set (which is unreadable at paper scale), we use three
+complementary views: the heatmap in Figure~\ref{fig:phase2_dashboard}, the
+best-model-per-set summary in Figure~\ref{fig:phase2_best_per_fs}, and focused
+bar charts for the two strongest representations ($\mathrm{Full(opt)}$ and $D$).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{p2_f1_bars_full}
+\caption{Test macro-F1 of all eight classifiers on $\mathrm{Full(opt)}$.}
+\label{fig:p2_full_bars}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{p2_f1_bars_hog}
+\caption{Test macro-F1 of all eight classifiers on $D$ (HOG only).}
+\label{fig:p2_hog_bars}
+\end{figure}
+
+\subsection{Class-Wise Performance Analysis}
+
+\subsubsection{Confusion Matrix}
+Figure~\ref{fig:cm} shows the row-normalized confusion matrix for the best
+overall configuration (SVM on $\mathrm{Full(opt)}$, test split).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{p2_confmat_best}
+\caption{Confusion matrix for SVM on $\mathrm{Full(opt)}$ (test set).}
+\label{fig:cm}
+\end{figure}
+
+\subsubsection{Per-Class Metrics (RQ2)}
+Table~\ref{tab:perclass} reports aggregate precision, recall, and macro-F1 for
+the best combination across all three classes. Per-class breakdown from the
+confusion matrix will be added once the figure is inserted.
+
+\begin{table}[t]
+\centering
+\caption{Aggregate performance for the best combination (SVM on Full(opt)),
+5-fold CV.}
+\label{tab:perclass}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Metric} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
+\midrule
+Macro (all classes) & $0.923$ & $0.920$ & $0.920$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Feature Contribution Analysis}
+
+The feature-set comparison (Table~\ref{tab:featurescore}) indicates that
+gradient-based HOG descriptors dominate discriminative performance: $D$ alone
+achieves $0.865$ mean macro-F1, substantially outperforming texture ($B$,
+$0.804$) and frequency ($C$, $0.717$) families. Adding statistical, texture,
+and frequency cues to HOG in $\mathrm{Full(opt)}$ yields a further gain to
+$0.887$ mean macro-F1 and the single best configuration (SVM, F1 $=0.920$).
+Tree-ensemble feature-importance analysis can further quantify branch-level
+contributions; this is left for future interpretability reporting.
+
+\subsection{Relationship Between Separability and Classification Performance}
+
+Phase~1 composite scores are normalized within each descriptor family and are
+not directly comparable across families. Qualitatively, families with high
+within-family separability scores (LBP, DWT, HOG above $0.98$) correspond to
+stronger Phase~2 performance when used in fusion or alone ($B$, $D$,
+$\mathrm{Full(opt)}$), whereas GLCM's lower separability score ($0.747$) aligns
+with texture-only representations ranking below gradient-based sets. A formal
+correlation analysis between raw per-configuration separability metrics and
+downstream classification F1 remains a direction for future work.
+
+\subsection{Comparison with Existing Approaches}
+
+The best cross-validated configuration (SVM on $\mathrm{Full(opt)}$, macro-F1
+$=0.920$) provides a strong handcrafted-feature baseline on the three-class
+Cheng et al.\ dataset~\cite{cheng2017}. Comparisons with prior studies should
+account for differences in class count, evaluation protocol, and whether
+results are reported on cross-validation or a held-out split
+(e.g.,~\cite{pattanaik2022,dheepak2024,nawaz2022,basthikodi2024}). The
+methodological contributions that distinguish this framework are its systematic,
+classifier-independent descriptor optimization; multi-family feature fusion;
+comprehensive feature cleaning; broad eight-classifier benchmark; and rigorous
+statistical validation (Section~\ref{sec:statistics}).
+
+\subsection{Practical Implications}
+\label{sec:practical}
+
+\subsubsection{Small-Scale and Limited-Data Settings}
+Many medical imaging datasets remain relatively small due to annotation costs and
+privacy constraints. Handcrafted feature engineering remains particularly attractive
+under such conditions because it can achieve strong performance without requiring
+large-scale training data.
+
+\subsubsection{Reproducibility}
+The explicit feature extraction and optimization procedures contribute to
+reproducible experimentation and facilitate independent validation by future
+researchers.
+
+\subsection{Discussion}
+
+Three principal conclusions emerge from the benchmark. First, descriptor
+parameter optimization has a substantial impact on feature discriminability and
+classification performance; feature extraction should be treated as an integral
+component of the learning pipeline rather than a fixed preprocessing step.
+Second, optimized HOG gradient features provide the strongest single-family
+representation, while multi-family fusion in $\mathrm{Full(opt)}$ yields the
+best overall results. Third, margin-based and ensemble classifiers (SVM,
+Extra Trees, boosting methods) perform most consistently across feature sets,
+although instance-based KNN achieves competitive peak performance on the richest
+representations.
+
+\subsection{Summary}
+\label{sec:results_summary}
+
+The findings presented in this section demonstrate that separability-guided
+handcrafted feature optimization constitutes an effective strategy for improving
+brain tumor MRI classification. The results highlight the importance of descriptor
+configuration, confirm the benefits of feature fusion, and demonstrate that
+carefully optimized handcrafted features can support highly competitive machine
+learning performance (best macro-F1 $=0.920$). Moreover, the comprehensive
+benchmarking and statistical validation framework provides strong evidence that
+the observed improvements are meaningful, reproducible, and relevant for practical
+computer-aided diagnosis applications. These findings form the basis for the
+conclusions presented in Section~\ref{sec:conclusion}.

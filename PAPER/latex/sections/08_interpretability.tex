@@ -1,19 +1,32 @@
-% Feature importance — RF / XGBoost on Full(opt)
-\section{Feature Importance Analysis}
+\section{Feature Importance and Interpretability}
 \label{sec:interpretability}
 
-Understanding which descriptor families drive predictions supports clinical interpretability and validates Phase~1 separability rankings.
-We aggregate \texttt{feature\_importances\_} from random forest (best Phase~2 config on Full(opt)) and XGBoost (when trained) by feature group: Stats (11 dims), GLCM (6), LBP (10), DWT (16), HOG ($\sim$1{,}176 after cleaning).
+\subsection{Random Forest Importance Analysis}
+\label{sec:interp_rf}
+Understanding which descriptor families drive predictions supports clinical
+interpretability and validates Phase~1 separability rankings. We aggregate
+\texttt{feature\_importances\_} from the best Random Forest configuration on
+$\mathrm{Full(opt)}$ by feature group: statistics ($11$ dims), GLCM ($6$),
+LBP ($14$), DWT ($16$), and HOG ($\sim$490 after cleaning).
 
-Fig.~\ref{fig:rf_importance} shows RF cumulative group importance.
-HOG dominates raw importance owing to its dimensionality; normalised per-dimension importance ranks GLCM and Stats highest---consistent with Phase~1 where GLCM had the lowest composite score among families but encodes discriminative co-occurrence structure in few dimensions.
+\subsection{Feature Group Contribution}
+\label{sec:interp_groups}
+Figure~\ref{fig:rf_importance} shows RF cumulative group importance. HOG
+dominates raw importance owing to its dimensionality; per-dimension importance
+ranks GLCM and statistical descriptors higher, consistent with their compact
+yet discriminative encoding of intensity and texture structure.
 
-\begin{figure}[!t]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{rf_branch_importance}
-\caption{Random forest feature-group importance on Full(opt) (held-out best config).}
+\caption{Random forest feature-group importance on $\mathrm{Full(opt)}$.}
 \label{fig:rf_importance}
 \end{figure}
 
-This pattern supports a feature-\emph{selective} strategy: adding all branches increases dimensionality faster than predictive gain (SVM Full(opt) vs.\ HOG-only $\Delta$F1 $=0.016$).
-Future work may prune HOG dimensions via PCA or select top-$k$ GLCM/LBP blocks identified by importance-per-dimension.
+\subsection{Linking Phase 1 and Phase 2}
+\label{sec:interp_link}
+High Phase~1 separability scores for LBP, DWT, and HOG align with strong
+Phase~2 performance when those blocks are used alone or in fusion ($D$ mean
+F1 $=0.865$; $\mathrm{Full(opt)}$ F1 $=0.920$ with SVM). This pattern
+supports the classifier-free selection strategy: separability metrics identify
+informative descriptors before expensive classifier sweeps.

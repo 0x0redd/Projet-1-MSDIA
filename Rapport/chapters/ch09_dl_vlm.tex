@@ -1,0 +1,230 @@
+%=======================================================================
+\chapter{Extensions exploratoires : Deep Learning et VLM}
+
+Au-delà du pipeline ML des chapitres précédents, deux notebooks complémentaires ont été
+réalisés~: \texttt{Deep\_learning.ipynb} (benchmark CNN et modèles hybrides, Phase~3) et
+\texttt{VLM.ipynb} (fine-tuning d'un modèle vision-langage avec LoRA). Cette section en
+résume le protocole, les figures clés et les résultats principaux.
+
+% -----------------------------------------------------------------------
+\section{Benchmark Deep Learning (\texttt{Deep\_learning.ipynb})}
+
+\subsection{Protocole}
+
+Le notebook implémente une \textbf{Phase~3} structurée en trois niveaux, sur le même jeu de
+données (\NTrain{} / \NTest{}) et les mêmes caractéristiques manuelles optimisées (Phase~1)~:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item \textbf{Tier~0 --- CNN purs}~: VGG16, ResNet50, EfficientNet-B0 et ViT-B/16
+        (transfert ImageNet, tête de classification entraînée).
+  \item \textbf{Tier~1 --- Hybrides}~: ResNet18 + une branche manuelle (GLCM, LBP, DWT ou HOG)
+        concaténée aux embeddings CNN (\texttt{HybridClassifier}).
+  \item \textbf{Tier~2 --- Fusion profonde}~: ResNet18 + les quatre branches manuelles fusionnées
+        par concaténation (\texttt{MultiBranchFusion}) ou attention apprise
+        (\texttt{AttentionFusion}).
+\end{itemize}
+
+Chaque modèle est évalué en \emph{hold-out} (split 80/20 stratifié) et en validation croisée
+5-fold. Les métriques sont exportées dans \texttt{results/phase3\_all\_metrics.csv}.
+
+\subsection{Résultats principaux}
+
+Le Tableau~\ref{tab:phase3-dl} et la Figure~\ref{fig:phase3-tier} rapportent les F1-Macro sur
+le split de test. Le meilleur modèle pur est \textbf{ResNet50} (F1 $= 0{,}935$), devant
+EfficientNet-B0 ($0{,}926$) et VGG16 ($0{,}910$). ViT-B/16 sous-performe sur ce petit corpus
+($0{,}842$).
+
+Les hybrides Tier~1 surpassent nettement les branches ML correspondantes de la Phase~2~: par
+exemple, \texttt{cnn\_hog} atteint F1 $= 0{,}934$ contre $0{,}903$ pour SVM + D (HOG), et
+\texttt{waveletcnn} atteint $0{,}917$ contre $0{,}760$ pour Extra Trees + C (DWT).
+
+En Tier~2, la fusion profonde n'apporte qu'un gain marginal sur Full(opt) de la Phase~2~:
+\texttt{multibranch\_fusion} ($0{,}923$) dépasse SVM + Full(opt) ($0{,}920$) de
+$+0{,}002$, tandis que \texttt{attention\_fusion} reste en dessous ($0{,}901$).
+
+\begin{table}[htbp]
+  \centering
+  \caption{Phase~3 --- meilleurs résultats par tier (split de test).}
+  \label{tab:phase3-dl}
+  \begin{tabular}{@{}clcc@{}}
+    \toprule
+    \thd{Tier} & \thd{Modèle} & \thd{F1-Macro} & \thd{Accuracy} \\
+    \midrule
+    0 & ResNet50          & 0,935 & 0,941 \\
+    0 & EfficientNet-B0   & 0,926 & 0,933 \\
+    0 & VGG16             & 0,910 & 0,915 \\
+    1 & CNN + HOG         & 0,934 & 0,940 \\
+    1 & LBPNet            & 0,934 & 0,940 \\
+    2 & MultiBranchFusion & 0,923 & 0,930 \\
+    \midrule
+    \multicolumn{2}{@{}l}{\textit{Réf. Phase~2 --- SVM + Full(opt)}} &
+      \textbf{0,920} & \textbf{0,920} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{phase3_tier_comparison}
+  \caption{Comparaison des F1-Macro par modèle et par tier (split de test).}
+  \label{fig:phase3-tier}
+\end{figure}
+
+La Figure~\ref{fig:phase3-roc} montre les courbes ROC one-vs-rest pour l'ensemble des dix
+modèles Phase~3. ResNet50 et les hybrides Tier~1 dominent sur les trois classes, confirmant la
+bonne séparabilité des tumeurs dans l'espace des représentations apprises.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{phase3_roc_all_models}
+  \caption{Courbes ROC (one-vs-rest) --- benchmark Phase~3 complet.}
+  \label{fig:phase3-roc}
+\end{figure}
+
+La matrice de confusion de ResNet50 (Figure~\ref{fig:phase3-cm-resnet50}) confirme un faible
+taux d'erreurs inter-classes, avec une légère confusion entre gliome et méningiome.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.72\textwidth]{phase3_eval_cm_t0_resnet50}
+  \caption{Matrice de confusion normalisée --- ResNet50 (Tier~0, split de test).}
+  \label{fig:phase3-cm-resnet50}
+\end{figure}
+
+Pour l'interprétabilité, le notebook génère des cartes Grad-CAM
+(Figure~\ref{fig:phase3-gradcam}). ResNet50 (Tier~0) et CNN+HOG (Tier~1) focalisent
+l'attention sur la région tumorale, validant visuellement la pertinence des représentations
+apprises.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.48\textwidth]{phase3_gradcam_t0_resnet50}\hfill
+  \includegraphics[width=0.48\textwidth]{phase3_gradcam_t1_cnn_hog}
+  \caption{Grad-CAM sur un cas correctement classifié par modèle~: ResNet50 (gauche) et
+    CNN+HOG (droite).}
+  \label{fig:phase3-gradcam}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\section{Exploration VLM (\texttt{VLM.ipynb})}
+
+\subsection{Objectif et architecture}
+
+Ce second notebook explore un \textbf{modèle vision-langage} appliqué à la même tâche de
+classification en trois classes (Glioma, Meningioma, Pituitary Tumor). Le modèle retenu est
+\textbf{Qwen2.5-VL-7B-Instruct}, chargé en \textbf{quantification 4-bit NF4} pour tenir sur une
+GPU $\sim$16\,GiB, puis adapté par \textbf{LoRA} ($r=8$, $\alpha=16$, $\sim$0{,}3\,\% de
+paramètres entraînables sur 8,3\,G de poids gelés).
+
+L'image et une consigne textuelle sont fournies au modèle~; la réponse attendue est le nom de
+la classe tumorale. Le jeu est découpé en 1\,050 / 150 / 300 échantillons (train / val / test).
+
+\subsection{Teacher Forcing et sondes de probabilité}
+
+Le notebook se concentre sur deux mécanismes fondamentaux du fine-tuning VLM~:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item \textbf{Teacher Forcing}~: pendant l'entraînement, les tokens de la réponse correcte
+        sont fournis comme contexte~; un masque de labels restreint la perte aux seuls tokens
+        de l'assistant (Figure~\ref{fig:vlm-tf-mask}).
+  \item \textbf{Sondes de probabilité}~: avant et après LoRA, le notebook mesure la
+        probabilité assignée à chaque token de classe à la première position de génération
+        (Figures~\ref{fig:vlm-zero-shot} et~\ref{fig:vlm-before-after}).
+\end{itemize}
+
+Un \emph{QA Monitor} interroge le modèle à intervalles réguliers pendant l'entraînement
+(5~époques, batch size~1, learning rate $2 \times 10^{-4}$) pour suivre l'évolution des
+probabilités de classe (Figure~\ref{fig:vlm-training}).
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.88\textwidth]{teacher_forcing_mask}
+  \caption{Masque de labels en mode Teacher Forcing~: seuls les tokens de la réponse assistant
+    contribuent à la perte.}
+  \label{fig:vlm-tf-mask}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{zero_shot_class_probs}
+  \caption{Sonde zero-shot~: probabilités des tokens de classe avant fine-tuning LoRA
+    (un échantillon par classe).}
+  \label{fig:vlm-zero-shot}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.48\textwidth]{training_loss_curve}\hfill
+  \includegraphics[width=0.48\textwidth]{qa_monitor_accuracy}
+  \caption{Courbes d'entraînement (gauche) et précision du QA Monitor sur les échantillons-sondes
+    (droite).}
+  \label{fig:vlm-training}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.48\textwidth]{before_after_class_probs}\hfill
+  \includegraphics[width=0.48\textwidth]{before_after_per_token_prob}
+  \caption{Probabilités des tokens de classe avant vs après LoRA (gauche) et évolution
+    per-token en teacher-forcing (droite).}
+  \label{fig:vlm-before-after}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.88\textwidth]{before_after_loss_heatmap}
+  \caption{Heatmap de la perte cross-entropie (teacher-forcing) avant vs après fine-tuning.}
+  \label{fig:vlm-loss-heatmap}
+\end{figure}
+
+\subsection{Résultats}
+
+Avant fine-tuning, le modèle généraliste distribue les probabilités de façon peu discriminante
+sur les classes tumorales. Après LoRA, les sondes montrent un recentrage net sur le token de
+la classe correcte, et le monitor atteint 3/3 sur les échantillons-sondes dès les premières
+étapes d'évaluation.
+
+Sur le jeu de test ($n = 300$), la génération greedy atteint une \textbf{accuracy globale de
+94,7\,\%} (F1 par classe $\approx 0{,}95$). Le Tableau~\ref{tab:vlm-test} et la
+Figure~\ref{fig:vlm-cm} détaillent ces scores.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Résultats VLM (Qwen2.5-VL-7B + LoRA) sur le jeu de test.}
+  \label{tab:vlm-test}
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    \thd{Classe} & \thd{Precision} & \thd{Recall} & \thd{F1} \\
+    \midrule
+    Glioma          & 0,941 & 0,950 & 0,945 \\
+    Meningioma      & 0,959 & 0,940 & 0,949 \\
+    Pituitary Tumor & 0,960 & 0,950 & 0,955 \\
+    \midrule
+    \textbf{Accuracy globale} & & & \textbf{0,947} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.72\textwidth]{qwen2vl_lora_confusion_matrix}
+  \caption{Matrice de confusion --- Qwen2.5-VL-7B + LoRA (jeu de test, $n = 300$).}
+  \label{fig:vlm-cm}
+\end{figure}
+
+Ce résultat dépasse le benchmark ML (92,0\,\%) et le meilleur CNN pur (93,5\,\%), tout en
+ouvrant la voie à des sorties textuelles explicatives --- avantage propre aux VLMs par rapport
+aux classifieurs traditionnels. L'exploration reste toutefois préliminaire (un seul modèle,
+fine-tuning léger, pas de validation statistique formelle).
+
+% -----------------------------------------------------------------------
+\section{Synthèse}
+
+Les deux notebooks confirment que des représentations apprises (CNN, VLM) peuvent égaler ou
+dépasser le pipeline manuel sur ce dataset, en particulier lorsque les branches hybrides
+combinent CNN et descripteurs optimisés. Le VLM apporte en outre une capacité générative
+(classification + justification textuelle) absente des approches ML et CNN classiques.
+
+Les limites demeurent~: dépendance GPU, faible volume de données, absence de segmentation 3D
+et protocole d'évaluation moins exhaustif que la Phase~2. Une fusion ML + DL + VLM, avec
+validation multicentrique, constituerait la suite logique de ce travail.

@@ -1,0 +1,25 @@
+% SLIDE 7 — Pipeline global
+\begin{frame}{Architecture du pipeline}
+  \timing{1:30}
+  \centering
+  \begin{tikzpicture}[
+    node distance=0.5cm and 0.35cm,
+    ph/.style={draw=accent, fill=accent!12, rounded corners, minimum height=0.9cm,
+               minimum width=2.4cm, align=center, font=\small},
+    arr/.style={-{Stealth[length=2mm]}, thick, accent}
+  ]
+    \node[ph] (p1) {\textbf{Phase 1}\\Sélection params\\(FDR, MI, DBI)};
+    \node[ph, right=1.2cm of p1] (p2) {\textbf{Phase 2}\\Benchmark\\\NModels{} modèles};
+    \node[ph, right=1.2cm of p2] (p3) {\textbf{Validation}\\$\kappa$, bootstrap\\Wilcoxon, Friedman};
+    \draw[arr] (p1) -- node[above,font=\scriptsize]{configs optimales} (p2);
+    \draw[arr] (p2) -- node[above,font=\scriptsize]{top configs} (p3);
+  \end{tikzpicture}
+
+  \vspace{0.6em}
+  \includegraphics[width=0.85\linewidth]{phase1_summary}
+\end{frame}
+
+\note{
+Séparation stricte : Phase 1 ne voit aucun classifieur. Phase 2 utilise les paramètres verrouillés.
+La validation statistique porte sur les meilleures configurations du split test.
+}

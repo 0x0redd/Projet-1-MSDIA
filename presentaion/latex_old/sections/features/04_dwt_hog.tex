@@ -1,0 +1,22 @@
+% SLIDE 9 — DWT & HOG
+\begin{frame}{Structure et forme : DWT et HOG}
+  \timing{1:30}
+  \begin{columns}[T]
+    \column{0.52\textwidth}
+    \textbf{DWT}~\cite{ref_hsr271195} : sous-bandes multi-échelle (LL, LH, HL, HH)\\
+    $\rightarrow$ \textbf{\dwtDim{} features} (moyenne, énergie, entropie)
+    \vspace{0.5em}
+
+    \textbf{HOG}~\cite{ref_s41598024772437} : histogrammes d'orientations de gradient\\
+    $\rightarrow$ \textbf{\hogDim{} dimensions} sur \ImgSize{}
+    \column{0.44\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{hog_top_configs}
+    \vspace{0.2em}
+    {\footnotesize Phase 1 — scores de séparabilité HOG (top configs).}
+  \end{columns}
+\end{frame}
+
+\note{
+DWT apporte la fréquence ; HOG domine en Phase 2 --- cohérent avec le score de séparabilité le plus élevé (0.997).
+}

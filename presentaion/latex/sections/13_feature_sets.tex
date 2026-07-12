@@ -1,0 +1,59 @@
+% Slide 13 — Feature Sets Evaluated
+\begin{frame}[shrink=2]{Feature Sets Evaluated}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.54\textwidth}
+    \begin{block}{Building blocks (single families)}
+      \small
+      \begin{tabular}{@{}clp{0.55\linewidth}@{}}
+        \toprule
+        \textbf{ID} & \textbf{Name} & \textbf{Signal captured} \\
+        \midrule
+        A & Statistics & intensity distribution (11 features) \\
+        B & LBP (opt) & local texture micro-patterns \\
+        C & DWT (opt) & multi-scale frequency sub-bands \\
+        D & HOG & edge/shape gradients \\
+        \bottomrule
+      \end{tabular}
+    \end{block}
+
+    \begin{block}{Fusion sets (incremental)}
+      \small
+      \begin{tabular}{@{}lp{0.70\linewidth}@{}}
+        \toprule
+        \textbf{Set} & \textbf{Purpose} \\
+        \midrule
+        A+B & add texture to intensity \\
+        B+C(opt) & combine texture + frequency \\
+        A+B+C(opt) & check synergy without HOG \\
+        \textbf{Full(opt)} & all complementary cues \\
+        \bottomrule
+      \end{tabular}
+    \end{block}
+
+    \column{0.44\textwidth}
+    \centering
+    \begin{tikzpicture}[
+      node distance=0.45cm,
+      box/.style={rectangle, rounded corners=2pt, draw=accent, fill=lightbg,
+                  minimum height=0.7cm, minimum width=0.92\linewidth, align=center, font=\small},
+      arr/.style={-{Stealth[length=2mm]}, thick, accent}
+    ]
+      \node[box] (single) {Single families\\A, B, C, D};
+      \node[box, below=of single] (pair) {Pair fusion\\A+B, B+C};
+      \node[box, below=of pair] (triple) {Triple fusion\\A+B+C};
+      \node[box, below=of triple] (full) {\textbf{Full(opt)}\\A+B+C+D};
+      \draw[arr] (single) -- (pair);
+      \draw[arr] (pair) -- (triple);
+      \draw[arr] (triple) -- (full);
+    \end{tikzpicture}
+
+    \begin{block}{Rationale}
+      \small Progressive fusion reveals which descriptors add complementary value beyond HOG.
+    \end{block}
+  \end{columns}
+\end{frame}
+
+\note{
+Eight feature sets total. Full(opt) concatenates all optimized branches after
+correlation pruning and scaling (526 cleaned features).
+}

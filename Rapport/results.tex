@@ -17,14 +17,42 @@
 \newcommand{\NTest}{300}
 \newcommand{\NTotal}{1{,}500}
 
-\newcommand{\glcmParams}{distances $=[1,2,4,8]$; angles $=[0]$; levels $=128$; symmetric $=$ True}
-\newcommand{\glcmScore}{0.7809}
-\newcommand{\lbpParams}{$P=8$; $R=1$; method $=$ uniform}
-\newcommand{\lbpScore}{1.0000}
-\newcommand{\dwtParams}{wavelet $=$ bior1.3; level $=1$}
-\newcommand{\dwtScore}{0.9941}
-\newcommand{\hogParams}{orientations $=6$; pixels\_per\_cell $=(16,16)$; cells\_per\_block $=(2,2)$; block\_norm $=$ L2-Hys}
-\newcommand{\hogScore}{0.9969}
+\newcommand{\glcmParams}{distances $=[1,2,4,8]$; angles $=[0]$; levels $=128$; symmetric $=$ False}
+\newcommand{\glcmScore}{0.7468}
+\newcommand{\lbpParams}{$P=12$; $R=1$; method $=$ uniform}
+\newcommand{\lbpScore}{0.9906}
+\newcommand{\dwtParams}{wavelet $=$ db2; level $=1$}
+\newcommand{\dwtScore}{0.9837}
+\newcommand{\hogParams}{orientations $=6$; pixels\_per\_cell $=(16,16)$; cells\_per\_block $=(3,3)$; block\_norm $=$ L2-Hys}
+\newcommand{\hogScore}{0.9898}
+
+%========================= FEATURE DIMENSIONS (Phase 2) ================
+\newcommand{\dimStats}{11}
+\newcommand{\dimGLCM}{6}
+\newcommand{\dimLBP}{14}
+\newcommand{\dimTexture}{20}
+\newcommand{\dimDWT}{16}
+\newcommand{\dimHOG}{1{,}944}
+\newcommand{\dimFull}{1{,}991}
+
+%========================= FEATURE CLEANING (Phase 2) ====================
+\newcommand{\corrThreshold}{0{,}95}
+\newcommand{\cleanA}{9}
+\newcommand{\cleanB}{18}
+\newcommand{\cleanC}{12}
+\newcommand{\cleanD}{490}
+\newcommand{\cleanApB}{27}
+\newcommand{\cleanBpC}{30}
+\newcommand{\cleanApBpC}{36}
+\newcommand{\cleanFull}{526}
+\newcommand{\keptA}{81{,}8}
+\newcommand{\keptB}{90{,}0}
+\newcommand{\keptC}{75{,}0}
+\newcommand{\keptD}{25{,}2}
+\newcommand{\keptApB}{87{,}1}
+\newcommand{\keptBpC}{83{,}3}
+\newcommand{\keptApBpC}{76{,}6}
+\newcommand{\keptFull}{26{,}4}
 
 %========================= PHASE 2 — MODEL BENCHMARK ===================
 % Fill from the GridSearchCV / finalize cell output.
@@ -40,16 +68,22 @@
 \def\mlpCV{\TODO{CV}}     \def\mlpAcc{\TODO{Acc}}   \def\mlpFone{\TODO{F1}}   \def\mlpBP{\TODO{params}}
 \def\etCV{\TODO{CV}}      \def\etAcc{\TODO{Acc}}    \def\etFone{\TODO{F1}}    \def\etBP{\TODO{params}}
 
-% Headline result (best feature-set x model)
-\def\bestModel{\TODO{best model}}
-\def\bestFeatureSet{\TODO{best feature set}}
-\def\bestAcc{\TODO{acc}}
-\def\bestFone{\TODO{macro-F1}}
+% Headline result (best feature-set x model) — from phase2_benchmark_results.csv
+\def\bestModel{SVM}
+\def\bestFeatureSet{Full(opt)}
+\def\bestAcc{0{,}920}
+\def\bestFone{0{,}920}
+\newcommand{\cvFolds}{5}
 
 %========================= STATISTICAL VALIDATION =====================
-\def\kappaModel{\TODO{model}}      \def\kappaVal{\TODO{kappa}}      \def\kappaInterp{\TODO{interpretation}}
-\def\bootModel{\TODO{model}}       \def\bootCI{\TODO{[lo, hi]}}
-\def\cvModel{\TODO{model}}         \def\cvMean{\TODO{mean}}         \def\cvStd{\TODO{std}}
+\def\kappaModel{SVM + Full(opt)}
+\def\kappaVal{0{,}88}
+\def\kappaInterp{accord presque parfait}
+\def\bootModel{SVM + Full(opt)}
+\def\bootCI{[0{,}890 ; 0{,}950]}
+\def\cvModel{SVM + Full(opt)}
+\def\cvMean{0{,}895}
+\def\cvStd{0{,}010}
 \def\mcPair{\TODO{A vs B}}         \def\mcChi{\TODO{chi2}}          \def\mcP{\TODO{p}}        \def\mcConc{\TODO{sig / not sig}}
 \def\wxPair{\TODO{A vs B}}         \def\wxW{\TODO{W}}               \def\wxP{\TODO{p}}        \def\wxConc{\TODO{sig / not sig}}
 \def\frChi{\TODO{chi2}}            \def\frP{\TODO{p}}               \def\frConc{\TODO{sig / not sig}}

@@ -1,0 +1,43 @@
+\section{Analyse d'interprétabilité}
+\label{sec:analysis}
+
+\subsection{Importance des caractéristiques}
+
+Pour comprendre quelles familles de descripteurs pilotent les prédictions de Full(opt),
+nous avons calculé des scores d'importance à partir d'une forêt aléatoire entraînée
+sur le jeu complet, avec regroupement des caractéristiques par branche source.
+La Figure~\ref{fig:importance} montre la contribution relative de chaque famille.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.80\linewidth]{rf_branch_importance.png}
+  \caption{Importance des caractéristiques par branche (forêt aléatoire sur Full(opt)).
+           Le HOG et le LBP contribuent le plus ; les statistiques et la DWT apportent
+           des gains complémentaires plus modestes.}
+  \label{fig:importance}
+\end{figure}
+
+Le HOG domine en raison de sa haute dimensionnalité et de sa forte discriminabilité
+basée sur les gradients. Le LBP apporte une information texturale complémentaire.
+Les statistiques et la DWT fournissent des gains plus faibles mais non nuls, en
+cohérence avec l'amélioration observée du HOG seul (90,3\,\%) au Full(opt) (92,0\,\%).
+
+\subsection{Visualisation de l'espace des caractéristiques}
+
+La Figure~\ref{fig:tsne} présente une projection t-SNE 2D des vecteurs Full(opt)
+à 526 dimensions pour tous les échantillons de test.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.70\linewidth]{tsne_best_feature_set.png}
+  \caption{Visualisation t-SNE des caractéristiques Full(opt) (partition de test).
+           Une séparation partielle des classes est visible ; les clusters gliome
+           et méningiome se chevauchent davantage que l'hypophysaire, ce qui explique
+           la confusion résiduelle du meilleur modèle.}
+  \label{fig:tsne}
+\end{figure}
+
+La tumeur hypophysaire forme un cluster bien séparé, ce qui explique la forte
+précision par classe pour cette catégorie. Le chevauchement partiel entre gliome
+et méningiome correspond à la principale zone de confusion dans les résultats
+de classification.

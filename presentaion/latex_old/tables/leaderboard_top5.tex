@@ -1,0 +1,16 @@
+\begin{table}
+\centering
+\footnotesize
+\begin{tabular}{@{}clccc@{}}
+\toprule
+\textbf{Rang} & \textbf{Feature set / Modèle} & \textbf{F1-macro} & \textbf{Acc.} & \textbf{$\kappa$} \\
+\midrule
+1 & \textbf{Full(opt) / SVM} & \textbf{\BestFOne} & \textbf{\BestAcc} & \textbf{\BestKappa} \\
+2 & D — HOG / SVM & \RankTwoFOne & \HogSvmAcc & 0.855 \\
+3 & Full(opt) / KNN & \RankThreeFOne & 90.0\% & 0.85 \\
+4 & D — HOG / KNN & \RankFourFOne & 89.7\% & 0.845 \\
+5 & Full(opt) / LightGBM & \RankFiveFOne & 89.3\% & 0.84 \\
+\bottomrule
+\end{tabular}
+\caption{Top 5 configurations (split test, tri par F1-macro). IC 95\% : Full+SVM [\BestFOneCILow, \BestFOneCIHigh].}
+\end{table}

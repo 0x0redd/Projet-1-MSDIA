@@ -1,0 +1,388 @@
+%=======================================================================
+\chapter{Extraction des caractéristiques}
+
+\section{Vue d'ensemble}
+
+L'efficacité d'un système de classification d'images médicales dépend fortement de la qualité
+des caractéristiques utilisées pour représenter les informations visuelles contenues dans les
+images. Dans le contexte de la classification des tumeurs cérébrales à partir d'images IRM, une
+représentation pertinente doit être capable de capturer différents aspects de l'image tels que
+l'intensité des pixels, la texture, les variations fréquentielles ainsi que les structures
+morphologiques.
+
+Afin d'obtenir une représentation riche et complémentaire des images, ce projet adopte une
+approche multi-descripteurs basée sur l'extraction de plusieurs familles de caractéristiques
+manuelles (\emph{Handcrafted Features}). Chaque famille permet de décrire une propriété
+spécifique de l'image~:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item les caractéristiques statistiques décrivent la distribution globale des niveaux de gris~;
+  \item les descripteurs de texture (GLCM et LBP) capturent l'organisation spatiale des pixels~;
+  \item les caractéristiques fréquentielles extraites par DWT analysent les variations à
+        différentes échelles~;
+  \item les descripteurs HOG représentent les contours et les orientations dominantes des
+        gradients.
+\end{itemize}
+
+Cette diversité permet d'exploiter simultanément plusieurs sources d'information et d'étudier
+leur complémentarité dans le processus de classification.
+
+La Figure~\ref{fig:extraction-pipeline} illustre l'architecture générale de l'extraction des
+caractéristiques utilisée dans ce travail.
+
+% \begin{notebox}[Pipeline d'extraction~:]
+% Image prétraitée $\rightarrow$ extraction parallèle des branches A (Stats), B (GLCM+LBP),
+% C (DWT) et D (HOG) $\rightarrow$ fusion des vecteurs $\rightarrow$ classifieur ML.
+% \end{notebox}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    x=1cm, y=1cm,
+    input/.style={rectangle, rounded corners=3pt, draw=accent, fill=headbg,
+                  minimum width=2.8cm, minimum height=0.95cm, align=center,
+                  font=\small\bfseries},
+    branch/.style={rectangle, rounded corners=3pt, draw=accent, fill=white,
+                   minimum width=2.15cm, minimum height=1.25cm, align=center,
+                   font=\footnotesize},
+    merge/.style={rectangle, rounded corners=3pt, draw=accent2, fill=headbg,
+                  minimum width=2.8cm, minimum height=0.95cm, align=center,
+                  font=\small\bfseries},
+    clfbox/.style={rectangle, rounded corners=3pt, draw=accent, fill=white,
+                   minimum width=2.4cm, minimum height=0.9cm, align=center,
+                   font=\footnotesize},
+    arr/.style={-{Stealth[length=2mm]}, thick, accent!85}
+  ]
+    % --- nodes ---
+    \node[input] (img) at (0,0) {Image\\prétraitée};
+
+    \node[branch] (a) at (-4.5,-2.1) {A --- Stats\\[1pt]
+      {\scriptsize 11 dim.}};
+    \node[branch] (b) at (-1.5,-2.1) {B --- Texture\\[1pt]
+      {\scriptsize GLCM+LBP}\\{\scriptsize 20 dim.}};
+    \node[branch] (c) at (1.5,-2.1) {C --- DWT\\[1pt]
+      {\scriptsize 16 dim.}};
+    \node[branch] (d) at (4.5,-2.1) {D --- HOG\\[1pt]
+      {\scriptsize 1944 dim.}};
+
+    \node[merge] (fuse) at (0,-3.75) {Fusion\\[1pt]
+      {\scriptsize Full = 1991 dim.}};
+    \node[clfbox] (clf) at (0,-5.05) {Classifieur\\[1pt]
+      {\scriptsize SVM, KNN, \ldots}};
+
+    % --- top fan-out ---
+    \coordinate (topbus) at (0,-0.75);
+    \draw[arr] (img.south) -- (topbus);
+    \draw[arr] (topbus) -| (a.north);
+    \draw[arr] (topbus) -| (b.north);
+    \draw[arr] (topbus) -| (c.north);
+    \draw[arr] (topbus) -| (d.north);
+
+    % --- bottom fan-in ---
+    \coordinate (botbus) at (0,-3.05);
+    \draw[arr] (a.south) -- (a.south |- botbus);
+    \draw[arr] (b.south) -- (b.south |- botbus);
+    \draw[arr] (c.south) -- (c.south |- botbus);
+    \draw[arr] (d.south) -- (d.south |- botbus);
+    \draw[arr] (-4.5,-3.05) -- (4.5,-3.05);
+    \draw[arr] (botbus) -- (fuse.north);
+
+    \draw[arr] (fuse.south) -- (clf.north);
+  \end{tikzpicture}
+  \caption{Architecture générale du pipeline multi-descripteurs.}
+  \label{fig:extraction-pipeline}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\section{Histogram of Oriented Gradients (HOG)}
+
+\subsection{Principe}
+
+Le descripteur \emph{Histogram of Oriented Gradients} (HOG) est une méthode largement utilisée
+pour représenter les formes et les contours présents dans une image.
+
+Le principe consiste à calculer les gradients locaux puis à construire des histogrammes
+représentant la distribution des orientations dominantes.
+
+Les régions tumorales présentent souvent des structures morphologiques spécifiques qui peuvent
+être efficacement capturées par cette représentation.
+
+\subsection{Hyperparamètres étudiés}
+
+\paragraph{Orientations}
+Nombre de directions utilisées pour construire l'histogramme des gradients. Une valeur élevée
+permet une représentation plus détaillée des contours.
+
+\paragraph{Pixels per Cell}
+Détermine la taille des cellules élémentaires utilisées pour calculer les histogrammes locaux.
+Ce paramètre influence directement le niveau de détail capturé.
+
+\paragraph{Cells per Block}
+Les cellules sont regroupées en blocs afin d'effectuer une normalisation locale. Cette étape
+améliore la robustesse du descripteur face aux variations de contraste.
+
+La configuration optimale retenue est~: \hogParams{} (score composite~: \hogScore).
+
+Le vecteur HOG obtenu fournit une représentation détaillée des structures géométriques
+présentes dans les images IRM et complète efficacement les informations statistiques,
+texturales et fréquentielles extraites par les autres descripteurs.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{hog_schema}
+  \caption{Schéma illustratif du calcul HOG~: image d'entrée, visualisation des gradients
+    orientés et vecteur de caractéristiques résultant.}
+  \label{fig:hog-schema}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\section{Caractéristiques statistiques (A)}
+
+Les caractéristiques statistiques constituent la forme la plus simple de représentation d'une
+image. Elles permettent de résumer la distribution globale des intensités des pixels à travers
+plusieurs indicateurs numériques.
+
+Bien que relativement simples, ces mesures fournissent des informations importantes sur la
+luminosité, la dispersion et la forme de la distribution des niveaux de gris. Elles sont
+souvent utilisées comme descripteurs de base dans les systèmes de classification médicale.
+
+Pour chaque image, les caractéristiques suivantes sont extraites~:
+
+\paragraph{Moyenne (Mean)}
+La moyenne représente l'intensité moyenne des pixels de l'image~:
+\begin{equation}
+  \mu = \frac{1}{N}\sum_{i=1}^{N} x_i
+\end{equation}
+où $x_i$ représente l'intensité du pixel $i$ et $N$ le nombre total de pixels. Cette mesure
+fournit une indication globale du niveau de luminosité de l'image.
+
+\paragraph{Variance}
+La variance mesure la dispersion des intensités autour de la moyenne~:
+\begin{equation}
+  \sigma^2=\frac{1}{N}\sum_{i=1}^{N}(x_i-\mu)^2
+\end{equation}
+Une variance élevée indique une forte hétérogénéité des niveaux de gris.
+
+\paragraph{Écart-type (Standard Deviation)}
+L'écart-type correspond à la racine carrée de la variance~:
+\begin{equation}
+  \sigma=\sqrt{\sigma^2}
+\end{equation}
+Il constitue un indicateur direct de la variabilité des intensités.
+
+\paragraph{Entropie}
+L'entropie mesure la diversité de la distribution d'intensités (calculée sur un histogramme
+normalisé à 64 bins).
+
+\paragraph{Asymétrie (Skewness)}
+L'asymétrie mesure le degré de dissymétrie de la distribution des niveaux de gris. Une valeur
+positive indique une distribution étirée vers les fortes intensités tandis qu'une valeur
+négative traduit une concentration vers les faibles intensités.
+
+\paragraph{Kurtosis (Aplatissement)}
+Le kurtosis mesure le degré de concentration des valeurs autour de la moyenne. Cette
+caractéristique permet de distinguer les distributions présentant des pics prononcés de celles
+plus étalées.
+
+Le vecteur implémenté (\texttt{feat\_stats}) regroupe exactement \dimStats{} descripteurs~:
+moyenne, écart-type, variance, entropie, asymétrie, kurtosis et les percentiles
+10e, 25e, 50e (médiane), 75e et 90e.
+
+L'ensemble de ces mesures constitue le groupe de caractéristiques \textbf{A --- Statistical
+Features} utilisé dans la suite du projet.
+
+% -----------------------------------------------------------------------
+\section{Gray Level Co-occurrence Matrix (GLCM)}
+
+\subsection{Principe}
+
+La matrice de cooccurrence des niveaux de gris (\emph{Gray Level Co-occurrence Matrix} --- GLCM)
+est l'une des méthodes les plus utilisées pour l'analyse de texture.
+
+Introduite par Haralick, cette technique repose sur l'étude des relations spatiales entre les
+pixels voisins. La matrice GLCM comptabilise la fréquence d'apparition de paires de niveaux de
+gris séparées par une distance et une direction données.
+
+Ainsi, au lieu d'étudier chaque pixel individuellement, la méthode analyse la structure
+spatiale de l'image, ce qui permet de caractériser efficacement les textures présentes dans les
+régions tumorales.
+
+\subsection{Hyperparamètres étudiés}
+
+Dans le cadre de ce projet, plusieurs configurations de GLCM ont été évaluées lors de la phase
+d'optimisation (Phase~1).
+
+\paragraph{Distances}
+La distance définit l'écart entre les pixels considérés lors du calcul de la matrice. Les
+distances testées permettent de capturer des textures locales ou plus globales selon l'échelle
+étudiée.
+
+\paragraph{Angles}
+Les directions utilisées influencent la manière dont les relations spatiales sont observées.
+Les orientations classiques comprennent~:
+\begin{equation}
+  0^\circ,\ 45^\circ,\ 90^\circ,\ 135^\circ
+\end{equation}
+Ces différentes directions permettent de prendre en compte l'anisotropie potentielle des
+textures.
+
+\paragraph{Levels}
+Le paramètre \emph{levels} définit le nombre de niveaux de gris utilisés lors de la
+quantification de l'image. Une quantification appropriée permet de réduire le bruit tout en
+conservant les structures texturales importantes.
+
+\subsection{Caractéristiques extraites}
+
+À partir de chaque matrice GLCM, plusieurs indicateurs statistiques sont calculés.
+
+\paragraph{Contrast}
+Mesure les variations locales des niveaux de gris. Des valeurs élevées traduisent généralement
+des textures fortement contrastées.
+
+\paragraph{Correlation}
+Évalue la dépendance linéaire entre les pixels voisins. Cette mesure permet d'apprécier
+l'organisation spatiale de la texture.
+
+\paragraph{Energy}
+Mesure l'uniformité de la texture (somme des carrés des probabilités de cooccurrence). Une
+énergie élevée indique une texture homogène.
+
+\paragraph{Homogeneity}
+Mesure la proximité des valeurs de la matrice par rapport à sa diagonale principale. Une
+texture homogène présente généralement des valeurs élevées de cette caractéristique.
+
+\paragraph{Dissimilarity et ASM}
+La \emph{dissimilarity} quantifie la variation locale linéaire des niveaux de gris, tandis que
+l'\emph{ASM} (\emph{Angular Second Moment}) est une mesure complémentaire d'uniformité
+texturale. Au total, six descripteurs GLCM sont conservés (moyennés sur toutes les paires
+distance/angle)~: contrast, dissimilarity, homogeneity, energy, correlation et ASM.
+
+La configuration optimale retenue est~: \glcmParams{} (score composite~: \glcmScore).
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{glcm_best_params}
+  \caption{Illustration de l'extraction GLCM~: image d'entrée et valeurs des descripteurs de
+    texture calculés (meilleurs paramètres Phase~1).}
+  \label{fig:glcm-best}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\section{Local Binary Patterns (LBP)}
+
+\subsection{Principe}
+
+Le descripteur \emph{Local Binary Patterns} (LBP) est une méthode efficace d'analyse de texture
+locale.
+
+Son principe consiste à comparer chaque pixel central avec ses voisins. Si l'intensité d'un
+voisin est supérieure ou égale à celle du pixel central, un bit de valeur~1 est attribué~;
+sinon un bit de valeur~0 est attribué.
+
+La concaténation de ces bits forme un code binaire décrivant la structure locale du voisinage.
+L'histogramme des codes LBP obtenus constitue ensuite le vecteur de caractéristiques de
+l'image.
+
+Cette méthode est particulièrement robuste aux variations d'éclairage et largement utilisée
+pour la reconnaissance de textures.
+
+\subsection{Hyperparamètres étudiés}
+
+\paragraph{$P$ (Nombre de voisins)}
+Le paramètre $P$ représente le nombre de points de voisinage utilisés pour construire le motif
+binaire.
+
+\paragraph{$R$ (Rayon)}
+Le rayon $R$ définit la distance entre le pixel central et les pixels voisins. Des rayons plus
+élevés permettent de capturer des structures plus larges.
+
+\paragraph{Method}
+Plusieurs variantes de LBP ont été testées dans la grille Phase~1~: \emph{uniform},
+\emph{nri\_uniform} et \emph{ror} (\emph{rotation invariant}). La variante \emph{uniform}
+retenue produit un histogramme de $P+2$ bins (soit \dimLBP{} descripteurs pour $P=12$).
+
+La configuration optimale retenue est~: \lbpParams{} (score composite~: \lbpScore).
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{lbp_best_params}
+  \caption{Illustration de l'extraction LBP~: image d'entrée, carte LBP et histogramme des
+    motifs (meilleurs paramètres Phase~1).}
+  \label{fig:lbp-best}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\section{Discrete Wavelet Transform (DWT)}
+
+\subsection{Principe}
+
+La Transformée en Ondelettes Discrètes (DWT) est une méthode d'analyse fréquentielle
+permettant de représenter une image simultanément dans les domaines spatial et fréquentiel.
+
+Contrairement à la transformée de Fourier, la DWT conserve une localisation spatiale des
+informations, ce qui la rend particulièrement adaptée à l'analyse des images médicales.
+
+Lors de la décomposition, l'image est séparée en plusieurs sous-bandes~:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item approximation (LL)~;
+  \item détails horizontaux (LH)~;
+  \item détails verticaux (HL)~;
+  \item détails diagonaux (HH).
+\end{itemize}
+
+Ces sous-bandes permettent de capturer des informations texturales à différentes échelles.
+
+\subsection{Familles d'ondelettes}
+
+La grille Phase~1 teste les ondelettes suivantes~: \texttt{haar}, \texttt{db1}, \texttt{db2},
+\texttt{db4}, \texttt{sym2}, \texttt{coif1} et \texttt{bior1.3}. Pour chaque sous-bande, quatre
+statistiques sont calculées~: moyenne, écart-type, énergie et entropie.
+
+\subsection{Niveaux de décomposition}
+
+Le niveau de décomposition contrôle la profondeur de l'analyse multi-résolution. Des niveaux
+plus élevés permettent de capturer des structures globales tandis que des niveaux faibles
+privilégient les détails locaux.
+
+Les statistiques calculées sur les coefficients d'ondelettes constituent les caractéristiques
+DWT utilisées pour la classification.
+
+La configuration optimale retenue est~: \dwtParams{} (score composite~: \dwtScore).
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{dwt_best_params}
+  \caption{Illustration de l'extraction DWT~: image d'entrée, sous-bande d'approximation et
+    vecteur de caractéristiques (meilleurs paramètres Phase~1).}
+  \label{fig:dwt-best}
+\end{figure}
+
+% -----------------------------------------------------------------------
+\section{Synthèse des dimensions par groupe de caractéristiques}
+
+Le Tableau~\ref{tab:feature-dims} récapitule la dimension de chaque groupe de
+caractéristiques (A, B, C, D) avant l'étape de nettoyage, pour la configuration optimale retenue
+après la Phase~1.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Dimensions des groupes de caractéristiques avant nettoyage.}
+  \label{tab:feature-dims}
+  \begin{tabular}{@{}clcr@{}}
+    \toprule
+    \thd{Groupe} & \thd{Contenu} & \thd{Détail} & \thd{Dim.} \\
+    \midrule
+    A & Statistiques & mean, std, var, entropy, skew, kurtosis, p10--p90 & \dimStats \\
+    B & Texture & GLCM (\dimGLCM) + LBP (\dimLBP) & \dimTexture \\
+    C & DWT & Statistiques sur sous-bandes (niveau~1) & \dimDWT \\
+    D & HOG & Histogrammes de gradients orientés & \dimHOG \\
+    \midrule
+    \textbf{Full} & \textbf{Fusion A+B+C+D} & & \textbf{\dimFull} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+La branche HOG constitue de loin le descripteur le plus volumineux, ce qui justifie
+l'importance des étapes de nettoyage et de réduction de redondance décrites au
+Chapitre~\ref{ch:ensembles}.

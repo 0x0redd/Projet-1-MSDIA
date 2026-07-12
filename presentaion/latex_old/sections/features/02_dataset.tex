@@ -1,0 +1,25 @@
+\section{Données et descripteurs}
+
+% SLIDE 6 — Dataset
+\begin{frame}{Jeu de données et prétraitement}
+  \timing{2:00}
+  \begin{columns}[T]
+    \column{0.55\textwidth}
+    \textbf{Corpus :} Kaggle Brain Tumor Detection (\NTotal{} IRM, \NPerClass{}/classe).
+    \begin{itemize}
+      \item Classes : gliome, méningiome, tumeur hypophysaire
+      \item Split stratifié : train \NTrain{} + val \NVal{} / test \NTest{}
+      \item Prétraitement : niveaux de gris, \ImgSize{}, CLAHE, rognage bordures
+    \end{itemize}
+    \vspace{0.3em}
+    \textbf{Métrique principale :} F1-macro (équilibre des classes, $\approx 1.0$).
+    \column{0.42\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{dataset}
+  \end{columns}
+\end{frame}
+
+\note{
+Dataset équilibré : 500 images par classe. Le F1-macro évite qu'une classe majoritaire
+masque une faiblesse sur gliome ou méningiome.
+}

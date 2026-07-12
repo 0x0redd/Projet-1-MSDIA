@@ -1,0 +1,118 @@
+%=======================================================================
+%  metrics.tex — single source of truth for presentation numbers
+%=======================================================================
+
+% --- Research framing ---
+\newcommand{\ResearchQuestion}{%
+  Les features artisanales optimisées par séparabilité, couplées à des classifieurs classiques,
+  atteignent-elles une performance cliniquement intéressante sur l'IRM cérébrale
+  --- avec interprétabilité et coût de calcul réduits ?%
+}
+
+% --- Dataset ---
+\newcommand{\NClasses}{3}
+\newcommand{\NTotal}{1\,500}
+\newcommand{\NPerClass}{500}
+\newcommand{\NTrain}{1\,050}
+\newcommand{\NVal}{150}
+\newcommand{\NTest}{300}
+\newcommand{\NTestPerClass}{100}
+\newcommand{\ImgSize}{$128\times128$}
+\newcommand{\CacheTag}{\texttt{sz128x128\_clahe1\_test0.2\_maxNone}}
+
+% --- Phase 1 ---
+\newcommand{\glcmParams}{$d{=}[1,2,4,8]$; $\theta{=}0$; $L{=}128$; sym.}
+\newcommand{\glcmFDR}{0.313}
+\newcommand{\glcmMI}{0.196}
+\newcommand{\glcmDBI}{4.03}
+\newcommand{\glcmDim}{6}
+\newcommand{\glcmScore}{0.781}
+
+\newcommand{\lbpParams}{$P{=}8$; $R{=}1$; uniform}
+\newcommand{\lbpFDR}{0.196}
+\newcommand{\lbpMI}{0.111}
+\newcommand{\lbpDBI}{2.85}
+\newcommand{\lbpDim}{10}
+\newcommand{\lbpScore}{1.000}
+
+\newcommand{\dwtParams}{\texttt{bior1.3}; niveau $=1$}
+\newcommand{\dwtFDR}{0.193}
+\newcommand{\dwtMI}{0.104}
+\newcommand{\dwtDBI}{3.99}
+\newcommand{\dwtDim}{16}
+\newcommand{\dwtScore}{0.994}
+
+\newcommand{\hogParams}{6 orient.; cell. $(16,16)$; blocs $(2,2)$}
+\newcommand{\hogFDR}{0.021}
+\newcommand{\hogMI}{0.025}
+\newcommand{\hogDBI}{6.63}
+\newcommand{\hogDim}{1\,176}
+\newcommand{\hogScore}{0.997}
+
+\newcommand{\NPhaseOneConfigs}{213}
+
+% --- Phase 2 protocol ---
+\newcommand{\NModels}{8}
+\newcommand{\NBranches}{8}
+\newcommand{\NEvalModes}{6}
+\newcommand{\NRuns}{384}
+
+% --- Best overall (F1-macro primary) ---
+\newcommand{\BestPipeline}{\textbf{Full(opt) + SVM}}
+\newcommand{\BestFOne}{0.920}
+\newcommand{\BestFOneCILow}{0.890}
+\newcommand{\BestFOneCIHigh}{0.950}
+\newcommand{\BestAcc}{92.0\%}
+\newcommand{\BestKappa}{0.88}
+\newcommand{\BestAccCILow}{0.89}
+\newcommand{\BestAccCIHigh}{0.95}
+\newcommand{\BestAccCVStd}{$\pm 0.0099$}
+
+% --- HOG baseline ---
+\newcommand{\HogPipeline}{D — HOG + SVM}
+\newcommand{\HogSvmFOne}{0.903}
+\newcommand{\HogSvmAcc}{90.3\%}
+\newcommand{\HogSvmKappa}{0.855}
+\newcommand{\HogFOneCILow}{0.868}
+\newcommand{\HogFOneCIHigh}{0.935}
+\newcommand{\HogAccCILow}{0.87}
+\newcommand{\HogAccCIHigh}{0.94}
+\newcommand{\FusionDeltaFOne}{0.017}
+\newcommand{\FusionGain}{1.7}
+
+% --- Per-branch best (split, manifest) ---
+\newcommand{\FOneAStats}{0.787}
+\newcommand{\AccAStats}{78.7\%}
+\newcommand{\ModelAStats}{SVM}
+\newcommand{\FOneBTex}{0.827}
+\newcommand{\AccBTex}{82.7\%}
+\newcommand{\ModelBTex}{XGBoost}
+\newcommand{\FOneCDwt}{0.763}
+\newcommand{\AccCDwt}{76.3\%}
+\newcommand{\ModelCDwt}{ExtraTrees}
+\newcommand{\FOneDHog}{0.903}
+\newcommand{\AccDHog}{90.3\%}
+\newcommand{\ModelDHog}{SVM}
+\newcommand{\FOneApB}{0.850}
+\newcommand{\AccApB}{85.0\%}
+\newcommand{\ModelApB}{ExtraTrees}
+\newcommand{\FOneBpC}{0.853}
+\newcommand{\AccBpC}{85.3\%}
+\newcommand{\ModelBpC}{XGBoost}
+\newcommand{\FOneApBpC}{0.857}
+\newcommand{\AccApBpC}{85.7\%}
+\newcommand{\ModelApBpC}{RF}
+\newcommand{\FOneFull}{0.920}
+\newcommand{\AccFull}{92.0\%}
+\newcommand{\ModelFull}{SVM}
+
+% --- Leaderboard ---
+\newcommand{\RankTwoFOne}{0.903}
+\newcommand{\RankThreeFOne}{0.900}
+\newcommand{\RankFourFOne}{0.897}
+\newcommand{\RankFiveFOne}{0.894}
+
+% --- Statistical tests ---
+\newcommand{\FriedmanFullP}{0.022}
+\newcommand{\FriedmanHogP}{0.022}
+\newcommand{\WilcoxonFullSvmKnnP}{0.0625}

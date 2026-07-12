@@ -1,0 +1,93 @@
+\section{Statistical Validation}
+\label{sec:statistics}
+
+\subsection{Overview}
+
+To address \textbf{RQ4} (Section~\ref{sec:results}), a multi-faceted statistical
+validation framework was applied to the Phase~2 benchmark results. The analyses
+comprise Cohen's kappa coefficient~\cite{cohen1960} for inter-rater agreement
+beyond chance, bootstrap $95\%$ confidence intervals for performance stability,
+McNemar's test~\cite{mcnemar1947} and the Wilcoxon signed-rank test for pairwise
+comparisons, and the Friedman test with Nemenyi post-hoc analysis~\cite{demsar2006}
+for global classifier ranking across all evaluation settings.
+
+\subsection{Friedman Test and Nemenyi Post-Hoc Analysis}
+
+The Friedman test evaluates whether statistically significant differences exist
+among the $k$ classifiers when ranked across $N$ evaluation settings (feature
+sets). When the Friedman test rejects the null hypothesis of equal performance,
+the Nemenyi post-hoc procedure identifies which classifier pairs differ
+significantly in average rank.
+
+\subsubsection{Critical Difference}
+
+The critical difference is computed as
+\begin{equation}
+\mathrm{CD} = q_{\alpha}\sqrt{\frac{k(k+1)}{6N}},
+\label{eq:nemenyi_cd}
+\end{equation}
+where $q_{\alpha}$ is the critical value from the Studentized range statistic at
+significance level $\alpha$, $k$ is the number of classifiers, and $N$ is the
+number of evaluation settings. Two classifiers are considered significantly
+different if their average rank difference exceeds the critical difference.
+
+\subsubsection{Critical Difference Diagram}
+
+Figure~\ref{fig:nemenyi_cd} presents Friedman test $p$-values for each feature
+set. When the Friedman test rejects the null hypothesis of equal performance,
+the Nemenyi post-hoc procedure (Eq.~\ref{eq:nemenyi_cd}) identifies which
+classifier pairs differ significantly in average rank.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{friedman_pvalues}
+\caption{Friedman test $p$-values per feature set (simultaneous comparison of
+eight classifiers). All feature sets reject the null hypothesis of equal
+classifier performance at $\alpha=0.05$.}
+\label{fig:nemenyi_cd}
+\end{figure}
+
+\subsection{Cohen's Kappa and Bootstrap Confidence Intervals}
+
+Table~\ref{tab:stats_top5} reports Cohen's $\kappa$ and bootstrap $95\%$
+confidence intervals for the five highest-ranked configurations. The best model
+(SVM on $\mathrm{Full(opt)}$) achieves $\kappa=0.88$ with a bootstrap F1
+interval of $[0.890, 0.950]$, indicating substantial agreement beyond chance
+and stable performance estimates. The top five configurations all exceed
+$\kappa=0.84$, supporting the reliability of the leading combinations.
+
+\input{tables/stats_top5}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{bootstrap_ci_best_fs}
+\caption{Bootstrap $95\%$ confidence intervals (accuracy and macro-F1) for the
+top models on $\mathrm{Full(opt)}$.}
+\label{fig:bootstrap_ci}
+\end{figure}
+
+\subsection{Discussion of Statistical Findings}
+\label{sec:stats_discussion}
+
+The statistical analyses provide several important insights.
+Cohen's kappa values confirm that the best-performing models achieve substantial
+agreement beyond chance expectations. Second, bootstrap confidence intervals
+demonstrate the stability and robustness of the obtained performance estimates.
+Third, McNemar and Wilcoxon tests reveal that some performance improvements are
+statistically significant rather than resulting from random variation. Fourth,
+the Friedman--Nemenyi analysis establishes a global ranking of classifiers and
+identifies groups of algorithms with comparable performance. Collectively, these
+findings strengthen the validity of the experimental results and support the
+conclusion that the observed improvements are both meaningful and reproducible.
+
+\subsection{Summary}
+\label{sec:stats_summary}
+
+The statistical validation framework confirms that the performance gains achieved
+by the proposed separability-guided optimization strategy are not merely
+numerical improvements but are supported by rigorous statistical evidence. The
+combination of agreement measures, confidence interval estimation, pairwise
+significance testing, and multi-classifier ranking provides a comprehensive
+assessment of model reliability and comparative effectiveness. These results
+establish a strong foundation for the final discussion and comparison with
+existing literature presented in Section~\ref{sec:results}.

@@ -1,0 +1,43 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Pourquoi l'optimisation des caractéristiques aide}
+
+La recherche de séparabilité en Phase~1 sélectionne les paramètres de descripteurs
+qui maximisent l'information discriminante entre classes avant tout entraînement
+de classifieur. Cela évite un essai-erreur coûteux en Phase~2 et garantit que
+les caractéristiques entrant dans le benchmark sont déjà bien réglées. Le gain de
+\FusionGain{} points de pourcentage du HOG seul au Full(opt) --- modeste en valeur
+absolue --- est statistiquement significatif (McNemar vs.\ RF : $p = \McNemarRF$)
+et suggère que les quatre familles de descripteurs complémentaires capturent une
+information non redondante.
+
+\subsection{Pourquoi le SVM performe le mieux}
+
+Le SVM à noyau polynomial capture des frontières de classe non linéaires dans
+l'espace Full(opt) à 526 dimensions. Les descripteurs denses en haute dimension
+(le HOG contribue à la majorité des 526 dimensions) favorisent généralement les
+apprenants à marge plutôt que les stratégies de bagging ou de boosting sur des
+jeux de données de taille modeste. Le fait que le KNN figure également en tête
+du classement suggère que l'espace Full(opt) possède une géométrie locale forte
+près des frontières de décision.
+
+\subsection{Limites}
+
+\begin{itemize}
+  \item Le jeu de données (\NTotal{} images) reste modeste ; les résultats peuvent
+        ne pas se généraliser à des populations multi-scanners ou multi-centres.
+  \item Le pipeline de prétraitement (CLAHE, redimensionnement fixe) n'est pas adapté
+        aux protocoles d'acquisition spécifiques.
+  \item Les modèles d'apprentissage profond dépassent souvent le ML classique sur
+        de grands jeux IRM ; notre pipeline cible le scénario de données limitées
+        et de contraintes d'interprétabilité.
+\end{itemize}
+
+\subsection{Implications pratiques}
+
+Le pipeline s'exécute entièrement sur CPU, sans outillage propriétaire, et produit
+des descripteurs dont la signification physique (texture, fréquence, contours) est
+compréhensible par les experts du domaine. Il est donc adapté comme outil d'aide
+à la décision dans des contextes où les ressources de calcul ou les volumes de
+données excluent l'apprentissage profond.

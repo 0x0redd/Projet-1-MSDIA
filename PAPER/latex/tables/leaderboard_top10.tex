@@ -1,0 +1,25 @@
+% Auto-generated — do not edit by hand
+\begin{table}[!t]
+\centering
+\caption{Top-10 classifier--feature-set combinations ranked by macro-F1 (5-fold stratified CV). $\kappa$: Cohen's kappa; F1 CI: bootstrap 95\% interval.}
+\label{tab:leaderboard}
+\renewcommand{\arraystretch}{1.15}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}rllcccl@{}}
+\toprule
+\textbf{Rank} & \textbf{Feature set} & \textbf{Clf.} & \textbf{Acc.} & \textbf{F1} & $\boldsymbol{\kappa}$ & \textbf{F1 CI} \\
+\midrule
+1 & Full(opt) & SVM & 0.9200 & 0.9204 & 0.88 & [0.8895, 0.9504] \\
+2 & D --- HOG & SVM & 0.9033 & 0.9032 & 0.855 & [0.8683, 0.9346] \\
+3 & Full(opt) & KNN & 0.9000 & 0.9002 & 0.85 & [0.866, 0.9322] \\
+4 & D --- HOG & KNN & 0.8967 & 0.8967 & 0.845 & [0.8626, 0.9283] \\
+5 & Full(opt) & LightGBM & 0.8933 & 0.8938 & 0.84 & [0.8592, 0.9267] \\
+6 & Full(opt) & MLP & 0.8833 & 0.8839 & 0.825 & [0.8457, 0.9187] \\
+7 & Full(opt) & XGBoost & 0.8800 & 0.8800 & 0.82 & [0.8427, 0.9145] \\
+8 & Full(opt) & ET & 0.8767 & 0.8765 & 0.815 & [0.84, 0.9123] \\
+9 & D --- HOG & MLP & 0.8767 & 0.8767 & 0.815 & [0.8382, 0.9119] \\
+10 & Full(opt) & LR & 0.8700 & 0.8702 & 0.805 & [0.8306, 0.905] \\
+\bottomrule
+\end{tabular}
+\end{table}

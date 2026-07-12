@@ -1,0 +1,23 @@
+% SLIDE 5 — Contributions
+\begin{frame}{Contributions}
+  \timing{2:00}
+  \begin{columns}[T]
+    \column{0.52\textwidth}
+    \begin{enumerate}
+      \item Protocole \textbf{séparabilité d'abord} : \NPhaseOneConfigs{} configs, métriques FDR+MI+DBI.
+      \item Benchmark \textbf{\NModels{} classifieurs} $\times$ \textbf{\NBranches} branches ($\NRuns{}$ runs).
+      \item Analyse d'\textbf{importance par branche} (RF sur Full(opt)).
+      \item Validation : $\kappa$, bootstrap 95\%, Wilcoxon, Friedman--Nemenyi.
+    \end{enumerate}
+    \column{0.44\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{phase1_summary}
+    \vspace{0.2em}
+    {\footnotesize Vue d'ensemble Phase 1 : sélection avant tout entraînement.}
+  \end{columns}
+\end{frame}
+
+\note{
+Nos quatre contributions répondent directement à la lacune : séparation des phases,
+benchmark exhaustif, interprétabilité et rigueur statistique.
+}

@@ -1,0 +1,23 @@
+% Slide 12 — Phase 1 Summary
+\begin{frame}[shrink=5]{Phase 1 Summary}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+    \begin{block}{Selected parameters (frozen for Phase 2)}
+      \input{tables/best_params}
+    \end{block}
+
+    \begin{block}{Key observation}
+      \small Texture (LBP) and gradients (HOG) achieve the highest separability.\vspace{0.2em}
+
+      This motivates using them as strong baselines and testing whether fusion adds value.
+    \end{block}
+    \column{0.50\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{phase1_summary.png}
+  \end{columns}
+\end{frame}
+
+\note{
+Phase 1 complete. All four feature families are ready for classifier benchmarking.
+Key takeaway: texture and gradient descriptors dominate separability scores.
+}

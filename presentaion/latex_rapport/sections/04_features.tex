@@ -1,0 +1,46 @@
+\section{Méthodes d'extraction de caractéristiques}
+\label{sec:features}
+
+Quatre familles de descripteurs complémentaires sont extraites de chaque image
+prétraitée. Chacune capture un aspect distinct de l'apparence tumorale.
+
+\subsection{A --- Caractéristiques statistiques (distribution d'intensité)}
+
+Onze statistiques du premier ordre sont calculées à partir de l'histogramme d'intensités
+des pixels : moyenne, écart-type, variance, entropie de Shannon, asymétrie, kurtosis
+et cinq percentiles (p10, p25, p50, p75, p90). Elles fournissent un résumé compact
+de la distribution globale d'intensité, sans structure spatiale.
+
+\subsection{B --- Motifs binaires locaux (LBP)}
+
+Le LBP encode la texture locale en comparant chaque pixel à son voisinage circulaire
+de $P$ voisins au rayon $R$. La méthode d'encodage détermine le regroupement en histogramme.
+Le LBP capture les micro-motifs de texture liés à l'hétérogénéité tissulaire tumorale.
+
+\subsection{C --- Transformée en ondelettes discrète (DWT)}
+
+Une DWT 2D à un niveau décompose l'image en quatre sous-bandes (LL, LH, HL, HH)
+représentant respectivement la structure grossière et les détails haute fréquence
+horizontaux, verticaux et diagonaux. Des statistiques sont extraites de chaque
+sous-bande, fournissant une information multi-échelle dans le domaine fréquentiel.
+
+\subsection{D --- Histogrammes de gradients orientés (HOG)}
+
+Le HOG capture la distribution des magnitudes et orientations des gradients locaux
+en divisant l'image en cellules et en calculant des histogrammes d'orientation,
+puis en normalisant sur des blocs chevauchants. Le HOG est bien établi pour la
+discrimination basée sur la forme et les contours.
+
+\bigskip
+La Figure~\ref{fig:descriptor_demo} illustre les quatre types de descripteurs
+appliqués à une même coupe IRM.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{descriptor_demo.png}
+  \caption{Descripteurs artisanaux calculés à partir d'une coupe IRM prétraitée
+           (méningiome). Haut : coupe prétraitée. Ligne du milieu (gauche à droite) :
+           matrice de co-occurrence GLCM, carte LBP, carte d'énergie HOG. Ligne du bas :
+           sous-bandes DWT (LL, LH, HL, HH).}
+  \label{fig:descriptor_demo}
+\end{figure}

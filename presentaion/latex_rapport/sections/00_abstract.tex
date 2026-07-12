@@ -1,0 +1,18 @@
+Le diagnostic des tumeurs cérébrales repose sur la distinction entre gliome, méningiome
+et tumeur hypophysaire à partir d'images IRM --- une tâche essentielle pour la planification
+thérapeutique, mais chronophage lorsqu'elle est réalisée manuellement. Ce rapport présente
+un pipeline d'apprentissage automatique en deux phases conçu pour classifier des IRM
+de tumeurs cérébrales à l'aide de descripteurs artisanaux optimisés. En Phase~1, nous
+effectuons une recherche de paramètres guidée par la séparabilité sur \NPhaseOneConfigs{}
+configurations de quatre familles de descripteurs (statistiques, motifs binaires locaux
+--- LBP, transformée en ondelettes discrète --- DWT, et histogrammes de gradients orientés
+--- HOG), en sélectionnant la meilleure configuration par famille sans entraîner de
+classifieur. En Phase~2, les jeux de caractéristiques optimisés et leurs fusions sont
+comparés à \NModels{} classifieurs ajustés par validation croisée à 5 plis, soit
+\NRuns{} combinaisons évaluées. Le meilleur pipeline --- Full(opt) + SVM à noyau
+polynomial --- atteint une précision de \BestAcc{} et un F1-macro de \BestFOne{}
+(IC bootstrap 95\,\% : [\BestFOneCILow, \BestFOneCIHigh]) sur un jeu de données
+équilibré de \NTotal{} échantillons. La validation statistique (test de McNemar,
+test de Friedman et analyse de stabilité par graine aléatoire) confirme la robustesse
+des résultats. L'ensemble du pipeline s'exécute sur CPU, sans apprentissage profond,
+et produit des descripteurs interprétables adaptés à l'aide à la décision clinique.

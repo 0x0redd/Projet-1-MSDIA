@@ -1,31 +1,82 @@
+%=======================================================================
+%  Research Paper — Brain Tumor MRI Classification (Two-Phase Framework)
+%  Compile:  .\build.ps1   (or: pdflatex -> bibtex -> pdflatex x2)
+%
+%  STRUCTURE (methodology-first organisation)
+%    Abstract
+%    1. Introduction
+%    2. Related Work
+%    3. Materials and Experimental Setup
+%    4. Phase 1: Separability-Guided Feature Configuration  [methodological core]
+%    5. Feature Representation Construction
+%    6. Phase 2: Classifier Benchmarking
+%    7. Results and Discussion  [Phase 2 numbers: \TBD until benchmark completes]
+%    8. Feature Importance
+%    9. Statistical Validation  (pending — RQ4)
+%   10. Discussion               (merged into §7)
+%   11. Limitations
+%   12. Conclusion and Future Work
+%
+%  Provide section text in sections/*.tex (search for \placeholder)
+%=======================================================================
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{tikz}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{subcaption}
 \usepackage{siunitx}
-\usepackage{amsmath}
-\usepackage{cite}
 \usepackage{url}
 \usepackage[hidelinks]{hyperref}
 
-\graphicspath{{figures/}{../../output/}}
+\graphicspath{{figures/}{../../output/}{../../figures/}}
 
-\title{Handcrafted Feature Optimisation and Classifier Benchmarking for Brain Tumor MRI Classification}
+% Placeholder for sections awaiting your text
+\newcommand{\placeholder}[1]{\textit{[#1 --- text to be provided]}}
+\newcommand{\TBD}{\textit{[TBD]}}
+
+% Temporary first-page styling (remove for a strict IEEE submission).
+\definecolor{PaperNavy}{HTML}{173B63}
+\definecolor{PaperBlue}{HTML}{2B6EA6}
+\definecolor{PaperLightBlue}{HTML}{DCEAF5}
+\renewcommand{\abstractname}{\textcolor{PaperNavy}{Abstract}}
+
+\title{\textcolor{PaperNavy}{Handcrafted Feature Optimisation and Classifier
+Benchmarking for Brain Tumor MRI Classification}\\[-0.35em]
+\textcolor{PaperBlue}{\rule{0.42\textwidth}{1.2pt}}}
 
 \author{%
-\IEEEauthorblockN{Author Name}
+\IEEEauthorblockN{\textcolor{PaperBlue}{Ferrah Othmane}}
 \IEEEauthorblockA{\textit{Department of Computer Science}\\
-\textit{Institution Name}\\
-City, Country\\
-author@institution.edu}
+\textit{University of Moulay Ismail}\\
+\textit{Morocco}\\
+o.ferrah@edu.umi.ac.ma}
+\and
+\IEEEauthorblockN{\textcolor{PaperBlue}{Ilham El Ouariachi}}
+\IEEEauthorblockA{\textit{Department of Computer Science}\\
+\textit{University of Moulay Ismail}\\
+\textit{Morocco}}
 }
 
 \begin{document}
+\AddToHookNext{shipout/background}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[PaperNavy]
+      (current page.north west)
+      rectangle ([yshift=-5pt]current page.north east);
+    \fill[PaperBlue]
+      ([yshift=-5pt]current page.north west)
+      rectangle ([yshift=-7pt]current page.north east);
+  \end{tikzpicture}%
+}
 \maketitle
 
 \begin{abstract}
@@ -33,20 +84,24 @@ author@institution.edu}
 \end{abstract}
 
 \begin{IEEEkeywords}
-Brain tumor, MRI, texture features, machine learning, parameter optimisation, statistical validation
+Brain Tumor MRI, Handcrafted Features, Feature Optimization, Texture Analysis, GLCM, LBP, DWT, HOG, Machine Learning, Classifier Benchmarking, Statistical Validation
 \end{IEEEkeywords}
 
 \input{sections/01_introduction}
 \input{sections/02_related_work}
-\input{sections/03_methods}
-\input{sections/04_phase1_results}
-\input{sections/04_results_ml}
+\input{sections/03_materials_setup}
+\input{sections/04_phase1_method}
+\input{sections/05_feature_representation}
+\input{sections/06_phase2_method}
+\input{sections/07_results}
 \input{sections/08_interpretability}
-\input{sections/07_statistics}
-\input{sections/09_discussion}
-\input{sections/10_conclusion}
+\input{sections/09_statistics}
+% \input{sections/10_discussion}        % merged into §7
+\input{sections/11_limitations}
+\input{sections/12_conclusion}
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 
 \end{document}
+
